@@ -14,6 +14,9 @@ class BudgetGoal(db.Model):
     amount = db.Column(db.Numeric(12, 2), nullable=True)
     percentage = db.Column(db.Numeric(5, 2), nullable=True)
 
+    year = db.Column(db.Integer, nullable=False)
+    month = db.Column(db.Integer, nullable=False)
+    
     # Prevent duplicate category goals per user
     __table_args__ = (
         db.UniqueConstraint("user_id", "category", name="uq_user_category_budget"),

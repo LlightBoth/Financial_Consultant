@@ -57,6 +57,15 @@ def create_app(config_class: type[Config] = Config):
         user = db.session.get(User, int(user_id))
         return user
 
+    @login_manager.unauthorized_handler
+    def unauthorized():
+        # If the request comes from JS fetch / AJAX or requests JSON
+        if flask.request.is_json or flask.request.headers.get('X-Requested-With') == 'XMLHttpRequest' or 'api' in flask.request.path:
+            return flask.jsonify({"error": "Unauthorized", "message": "Session expired. Please log in again."}), 401
+        
+        # Otherwise redirect standard page requests to login
+        return flask.redirect(flask.url_for('auth.login'))
+
     # Global Notification
     @app.context_processor
     def inject_notifications():

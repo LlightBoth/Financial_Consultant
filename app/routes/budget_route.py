@@ -48,18 +48,23 @@ def update_budget_goals():
 @budget_bp.route("/add-goal", methods=["POST"])
 @login_required
 def add_budget_goal():
+    today = date.today()
     category = request.form.get("category")
     percentage = request.form.get("percentage")
     amount = request.form.get("amount")
+    year = request.form.get("year", today.year, type=int)
+    month = request.form.get("month", today.month, type=int)
 
     if not category:
         flash("Please select a valid category.", "danger")
-        return redirect(url_for("budgets.planner"))
+        return redirect(url_for("budgets.planner", year=year, month=month))
 
-    # save_category_goal handles upsert (create or update) logic internally
+    # Pass year and month to your service
     success, message = BudgetServices.save_category_goal(
         user_id=current_user.id,
         category=category,
+        year=year,
+        month=month,
         percentage=percentage,
         amount=amount
     )
@@ -69,4 +74,4 @@ def add_budget_goal():
     else:
         flash(message, "danger")
 
-    return redirect(url_for("budgets.planner"))
+    return redirect(url_for("budgets.planner", year=year, month=month))

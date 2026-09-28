@@ -5,347 +5,696 @@
 <link href="{{ url_for('static', filename='css/client/dashboard.css') }}" rel="stylesheet">
 
 <div class="container-fluid pb-5">
-    
-    <!-- Header Banner -->
-    <div class="dash-header-banner">
-        <div>
-            <h3 class="fw-bold mb-1">Financial Intelligence</h3>
-            <span class="text-muted small">Real-time performance metrics & savings tracking</span>
-        </div>
-        <div class="d-flex gap-2">
-            <form action="{{ url_for('advisors.personalAnalyse') }}" method="POST" class="d-inline">
-                {% if csrf_token is defined %}
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                {% endif %}
-                
-                <input type="hidden" name="income" value="{{ total_income | default(0) }}">
-                <input type="hidden" name="expense" value="{{ total_expense | default(0) }}">
 
-                <button type="submit" class="btn btn-primary rounded-pill px-4 shadow-sm fw-semibold">
-                    <i class="bi bi-upc-scan me-1"></i> Analyse Now
-                </button>
-            </form>
+  <!-- Header Banner -->
+  <div class="dash-header-banner">
+    <div>
+      <h3 class="fw-bold mb-1">Financial Intelligence</h3>
+      <span class="text-muted small">Real-time performance metrics & cashflow tracking</span>
+    </div>
+    <div class="d-flex align-items-center gap-2">
+      <form action="{{ url_for('advisors.personalAnalyse') }}" method="POST" class="d-inline">
+        {% if csrf_token is defined %}
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        {% endif %}
+        <input type="hidden" name="income" value="{{ total_income | default(0) }}">
+        <input type="hidden" name="expense" value="{{ total_expense | default(0) }}">
+
+        <button type="submit" class="btn btn-primary rounded-pill px-4 shadow-sm fw-semibold">
+          <i class="bi bi-upc-scan me-1"></i> Analyse Now
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Primary Metric Cards Section -->
+  <div class="mb-4">
+    <!-- Period Control Header Banner -->
+    <div class="dash-header-banner mb-3">
+      <div class="d-flex align-items-center gap-2">
+        <div class="btn-group btn-group-sm align-items-center border rounded-2 p-0.5 bg-body-tertiary" role="group" aria-label="Period navigation">
+          <button type="button" id="prevPeriod" class="btn btn-sm btn-link text-secondary p-1 border-0" aria-label="Previous period">
+            <svg class="bi" width="12" height="12" fill="currentColor" viewBox="0 0 16 16">
+              <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
+            </svg>
+          </button>
+          <span id="currentPeriodLabel" class="text-body small fw-semibold px-2" style="min-width: 120px; text-align: center;">Loading...</span>
+          <button type="button" id="nextPeriod" class="btn btn-sm btn-link text-secondary p-1 border-0" aria-label="Next period">
+            <svg class="bi" width="12" height="12" fill="currentColor" viewBox="0 0 16 16">
+              <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
+            </svg>
+          </button>
         </div>
+      </div>
+
+      <div class="metric-label mb-0 d-none d-md-block">FINANCIAL OVERVIEW</div>
+
+      <div class="btn-group btn-group-sm" role="group" aria-label="Period mode view">
+        <button type="button" id="viewYearBtn" class="btn btn-outline-primary py-1">Year</button>
+        <button type="button" id="viewMonthBtn" class="btn btn-primary active py-1">Month</button>
+      </div>
     </div>
 
-    <!-- Metric Cards Grid -->
-    <div class="row g-4 mb-4">
-        <!-- Total Balance Savings -->
-        <div class="col-md-4">
-            <div class="card stat-card shadow-sm p-4 h-100 border-0">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    <span class="text-uppercase tracking-wider text-muted fw-bold extra-small">Account Reserve</span>
-                    <span class="badge bg-success-subtle text-success rounded-pill px-2.5 py-1.5 small fw-bold">
-                        <i class="bi bi-arrow-up-right me-1"></i> Live
-                    </span>
-                </div>
-                <div class="metric-value fs-2 fw-bold mb-2 {% if sum_saving >= 0 %} text-success {% else %} text-danger {% endif %}">
-                    ${{ "{:,.2f}".format(sum_saving or 0) }}
-                </div>
-                <div class="metric-label text-body-secondary fw-medium mb-1">Total Savings Balance</div>
+    <!-- Top Row: Account & Performance (3 Cards) -->
+    <div class="row g-3 mb-3">
+      <!-- Account Reserve -->
+      <div class="col-12 col-md-4">
+        <div class="card stat-card p-3 h-100">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="metric-label">Account Reserve</span>
+            <div class="icon-box-modern green" style="width:36px; height:36px; font-size:1rem;">
+              <i class="bi bi-wallet2"></i>
             </div>
+          </div>
+          <div id="valSumSaving" class="metric-value fs-4 mb-1 text-success">
+            ${{ "{:,.2f}".format(sum_saving or 0) }}
+          </div>
+          <span class="text-muted extra-small">Total Savings Balance</span>
         </div>
+      </div>
 
-        <!-- Income Growth Rate -->
-        <div class="col-md-4">
-            <div class="card stat-card shadow-sm p-4 h-100 border-0">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    <span class="text-uppercase tracking-wider text-muted fw-bold extra-small">Performance</span>
-                    <span class="badge bg-primary-subtle text-primary rounded-pill px-2.5 py-1.5 small fw-bold">
-                        <i class="bi bi-activity me-1"></i> Rate
-                    </span>
-                </div>
-                <div class="metric-value fs-2 fw-bold text-body-emphasis mb-2">
-                    {% if sum_saving_rate > 0 %}+{% endif %}{{ "{:,.2f}".format(sum_saving_rate or 0) }}%
-                </div>
-                <div class="metric-label text-body-secondary fw-medium mb-1">Income Growth Rate</div>
+      <!-- Income Growth Rate -->
+      <div class="col-12 col-md-4">
+        <div class="card stat-card p-3 h-100">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="metric-label">Growth Rate</span>
+            <div class="icon-box-modern blue" style="width:36px; height:36px; font-size:1rem;">
+              <i class="bi bi-graph-up-arrow"></i>
             </div>
+          </div>
+          <div id="valGrowthRate" class="metric-value fs-4 mb-1 text-body-emphasis">
+            {% if (sum_saving_rate or 0) > 0 %}+{% endif %}{{ "{:,.2f}".format(sum_saving_rate or 0) }}%
+          </div>
+          <span class="text-muted extra-small">Performance vs last period</span>
         </div>
+      </div>
 
-        <!-- Risk Status -->
-        <div class="col-md-4">
-            <div class="card stat-card shadow-sm p-4 h-100 border-0">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    <span class="text-uppercase tracking-wider text-muted fw-bold extra-small">Risk Metrics</span>
-                    <span class="badge bg-secondary-subtle text-secondary rounded-pill px-2.5 py-1.5 small fw-bold">
-                        Score
-                    </span>
-                </div>
-                {% if sum_saving_rate >= 65 %}
-                <div class="metric-value fs-2 fw-bold text-success mb-2">Low Risk</div>
-                {% elif sum_saving_rate >= 15 %}
-                <div class="metric-value fs-2 fw-bold text-warning mb-2">Moderate Risk</div>
-                {% elif sum_saving_rate == 0 %}
-                <div class="metric-value fs-2 fw-bold text-muted mb-2">Neutral</div>
-                {% else %}
-                <div class="metric-value fs-2 fw-bold text-danger mb-2">High Risk</div>
-                {% endif %}
-                <div class="metric-label text-body-secondary fw-medium mb-1">Risk Profile Status</div>
+      <!-- Risk Status -->
+      <div class="col-12 col-md-4">
+        <div class="card stat-card p-3 h-100">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="metric-label">Risk Profile</span>
+            <div class="icon-box-modern purple" style="width:36px; height:36px; font-size:1rem;">
+              <i class="bi bi-shield-check"></i>
             </div>
+          </div>
+          <div id="valRiskStatus" class="metric-value fs-4 mb-1">
+            {% if sum_saving_rate is not defined or sum_saving_rate == 0 %}
+              <span class="text-muted">No Data</span>
+            {% elif sum_saving_rate >= 65 %}
+              <span class="text-success">Low Risk</span>
+            {% elif sum_saving_rate >= 15 %}
+              <span class="text-warning">Moderate</span>
+            {% else %}
+              <span class="text-danger">High Risk</span>
+            {% endif %}
+          </div>
+          <span class="text-muted extra-small">Calculated Status</span>
         </div>
+      </div>
     </div>
 
-    <!-- Charts Row -->
-    <div class="row g-4 mb-4">
-        <!-- Monthly Performance -->
-        <div class="col-12 col-lg-8">
-            <div class="card stat-card shadow-sm p-4 h-100">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h6 class="fw-bold mb-0 text-uppercase text-muted small">Monthly Cashflow Trend</h6>
-                    <span class="badge bg-primary-subtle text-primary small">Monthly Analysis</span>
-                </div>
-                <div id="chart_main" class="w-100" style="height: 280px;"></div>
+    <!-- Bottom Row: Budget & Expenses (3 Cards) -->
+    <div class="row g-3">
+      <!-- Monthly Expense -->
+      <div class="col-12 col-md-4">
+        <div class="card stat-card p-3 h-100">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="metric-label">Expense</span>
+            <div class="icon-box-modern amber" style="width:36px; height:36px; font-size:1rem;">
+              <i class="bi bi-bag"></i>
             </div>
+          </div>
+          <div id="valExpense" class="metric-value fs-4 mb-1 text-danger">
+            ${{ "{:,.0f}".format(activity.current_expense|default(total_expense|default(0))) }}
+          </div>
+          <a href="{{ url_for('expenses.index') }}" class="text-decoration-none extra-small text-primary fw-semibold">View Details →</a>
         </div>
+      </div>
 
-        <!-- Distribution Breakdown -->
-        <div class="col-12 col-lg-4">
-            <div class="card stat-card shadow-sm p-4 h-100">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h6 class="fw-bold mb-0 text-uppercase text-muted small">Income vs Expense</h6>
-                    <span class="badge bg-secondary-subtle text-secondary small">Ratio</span>
-                </div>
-                <div id="chart_side" class="w-100" style="height: 280px;"></div>
+      <!-- Monthly Budget -->
+      <div class="col-12 col-md-4">
+        <div class="card stat-card p-3 h-100">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="metric-label">Budget</span>
+            <div class="icon-box-modern blue" style="width:36px; height:36px; font-size:1rem;">
+              <i class="bi bi-calculator"></i>
             </div>
+          </div>
+          <div id="valBudget" class="metric-value fs-4 mb-1">
+            ${{ "{:,.0f}".format(budget_total|default(0)) }}
+          </div>
+          <span id="valBudgetStatus" class="text-muted extra-small">
+            {% if (budget_total|default(0)) == 0 %}No budget set for period{% else %}Current limit{% endif %}
+          </span>
         </div>
+      </div>
+
+      <!-- Remaining Budget -->
+      <div class="col-12 col-md-4">
+        <div class="card stat-card p-3 h-100">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="metric-label">Remaining</span>
+            <div class="icon-box-modern green" style="width:36px; height:36px; font-size:1rem;">
+              <i class="bi bi-currency-dollar"></i>
+            </div>
+          </div>
+          {% set remaining = budget_total|default(0) - activity.current_expense|default(0) %}
+          <div id="valRemaining" class="metric-value fs-4 mb-1 {% if remaining < 0 %}text-danger{% elif (budget_total|default(0)) == 0 %}text-muted{% else %}text-success{% endif %}">
+            ${{ "{:,.0f}".format(remaining) }}
+          </div>
+          <a href="{{ url_for('incomes.index') }}" class="text-decoration-none extra-small text-primary fw-semibold">Manage →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Primary Charts Row -->
+  <div class="row g-4 mb-4">
+    <!-- Monthly Cashflow Trend -->
+    <div class="col-12 col-lg-8">
+      <div class="card stat-card p-4 h-100">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div>
+            <span class="metric-label d-block">Monthly Cashflow Trend</span>
+            <small class="text-muted">Income · Expense · Net Cash Flow</small>
+          </div>
+          <span class="badge bg-primary-subtle text-primary border border-primary-subtle">Yearly View</span>
+        </div>
+        <div class="position-relative" style="height: 270px;">
+          <canvas id="monthlyTrend"></canvas>
+        </div>
+      </div>
     </div>
 
+    <!-- Category Spend Donut -->
+    <div class="col-12 col-lg-4">
+      <div class="card stat-card p-4 h-100">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <div>
+            <span class="metric-label d-block">Category Spend</span>
+            <small class="text-muted">This Month Breakdown</small>
+          </div>
+        </div>
+        <div class="position-relative mx-auto mb-3" style="height: 180px; max-width: 200px;">
+          <canvas id="categorySpend"></canvas>
+        </div>
+        <div class="border-top border-secondary-subtle pt-2" id="categorySpendList">
+          {% for item in activity.category_series|default([]) %}
+            {% if loop.index <= 4 %}
+            <div class="d-flex justify-content-between py-1 small">
+              <span class="text-secondary">{{ item.category }}</span>
+              <strong class="text-body-emphasis">${{ "{:,.0f}".format(item.current) }}</strong>
+            </div>
+            {% endif %}
+          {% else %}
+            <p class="text-muted extra-small mb-0 text-center py-2">No category spend recorded.</p>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Secondary Breakdown Grid -->
+  <div class="row g-4">
+    <!-- Expense Category Table -->
+    <div class="col-12 col-lg-7">
+      <div class="card stat-card p-4 h-100">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <span class="metric-label">Expense Categories</span>
+          <span class="badge bg-body-tertiary text-secondary border">Breakdown</span>
+        </div>
+        <div class="table-responsive" style="max-height: 290px;">
+          <table class="table table-hover align-middle mb-0 small">
+            <thead>
+              <tr class="text-secondary border-bottom">
+                <th>Category</th>
+                <th class="text-end">Month Spent</th>
+                <th class="text-end">Budget</th>
+                <th class="text-end">Remaining</th>
+                <th class="text-end">Average</th>
+              </tr>
+            </thead>
+            <tbody id="expenseCategoryTableBody">
+            {% for item in activity.budget_categories|default([]) %}
+              <tr>
+                <td class="fw-medium">
+                  <span class="icon-box-modern blue d-inline-flex me-2" style="width: 24px; height: 24px; font-size: 0.75rem;">
+                    <i class="bi bi-tag-fill"></i>
+                  </span>
+                  {{ item.category }}
+                </td>
+                <td class="text-end fw-semibold {% if item.status == 'over' %}text-danger{% endif %}">
+                  ${{ "{:,.0f}".format(item.spent) }}
+                </td>
+                <td class="text-end text-muted">${{ "{:,.0f}".format(item.limit) if item.limit is not none else '—' }}</td>
+                <td class="text-end fw-semibold {% if item.status == 'over' %}text-danger{% else %}text-success{% endif %}">
+                  ${{ "{:,.0f}".format(item.remaining) if item.remaining is not none else '—' }}
+                </td>
+                <td class="text-end text-muted">${{ "{:,.0f}".format(item.average|default(0)) }}</td>
+              </tr>
+            {% else %}
+              <tr><td colspan="5" class="text-center text-muted py-4">No budget or expense data for this period.</td></tr>
+            {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Largest Expenses List -->
+    <div class="col-12 col-lg-5">
+      <div class="card stat-card p-4 h-100">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <span class="metric-label">Largest Expenses</span>
+          <a href="{{ url_for('expenses.index') }}" class="text-primary text-decoration-none small fw-semibold">View All</a>
+        </div>
+        <div class="overflow-y-auto" id="largestExpensesList" style="max-height: 290px;">
+          {% for item in largest_expenses|default([]) %}
+            <div class="plan-progress-pill mb-2 p-2.5">
+              <div class="d-flex justify-content-between text-muted extra-small mb-1">
+                <span>{{ item.category }}</span>
+                <span>{{ item.expense_date.month ~ '/' ~ item.expense_date.day ~ '/' ~ item.expense_date.year if item.expense_date else '' }}</span>
+              </div>
+              <div class="d-flex align-items-center justify-content-between">
+                <div class="fw-semibold text-body-emphasis small">{{ item.description or 'Expense Item' }}</div>
+                <div class="fw-bold text-danger">${{ "{:,.2f}".format(item.amount) }}</div>
+              </div>
+            </div>
+          {% else %}
+            <div class="text-center text-muted small py-4">No expense entries recorded for this period.</div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Cash Movement Flow -->
+    <div class="col-12 col-lg-7">
+      <div class="card stat-card p-4 h-100">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <div>
+            <span class="metric-label d-block">Cash Flow Movement</span>
+            <small class="text-muted">Inflow vs. Outflow</small>
+          </div>
+        </div>
+        <div class="position-relative" style="height: 220px;">
+          <canvas id="flowChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Income Sources -->
+    <div class="col-12 col-lg-5">
+      <div class="card stat-card p-4 h-100">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <span class="metric-label">Income Sources</span>
+          <span class="badge bg-success-subtle text-success border border-success-subtle">This Month</span>
+        </div>
+        <div class="overflow-y-auto" id="incomeSourcesList" style="max-height: 220px;">
+          {% for item in income_sources|default([]) %}
+            <div class="plan-progress-pill d-flex align-items-center justify-content-between mb-2 p-2.5">
+              <div class="d-flex align-items-center gap-2">
+                <div class="icon-box-modern green" style="width: 32px; height: 32px; font-size: 0.9rem;">
+                  <i class="bi bi-briefcase"></i>
+                </div>
+                <span class="fw-semibold text-body-emphasis small">{{ item.category }}</span>
+              </div>
+              <span class="fw-bold text-success">${{ "{:,.0f}".format(item.total) }}</span>
+            </div>
+          {% else %}
+            <div class="text-center text-muted small py-4">No income recorded for this period.</div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
-<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-<script type="text/javascript">
-    google.charts.load('current', {'packages':['corechart']});
-    google.charts.setOnLoadCallback(drawCharts);
+<!-- Render Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
 
-    // Dynamic Flask/Jinja2 variables
-    const monthlyData = {{ monthly_cashflow | tojson | safe }};
-    const totalIncome = Number({{ total_income | default(0) | tojson }}) || 0;
-    const totalExpense = Number({{ total_expense | default(0) | tojson }}) || 0;
+  let currentDate = new Date();
+  let viewMode = 'month';
 
-function drawCharts() {
-    const currentTheme =
-        localStorage.getItem('theme') ||
-        document.documentElement.getAttribute('data-bs-theme') ||
-        'light';
+  const labelEl = document.getElementById('currentPeriodLabel');
+  const prevBtn = document.getElementById('prevPeriod');
+  const nextBtn = document.getElementById('nextPeriod');
+  const viewMonthBtn = document.getElementById('viewMonthBtn');
+  const viewYearBtn = document.getElementById('viewYearBtn');
 
-    const isDark = currentTheme === 'dark';
+  // Declare chart instances globally
+  let categoryChart = null;
+  const apiUrl = "{{ url_for('dashboards.budget_api') }}";
 
-    const labelColor = isDark ? '#94a3b8' : '#64748b';
-    const gridColor = isDark
-        ? 'rgba(255,255,255,0.06)'
-        : 'rgba(0,0,0,0.06)';
+  // Color Tokens matching Midnight Obsidian
+  const blueColor = '#3b82f6';
+  const greenColor = '#10b981';
+  const redColor = '#ef4444';
+  const amberColor = '#f59e0b';
+  const purpleColor = '#8b5cf6';
+  const mutedColor = 'rgba(148, 163, 184, 0.2)'; // Placeholder gray for empty donut
 
-    const sharedOptions = {
-        backgroundColor: 'transparent',
+  function formatCurrency(num) {
+    return '$' + Number(num || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
 
-        chartArea: {
-            width: '82%',
-            height: '75%'
-        },
+  function updateDashboardUI(data) {
+    if (!data) return;
 
-        legend: {
-            position: 'top',
-            alignment: 'end',
-            textStyle: {
-                color: labelColor,
-                fontSize: 12,
-                fontName: 'Inter'
-            }
-        },
+    // --- 1. Metric Cards & Fallbacks ---
+    const savingEl = document.getElementById('valSumSaving');
+    if (savingEl) {
+      const savingVal = data.sum_saving || 0;
+      savingEl.textContent = formatCurrency(savingVal);
+      savingEl.className = `metric-value fs-4 mb-1 ${savingVal >= 0 ? 'text-success' : 'text-danger'}`;
+    }
 
-        hAxis: {
-            textStyle: {
-                color: labelColor,
-                fontSize: 11,
-                fontName: 'Inter'
-            }
-        }
-    };
+    const rateEl = document.getElementById('valGrowthRate');
+    if (rateEl) {
+      const rateVal = data.sum_saving_rate || 0;
+      rateEl.textContent = (rateVal > 0 ? '+' : '') + rateVal.toFixed(2) + '%';
+    }
 
+    const riskEl = document.getElementById('valRiskStatus');
+    if (riskEl) {
+      const rateVal = data.sum_saving_rate || 0;
+      if (!rateVal || rateVal === 0) {
+        riskEl.innerHTML = '<span class="text-muted">No Data</span>';
+      } else if (rateVal >= 65) {
+        riskEl.innerHTML = '<span class="text-success">Low Risk</span>';
+      } else if (rateVal >= 15) {
+        riskEl.innerHTML = '<span class="text-warning">Moderate</span>';
+      } else {
+        riskEl.innerHTML = '<span class="text-danger">High Risk</span>';
+      }
+    }
 
-    // ============================================================
-    // 1. MAIN CASHFLOW CHART
-    // ============================================================
+    const expenseVal = data.activity?.current_expense ?? data.total_expense ?? 0;
+    const budgetVal = data.budget_total ?? 0;
+    const remainingVal = budgetVal - expenseVal;
 
-    const mainChartEl = document.getElementById('chart_main');
+    const expenseEl = document.getElementById('valExpense');
+    if (expenseEl) expenseEl.textContent = formatCurrency(expenseVal);
 
-    if (monthlyData && monthlyData.length > 0 && mainChartEl) {
+    const budgetEl = document.getElementById('valBudget');
+    if (budgetEl) budgetEl.textContent = formatCurrency(budgetVal);
 
-        const dataMain = new google.visualization.DataTable();
+    const budgetStatusEl = document.getElementById('valBudgetStatus');
+    if (budgetStatusEl) {
+      budgetStatusEl.textContent = budgetVal === 0 ? "No budget set for period" : "Current limit";
+    }
 
-        dataMain.addColumn('string', 'Month');
-        dataMain.addColumn('number', 'Income');
-        dataMain.addColumn('number', 'Expenses');
-        dataMain.addColumn('number', 'Net Cash Flow');
+    const remainingEl = document.getElementById('valRemaining');
+    if (remainingEl) {
+      remainingEl.textContent = formatCurrency(remainingVal);
+      if (budgetVal === 0 && expenseVal === 0) {
+        remainingEl.className = "metric-value fs-4 mb-1 text-muted";
+      } else if (remainingVal < 0) {
+        remainingEl.className = "metric-value fs-4 mb-1 text-danger";
+      } else {
+        remainingEl.className = "metric-value fs-4 mb-1 text-success";
+      }
+    }
 
-        const formattedData = monthlyData.map(row => [
-            String(row[0]),
-            Number(row[1]) || 0,
-            Number(row[2]) || 0,
-            Number(row[3]) || 0
-        ]);
-
-        dataMain.addRows(formattedData);
-
-
-        const comboOptions = {
-            ...sharedOptions,
-
-            seriesType: 'bars',
-
-            // Two different Y axes.
-            vAxes: {
-                // Left axis = Income / Expenses
-                0: {
-                    textStyle: {
-                        color: labelColor,
-                        fontSize: 11,
-                        fontName: 'Inter'
-                    },
-
-                    gridlines: {
-                        color: gridColor
-                    },
-
-                    format: '$#,##0'
-                },
-
-                // Right axis = Net Cash Flow
-                1: {
-                    textStyle: {
-                        color: '#3b82f6',
-                        fontSize: 11,
-                        fontName: 'Inter'
-                    },
-
-                    gridlines: {
-                        color: 'transparent'
-                    },
-
-                    format: '$#,##0'
-                }
-            },
-
-            // Map each series to an axis.
-            series: {
-                // Income
-                0: {
-                    type: 'bars',
-                    color: '#10b981',
-                    targetAxisIndex: 0
-                },
-
-                // Expenses
-                1: {
-                    type: 'bars',
-                    color: '#ef4444',
-                    targetAxisIndex: 0
-                },
-
-                // Net Cash Flow
-                2: {
-                    type: 'line',
-                    color: '#3b82f6',
-                    lineWidth: 3,
-                    pointSize: 6,
-                    targetAxisIndex: 1
-                }
-            },
-
-            // Gives the chart a little breathing room.
-            bar: {
-                groupWidth: '55%'
-            },
-
-            // Keep the line visually clean.
-            curveType: 'function',
-
-            // Makes negative values clearly visible.
-            interpolateNulls: true
-        };
-
-
-        new google.visualization.ComboChart(mainChartEl)
-            .draw(dataMain, comboOptions);
-
-    } else if (mainChartEl) {
-
-        mainChartEl.innerHTML = `
-            <div class="d-flex flex-column justify-content-center align-items-center h-100 text-body-secondary py-5">
-                <i class="bi bi-bar-chart-line fs-1 mb-2 opacity-50 text-primary"></i>
-                <div class="fw-semibold small">
-                    No Monthly Data Available
-                </div>
+    // --- 2. Income Sources Fallback ---
+    const incomeContainer = document.getElementById('incomeSourcesList');
+    if (incomeContainer) {
+      if (data.income_sources && data.income_sources.length > 0) {
+        incomeContainer.innerHTML = data.income_sources.map(src => `
+          <div class="plan-progress-pill d-flex align-items-center justify-content-between mb-2 p-2.5">
+            <div class="d-flex align-items-center gap-2">
+              <div class="icon-box-modern green" style="width: 32px; height: 32px; font-size: 0.9rem;">
+                <i class="bi bi-briefcase"></i>
+              </div>
+              <span class="fw-semibold text-body-emphasis small">${src.category}</span>
             </div>
-        `;
+            <span class="fw-bold text-success">${formatCurrency(src.total)}</span>
+          </div>
+        `).join('');
+      } else {
+        incomeContainer.innerHTML = `<div class="text-center text-muted small py-4">No income recorded for this period.</div>`;
+      }
     }
 
+    // --- 3. Largest Expenses List Fallback ---
+    const expenseList = document.getElementById('largestExpensesList');
+    if (expenseList) {
+      if (data.largest_expenses && data.largest_expenses.length > 0) {
+        expenseList.innerHTML = data.largest_expenses.map(exp => `
+          <div class="plan-progress-pill mb-2 p-2.5">
+            <div class="d-flex justify-content-between text-muted extra-small mb-1">
+              <span>${exp.category || 'General'}</span>
+              <span>${exp.expense_date || ''}</span>
+            </div>
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="fw-semibold text-body-emphasis small">${exp.description || 'Expense Item'}</div>
+              <div class="fw-bold text-danger">${formatCurrency(exp.amount)}</div>
+            </div>
+          </div>
+        `).join('');
+      } else {
+        expenseList.innerHTML = `<div class="text-center text-muted small py-4">No expense entries recorded for this period.</div>`;
+      }
+    }
 
-    // ============================================================
-    // 2. INCOME VS EXPENSE DONUT
-    // ============================================================
+    // --- 4. Category Spend Donut & List Fallback ---
+    const categories = data.activity?.category_series || [];
+    const validCategories = categories.filter(c => (c.current || c.amount || c.total || 0) > 0);
+    
+    let labels = validCategories.map(c => c.category || c.name);
+    let values = validCategories.map(c => c.current || c.amount || c.total);
+    let chartColors = [blueColor, redColor, greenColor, amberColor, purpleColor, '#ec4899'];
 
-    const sideChartEl = document.getElementById('chart_side');
+    // Fallback placeholder chart if no category values exist
+    if (values.length === 0) {
+      labels = ['No Expense'];
+      values = [1];
+      chartColors = [mutedColor];
+    }
 
-    if (sideChartEl) {
+    const categoryEl = document.getElementById('categorySpend');
+    if (categoryEl) {
+      if (categoryChart) {
+        categoryChart.data.labels = labels;
+        categoryChart.data.datasets[0].data = values;
+        categoryChart.data.datasets[0].backgroundColor = chartColors;
+        categoryChart.update();
+      } else {
+        categoryChart = new Chart(categoryEl, {
+          type: 'doughnut',
+          data: {
+            labels: labels,
+            datasets: [{
+              data: values,
+              backgroundColor: chartColors,
+              borderWidth: 0
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '72%',
+            plugins: { 
+              legend: { display: false },
+              tooltip: { enabled: validCategories.length > 0 }
+            }
+          }
+        });
+      }
+    }
 
-        if (totalIncome === 0 && totalExpense === 0) {
+    const categoryContainer = document.getElementById('categorySpendList');
+    if (categoryContainer) {
+      if (validCategories.length > 0) {
+        categoryContainer.innerHTML = validCategories.slice(0, 4).map(cat => `
+          <div class="d-flex justify-content-between py-1 small">
+            <span class="text-secondary">${cat.category || cat.name}</span>
+            <strong class="text-body-emphasis">${formatCurrency(cat.current || cat.amount || cat.total || 0)}</strong>
+          </div>
+        `).join('');
+      } else {
+        categoryContainer.innerHTML = `<p class="text-muted extra-small mb-0 text-center py-2">No category spend recorded.</p>`;
+      }
+    }
 
-            sideChartEl.innerHTML = `
-                <div class="d-flex flex-column justify-content-center align-items-center h-100 text-body-secondary py-5">
-                    <i class="bi bi-pie-chart fs-1 mb-2 opacity-50 text-primary"></i>
+    // --- 5. Expense Categories Table Fallback ---
+    const categoryTableBody = document.getElementById('expenseCategoryTableBody');
+    if (categoryTableBody) {
+      const categoriesList = data.activity?.budget_categories || [];
+      if (categoriesList.length > 0) {
+        categoryTableBody.innerHTML = categoriesList.map(item => `
+          <tr>
+            <td class="fw-medium">
+              <span class="icon-box-modern blue d-inline-flex me-2" style="width: 24px; height: 24px; font-size: 0.75rem;">
+                <i class="bi bi-tag-fill"></i>
+              </span>
+              ${item.category}
+            </td>
+            <td class="text-end fw-semibold ${item.status === 'over' ? 'text-danger' : ''}">
+              ${formatCurrency(item.spent)}
+            </td>
+            <td class="text-end text-muted">${item.limit !== null && item.limit !== undefined ? formatCurrency(item.limit) : '—'}</td>
+            <td class="text-end fw-semibold ${item.status === 'over' ? 'text-danger' : 'text-success'}">
+              ${item.remaining !== null && item.remaining !== undefined ? formatCurrency(item.remaining) : '—'}
+            </td>
+            <td class="text-end text-muted">${formatCurrency(item.average || 0)}</td>
+          </tr>
+        `).join('');
+      } else {
+        categoryTableBody.innerHTML = `<tr><td colspan="5" class="text-center text-muted py-4">No budget or expense data for this period.</td></tr>`;
+      }
+    }
+  }
 
-                    <div class="fw-semibold small">
-                        No Transaction Data
-                    </div>
+  async function fetchDashboardData() {
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth() + 1;
 
-                    <small class="text-muted">
-                        Add income or expense to render ratio.
-                    </small>
-                </div>
-            `;
+    labelEl.textContent = 'Loading...';
 
-            return;
+    try {
+      const response = await fetch(`${apiUrl}?year=${year}&month=${month}`, {
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest' // Helps Flask detect AJAX calls
         }
+      });
 
+      // Handle authentication redirect / session expiry
+      if (response.status === 401 || response.redirected && response.url.includes('/auth/login')) {
+        window.location.href = '/auth/login';
+        return;
+      }
 
-        const dataSide = google.visualization.arrayToDataTable([
-            ['Type', 'Amount'],
-            ['Expense', totalExpense],
-            ['Income', totalIncome]
-        ]);
+      const responseText = await response.text();
 
+      if (!response.ok) {
+        console.error(`HTTP Status ${response.status} Error:`, responseText);
+        throw new Error(`Server returned HTTP status ${response.status}`);
+      }
 
-        new google.visualization.PieChart(sideChartEl)
-            .draw(dataSide, {
-                ...sharedOptions,
+      let data;
+      try {
+        data = JSON.parse(responseText);
+      } catch (parseErr) {
+        // If server still returned HTML login page, redirect to login
+        if (responseText.includes('Sign In') || responseText.includes('login')) {
+          window.location.href = '/auth/login';
+          return;
+        }
+        throw new SyntaxError("Response was not valid JSON");
+      }
 
-                pieHole: 0.65,
+      updateDashboardUI(data);
 
-                colors: [
-                    '#ef4444',
-                    '#10b981'
-                ],
+      if (viewMode === 'month') {
+        labelEl.textContent = currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+      } else {
+        labelEl.textContent = year.toString();
+      }
 
-                legend: {
-                    position: 'bottom',
-                    alignment: 'center',
-                    textStyle: {
-                        color: labelColor,
-                        fontSize: 12,
-                        fontName: 'Inter'
-                    }
-                },
-
-                chartArea: {
-                    width: '90%',
-                    height: '75%'
-                }
-            });
+    } catch (err) {
+      console.error("Dashboard API Error:", err);
+      labelEl.textContent = "Error loading data";
     }
-}
+  }
 
+  // Prev / Next Controls
+  prevBtn.addEventListener('click', function() {
+    if (viewMode === 'month') {
+      currentDate.setMonth(currentDate.getMonth() - 1);
+    } else {
+      currentDate.setFullYear(currentDate.getFullYear() - 1);
+    }
+    fetchDashboardData();
+  });
 
-    window.addEventListener('resize', drawCharts);
+  nextBtn.addEventListener('click', function() {
+    if (viewMode === 'month') {
+      currentDate.setMonth(currentDate.getMonth() + 1);
+    } else {
+      currentDate.setFullYear(currentDate.getFullYear() + 1);
+    }
+    fetchDashboardData();
+  });
+
+  // Month / Year Mode Toggle
+  viewMonthBtn.addEventListener('click', function() {
+    viewMode = 'month';
+    viewMonthBtn.classList.add('btn-primary', 'active');
+    viewMonthBtn.classList.remove('btn-outline-primary');
+    viewYearBtn.classList.add('btn-outline-primary');
+    viewYearBtn.classList.remove('btn-primary', 'active');
+    fetchDashboardData();
+  });
+
+  viewYearBtn.addEventListener('click', function() {
+    viewMode = 'year';
+    viewYearBtn.classList.add('btn-primary', 'active');
+    viewYearBtn.classList.remove('btn-outline-primary');
+    viewMonthBtn.classList.add('btn-outline-primary');
+    viewMonthBtn.classList.remove('btn-primary', 'active');
+    fetchDashboardData();
+  });
+
+  // Initial Fetch on page load
+  fetchDashboardData();
+
+  const months = {{ activity.labels|default([])|tojson }};
+  const incomeData = {{ activity.income|default([])|tojson }};
+  const expenseData = {{ activity.expenses|default([])|tojson }};
+  const cashflowData = {{ activity.cashflow|default([])|tojson }};
+
+  // 1. Monthly Trend Combo Chart
+  const trendEl = document.getElementById('monthlyTrend');
+  if (trendEl) {
+    new Chart(trendEl, {
+      type: 'bar',
+      data: {
+        labels: months,
+        datasets: [
+          { label: 'Income', data: incomeData, backgroundColor: 'rgba(16, 185, 129, 0.75)', borderRadius: 4 },
+          { label: 'Expense', data: expenseData, backgroundColor: 'rgba(239, 68, 68, 0.75)', borderRadius: 4 },
+          { type: 'line', label: 'Net Cash Flow', data: cashflowData, borderColor: blueColor, borderWidth: 2, pointRadius: 3, tension: 0.3 }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { position: 'top', labels: { font: { family: 'Inter', size: 11 } } } },
+        scales: {
+          x: { grid: { display: false }, ticks: { font: { family: 'Inter', size: 10 } } },
+          y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { font: { family: 'Inter', size: 10 } } }
+        }
+      }
+    });
+  }
+
+  // 2. Flow Chart
+  const flowEl = document.getElementById('flowChart');
+  if (flowEl) {
+    new Chart(flowEl, {
+      type: 'bar',
+      data: {
+        labels: months,
+        datasets: [
+          { label: 'Income', data: incomeData, backgroundColor: 'rgba(16, 185, 129, 0.85)', borderRadius: 3 },
+          { label: 'Expense', data: expenseData, backgroundColor: 'rgba(239, 68, 68, 0.85)', borderRadius: 3 }
+        ]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { font: { family: 'Inter', size: 10 } } },
+          y: { grid: { display: false }, ticks: { font: { family: 'Inter', size: 10 } } }
+        }
+      }
+    });
+  }
+});
 </script>
 {% endblock %}

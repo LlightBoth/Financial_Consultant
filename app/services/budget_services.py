@@ -87,16 +87,16 @@ class BudgetServices:
         total_expense = sum(spending.values(), Decimal("0"))
         remaining = income - total_expense
 
-        # 1. Fetch category percentages lookup (custom or default)
-        category_percentages = BudgetServices.get_user_category_percentages(user)
+        # Query ONLY goals created specifically for this year & month
+        monthly_goals = BudgetGoal.query.filter_by(
+            user_id=user.id, 
+            year=year, 
+            month=month
+        ).all()
+        user_goals = {goal.category: goal for goal in monthly_goals}
 
-        # 2. Build direct lookup for user's explicit BudgetGoal models
-        user_goals = {}
-        if hasattr(user, "budget_goals") and user.budget_goals:
-            user_goals = {goal.category: goal for goal in user.budget_goals}
-
-        # 3. Merge all categories (defaults + saved goals + logged spending)
-        all_categories = set(category_percentages.keys()).union(set(spending.keys()))
+        # Only include categories that have actual spending OR an explicit goal for THIS month
+        all_categories = set(spending.keys()).union(set(user_goals.keys()))
 
         categories = []
 
@@ -104,27 +104,23 @@ class BudgetServices:
             goal = user_goals.get(category)
             spent = spending.get(category, Decimal("0"))
 
-            # --- PRIORITY LOGIC ---
-            # Priority 1: Fixed dollar amount override (if explicitly set)
             if goal and goal.amount is not None:
                 budget_amount = Decimal(str(goal.amount))
-                # Compute equivalent percentage for UI display
                 percentage = (budget_amount / income * Decimal("100")) if income > 0 else Decimal("0")
-
-            # Priority 2: Custom or default percentage allocation
-            else:
-                percentage = category_percentages.get(category, Decimal("0"))
+            elif goal and goal.percentage is not None:
+                percentage = Decimal(str(goal.percentage))
                 budget_amount = (income * percentage) / Decimal("100")
+            else:
+                percentage = Decimal("0")
+                budget_amount = Decimal("0")
 
             remaining_category = budget_amount - spent
 
-            # Calculate usage percentage
             if budget_amount > 0:
                 usage = (spent / budget_amount) * Decimal("100")
             else:
                 usage = Decimal("100") if spent > 0 else Decimal("0")
 
-            # Determine alert status
             if usage >= 100:
                 status, status_text = "danger", "Over budget"
             elif usage >= 80:
@@ -144,7 +140,6 @@ class BudgetServices:
                 "is_fixed_amount": bool(goal and goal.amount is not None)
             })
 
-        # Sort highest spent category first
         categories.sort(key=lambda x: x["spent"], reverse=True)
 
         data = {
@@ -283,15 +278,10 @@ class BudgetServices:
         return True, "Budget goals updated successfully"
 
     @staticmethod
-    def save_category_goal(user_id, category, percentage=None, amount=None):
-        """
-        Creates or updates a single category budget goal for a user.
-        Mutually clears percentage if amount is provided, and vice versa.
-        """
+    def save_category_goal(user_id, category, year, month, percentage=None, amount=None):
         if not category:
             return False, "Category is required."
 
-        # Helper to convert empty inputs, strings, or zeroes to None/Decimal
         def clean_decimal(val):
             if val is None:
                 return None
@@ -307,23 +297,28 @@ class BudgetServices:
         pct_val = clean_decimal(percentage)
         amt_val = clean_decimal(amount)
 
-        # MUTUAL EXCLUSIVITY RULE:
-        # If amount is provided, amount overrides percentage -> clear percentage.
-        # If percentage is provided and amount is empty -> clear amount.
         if amt_val is not None:
             pct_val = None
         elif pct_val is not None:
             amt_val = None
 
-        goal = BudgetGoal.query.filter_by(user_id=user_id, category=category).first()
+        # Filter lookup by user_id, category, year, AND month
+        goal = BudgetGoal.query.filter_by(
+            user_id=user_id, 
+            category=category, 
+            year=year, 
+            month=month
+        ).first()
 
         if goal:
             goal.percentage = pct_val
-            goal.amount = amt_val  # <-- Explicitly clears old fixed amount to None when switching to percentage!
+            goal.amount = amt_val
         else:
             goal = BudgetGoal(
                 user_id=user_id,
                 category=category,
+                year=year,
+                month=month,
                 percentage=pct_val,
                 amount=amt_val
             )
