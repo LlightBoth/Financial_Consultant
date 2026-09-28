@@ -11,3 +11,5 @@ from .fact_forms import FactForm, EditFactForm, ConfirmDeleteForm
 from .plan_forms import PlanForm, EditPlanForm, ConfirmDeleteForm
 from .income_forms import IncomeForm, EditIncomeForm, IncomeDeleteForm
 from .expense_forms import ExpenseForm, EditExpenseForm, ExpenseDeleteForm
+from .budget_forms import BudgetGoalDeleteForm, BudgetGoalForm, EditBudgetGoalForm
+from .advisor_forms import AdvisorForm

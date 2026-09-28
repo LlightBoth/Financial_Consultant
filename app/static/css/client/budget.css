@@ -1,0 +1,223 @@
+  /* Custom thin scrollbar */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: #f8f9fa;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #dee2e6;
+    border-radius: 9999px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #ced4da;
+  }
+
+  .card {
+    border-radius: 1rem;
+  }
+
+  .btn-purple {
+    background-color: #6f42c1;
+    color: #fff;
+  }
+
+  .btn-purple:hover {
+    background-color: #593196;
+    color: #fff;
+  }
+
+  .bg-purple-subtle {
+    background-color: #f3ebf9 !important;
+  }
+
+  .text-purple {
+    color: #6f42c1 !important;
+  }
+
+  .progress-bar-purple {
+    background-color: #6f42c1;
+  }
+
+  .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* =========================
+     MOBILE RESPONSIVE
+     ========================= */
+
+  @media screen and (max-width: 768px) {
+
+    .container-fluid {
+      width: 100%;
+      max-width: 100%;
+      padding-left: 12px !important;
+      padding-right: 12px !important;
+    }
+    .budget-page {
+      width: 100%;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+
+    /* Header */
+    .row.mb-4 {
+      margin-bottom: 1rem !important;
+    }
+
+    /* Month controls */
+    #prev-month-btn,
+    #next-month-btn {
+      flex-shrink: 0;
+    }
+
+    /* Controls */
+    .col-md-6.d-flex.justify-content-md-end {
+      justify-content: stretch !important;
+      width: 100%;
+    }
+
+    .col-md-6.d-flex.justify-content-md-end .btn {
+      flex: 1;
+    }
+
+    /* Metric cards */
+    .card-body {
+      padding: 1rem !important;
+    }
+
+    #stat-income,
+    #stat-spent,
+    #stat-remaining {
+      font-size: 1.5rem;
+    }
+    .budget-actions {
+      flex-direction: column;
+    }
+
+    .budget-actions .btn {
+      width: 100%;
+    }
+
+    /* Table */
+    .table-responsive {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .table {
+      min-width: 700px;
+    }
+
+    /* Recommendations */
+    #recommendations-container {
+      width: 100%;
+    }
+
+    /* Heatmap modal */
+    #heatmapModal .modal-dialog {
+      margin: 0.5rem;
+      max-width: calc(100% - 1rem);
+    }
+
+    #heatmapModal .modal-body {
+      padding: 1rem;
+    }
+
+    #treemapCanvas {
+      max-width: 100%;
+    }
+
+    /* Category goal modal */
+    #categoryGoalModal .modal-dialog {
+      margin: 0.5rem;
+      max-width: calc(100% - 1rem);
+    }
+  }
+
+  /* Extra-small phones */
+  @media screen and (max-width: 576px) {
+
+    .container-fluid {
+      padding-left: 8px !important;
+      padding-right: 8px !important;
+    }
+    .budget-page {
+      max-width: 100%;
+      padding-left: 12px;
+      padding-right: 12px;
+    }
+    .budget-actions {
+      flex-direction: column;
+    }
+
+    .budget-actions .btn {
+      width: 100%;
+    }
+    h1.h3 {
+      font-size: 1.35rem;
+    }
+
+    #current-month-display {
+      font-size: 1rem;
+    }
+
+    /* Month navigation */
+    .col-md-6.d-flex.items-center {
+      width: 100%;
+    }
+
+    /* Buttons */
+    .col-md-6.d-flex.justify-content-md-end {
+      flex-direction: column;
+      gap: 0.5rem !important;
+    }
+
+    .col-md-6.d-flex.justify-content-md-end .btn {
+      width: 100%;
+    }
+
+    /* Summary cards */
+    .row.g-3 {
+      --bs-gutter-x: 0.75rem;
+      --bs-gutter-y: 0.75rem;
+    }
+
+    /* Make modal almost full screen */
+    #heatmapModal .modal-dialog,
+    #categoryGoalModal .modal-dialog {
+      margin: 0.25rem;
+      max-width: calc(100% - 0.5rem);
+    }
+
+    /* Treemap */
+    #heatmapModal .modal-body {
+      padding: 0.75rem;
+    }
+
+    #heatmapModal .modal-body > div[style*="height"] {
+      height: 300px !important;
+    }
+
+    /* Legend wraps on phone */
+    #heatmapModal .d-flex.justify-content-center {
+      flex-wrap: wrap;
+      gap: 0.4rem !important;
+    }
+
+    #heatmapModal .badge {
+      font-size: 0.7rem;
+    }
+
+    /* Table card */
+    .card-header {
+      padding: 0.75rem !important;
+    }
+  }

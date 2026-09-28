@@ -1,0 +1,817 @@
+{% extends "layouts/clientBase.html" %}
+
+{% block title %}Budget{% endblock %}
+
+{% block content %}
+<link href="{{ url_for('static', filename='css/client/budget.css') }}" rel="stylesheet">
+
+
+<div class="container-fluid py-4 budget-page">
+  <!-- Header -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <h1 class="h3 fw-bold text-body mb-1">Budget</h1>
+      <p class="text-muted small mb-0">Plan and manage your monthly spending with smart budget tracking</p>
+    </div>
+  </div>
+
+  <!-- Month Navigation & Controls Bar -->
+  <div class="card shadow-sm border-0 mb-4">
+    <div class="card-body p-3">
+      <div class="row align-items-center gy-3">
+        <div class="col-md-6 d-flex align-items-center">
+          <button id="prev-month-btn" type="button" class="btn btn-body-secondary btn-sm rounded-circle me-3">
+            <svg class="bi" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/></svg>
+          </button>
+          <div>
+            <h2 id="current-month-display" class="h5 fw-bold text-body-secondary mb-0">Loading...</h2>
+            <div class="d-flex align-items-center mt-1">
+              <span class="p-1 bg-primary rounded-circle me-2"></span>
+              <span id="budget-status-subtitle" class="small text-primary fw-semibold">Budget Active</span>
+            </div>
+          </div>
+          <button id="next-month-btn" type="button" class="btn btn-body-secondary btn-sm rounded-circle ms-3">
+            <svg class="bi" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/></svg>
+          </button>
+        </div>
+
+        <div class="col-md-6 d-flex justify-content-md-end gap-2 budget-actions">
+          <button type="button" class="btn btn-purple btn-sm px-3 fw-medium rounded-3" data-bs-toggle="modal" data-bs-target="#categoryGoalModal">
+            + Budget
+          </button>
+
+          <button type="button" class="btn btn-primary btn-sm px-3 fw-medium rounded-3" data-bs-toggle="modal" data-bs-target="#heatmapModal">
+            Heatmap
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Key Metric Summary Cards -->
+  <div class="row g-3 mb-4">
+    <!-- Income -->
+    <div class="col-md-4">
+      <div class="card shadow-sm border-0 h-100">
+        <div class="card-body p-4 d-flex flex-column justify-content-between">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <span class="text-uppercase text-muted fw-bold tracking-wider" style="font-size: 0.75rem;">Income</span>
+              <div id="stat-income" class="h3 fw-bold text-body mt-1 mb-0">$0.00</div>
+              <p class="text-muted small mt-1 mb-0">Monthly total income</p>
+            </div>
+            <div class="p-2 bg-primary-subtle text-primary rounded-3">
+              <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            </div>
+          </div>
+          <div class="progress mt-3" style="height: 6px;">
+            <div class="progress-bar bg-primary" role="progressbar" style="width: 100%"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Spent -->
+    <div class="col-md-4">
+      <div class="card shadow-sm border-0 h-100">
+        <div class="card-body p-4 d-flex flex-column justify-content-between">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <span class="text-uppercase text-muted fw-bold tracking-wider" style="font-size: 0.75rem;">Spent</span>
+              <div id="stat-spent" class="h3 fw-bold text-body mt-1 mb-0">$0.00</div>
+              <p id="stat-spent-sub" class="text-muted small mt-1 mb-0">0% of income spent</p>
+            </div>
+            <div class="p-2 bg-warning-subtle text-warning rounded-3">
+              <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            </div>
+          </div>
+          <div class="progress mt-3" style="height: 6px;">
+            <div id="bar-spent" class="progress-bar bg-warning" role="progressbar" style="width: 0%"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Remaining -->
+    <div class="col-md-4">
+      <div class="card shadow-sm border-0 h-100">
+        <div class="card-body p-4 d-flex flex-column justify-content-between">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <span class="text-uppercase text-muted fw-bold tracking-wider" style="font-size: 0.75rem;">Remaining</span>
+              <div id="stat-remaining" class="h3 fw-bold text-body mt-1 mb-0">$0.00</div>
+              <p id="stat-remaining-sub" class="text-muted small mt-1 mb-0">Available cash flow</p>
+            </div>
+            <div class="p-2 bg-success-subtle text-success rounded-3">
+              <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+            </div>
+          </div>
+          <div class="progress mt-3" style="height: 6px;">
+            <div id="bar-remaining" class="progress-bar bg-success" role="progressbar" style="width: 0%"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dynamic Smart Recommendations -->
+  <div id="recommendations-container" class="mb-4"></div>
+
+  <!-- Category Allocation Table -->
+  <div class="card shadow-sm border-0 overflow-hidden">
+    <div class="card-header bg-body-secondary py-3 border-bottom border-light">
+      <h3 class="h6 fw-bold text-body mb-0">Category Allocations</h3>
+    </div>
+    <div class="table-responsive custom-scrollbar">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-bg-body">
+          <tr class="text-uppercase text-muted small fw-bold">
+            <th class="ps-4">Category</th>
+            <th class="text-end">Budget</th>
+            <th class="text-end">Spent</th>
+            <th class="text-end">Remaining</th>
+            <th class="text-center" style="width: 25%;">Progress</th>
+            <th class="text-center pe-4">Status</th>
+          </tr>
+        </thead>
+        <tbody id="categories-table-body" class="text-body small">
+          <tr>
+            <td colspan="6" class="text-center text-muted py-4">Loading budget records...</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+
+<!-- Modal For +Category Button -->
+<div class="modal fade" id="categoryGoalModal" tabindex="-1" aria-labelledby="categoryGoalModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title text-body-emphasis" id="categoryGoalModalLabel">Set Category Budget Target</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form action="{{ url_for('budgets.add_budget_goal') }}" method="POST" id="categoryGoalForm">
+        {{ form.hidden_tag() if form else '' }}
+        <div class="modal-body">
+          
+          <!-- Category Select -->
+          <div class="mb-3">
+            <label for="goal_category" class="form-label fw-bold">Category</label>
+            <select class="form-select" id="goal_category" name="category" required onchange="onCategoryChange(this.value)">
+              <option value="" selected disabled>Select a category...</option>
+              <option value="Housing">Housing</option>
+              <option value="Food">Food</option>
+              <option value="Transportation">Transportation</option>
+              <option value="Utilities">Utilities</option>
+              <option value="Education">Education</option>
+              <option value="Healthcare">Healthcare</option>
+              <option value="Shopping">Shopping</option>
+              <option value="Entertainment">Entertainment</option>
+              <option value="Debt">Debt</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+
+          <!-- Allocation Percentage Target -->
+          <div class="mb-3">
+            <label for="goal_percentage" class="form-label fw-bold">Target Income Percentage (%)</label>
+            <div class="input-group">
+              <input type="number" step="0.1" min="0" max="100" class="form-control" id="goal_percentage" name="percentage" placeholder="e.g. 15">
+              <span class="input-group-text">%</span>
+            </div>
+            <div class="form-text">Percentage of your monthly income allocated to this category.</div>
+          </div>
+
+          <!-- OR Fixed Amount Target -->
+          <div class="mb-3">
+            <label for="goal_amount" class="form-label fw-bold">OR Fixed Monthly Budget ($)</label>
+            <div class="input-group">
+              <span class="input-group-text">$</span>
+              <input type="number" step="0.01" min="0" class="form-control" id="goal_amount" name="amount" placeholder="e.g. 500.00">
+            </div>
+            <div class="form-text">Optional override if you prefer a static monthly cap over percentages.</div>
+            <div id="goal-spending-info" class="small text-muted mt-2"></div>
+          </div>
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="saveGoalBtn">Save Category Target</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+<!-- Heatmap Treemap Modal -->
+<div class="modal fade" id="heatmapModal" tabindex="-1" aria-labelledby="heatmapModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold text-body-emphasis" id="heatmapModalLabel">
+          <i class="bi bi-fire text-danger me-2"></i>Budget Spending Treemap
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p class="text-muted small mb-3">
+          Box area represents <strong>budget size ($)</strong>, while color intensity reflects <strong>spending status</strong>.
+        </p>
+
+        <!-- Canvas Container -->
+        <div style="position: relative; height: 350px; width: 100%;">
+          <canvas id="treemapCanvas"></canvas>
+        </div>
+
+        <!-- Legend -->
+        <div class="d-flex justify-content-center align-items-center flex-wrap gap-2 mt-3 pt-3 border-top">
+          <small class="text-muted">Status:</small>
+          <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1">&lt; 75% Safe</span>
+          <span class="badge bg-warning-subtle text-warning border border-warning-subtle px-2 py-1">75% - 95% Warning</span>
+          <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-1">&gt; 95% Critical</span>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary btn-sm rounded-2 px-3" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Chart.js Core -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- Official Chart.js Treemap Plugin -->
+<script src="https://cdn.jsdelivr.net/npm/chartjs-chart-treemap@2.3.0/dist/chartjs-chart-treemap.min.js"></script>
+<script>
+  let currentYear = new Date().getFullYear();
+  let currentMonth = new Date().getMonth() + 1;
+
+  let currentBudgetData = null;
+    // TreeMap Chart
+  let treemapChartInstance = null;
+
+
+  document.addEventListener("DOMContentLoaded", () => {
+    fetchBudgetData(currentYear, currentMonth);
+
+    document
+      .getElementById("prev-month-btn")
+      .addEventListener("click", () => {
+
+        currentMonth--;
+
+        if (currentMonth < 1) {
+          currentMonth = 12;
+          currentYear--;
+        }
+
+        fetchBudgetData(currentYear, currentMonth);
+      });
+
+    document
+      .getElementById("next-month-btn")
+      .addEventListener("click", () => {
+
+        currentMonth++;
+
+        if (currentMonth > 12) {
+          currentMonth = 1;
+          currentYear++;
+        }
+
+        fetchBudgetData(currentYear, currentMonth);
+      });
+
+
+    // Percentage input
+    document
+      .getElementById("goal_percentage")
+      .addEventListener("input", function () {
+
+        if (this.value.trim() !== "") {
+          document.getElementById("goal_amount").value = "";
+        }
+
+      });
+
+
+    // Fixed amount input
+    document
+      .getElementById("goal_amount")
+      .addEventListener("input", function () {
+
+        if (this.value.trim() !== "") {
+          document.getElementById("goal_percentage").value = "";
+        }
+
+      });
+
+
+    // Heatmap listener should ALSO be registered only once.
+    document
+      .getElementById("heatmapModal")
+      .addEventListener("shown.bs.modal", renderHeatmap);
+
+  });
+
+  async function fetchBudgetData(year, month) {
+    try {
+      const res = await fetch(
+        `/budget/api?year=${year}&month=${month}`
+      );
+
+      if (!res.ok) {
+        throw new Error("Failed to load budget data");
+      }
+
+      const data = await res.json();
+
+      // IMPORTANT:
+      // Store the currently selected month's data globally.
+      currentBudgetData = data;
+
+      renderDashboard(data);
+
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  function openGoalModal(categoryName = null) {
+
+    const categorySelect =
+      document.getElementById("goal_category");
+
+    if (!categorySelect) {
+      return;
+    }
+
+    if (categoryName) {
+
+      categorySelect.value = categoryName;
+
+      onCategoryChange(categoryName);
+
+    } else {
+
+      categorySelect.value = "";
+
+      onCategoryChange("");
+    }
+
+    const modalElement =
+      document.getElementById("categoryGoalModal");
+
+    const modal =
+      bootstrap.Modal.getOrCreateInstance(modalElement);
+
+    modal.show();
+  }
+
+  function renderDashboard(data) {
+    const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    document.getElementById("current-month-display").innerText = `${monthNames[data.month - 1]} ${data.year}`;
+
+    // Dynamic Top Metrics
+    document.getElementById("stat-income").innerText = formatCurrency(data.income);
+    document.getElementById("stat-spent").innerText = formatCurrency(data.total_expense);
+    document.getElementById("stat-remaining").innerText = formatCurrency(data.remaining);
+
+    const spentPercent = data.income > 0 ? Math.min((data.total_expense / data.income) * 100, 100) : 0;
+    const remainingPercent = data.income > 0 ? Math.max((data.remaining / data.income) * 100, 0) : 0;
+
+    document.getElementById("stat-spent-sub").innerText = `${spentPercent.toFixed(0)}% of income spent`;
+    document.getElementById("bar-spent").style.width = `${spentPercent}%`;
+    document.getElementById("bar-remaining").style.width = `${remainingPercent}%`;
+
+    // Recommendations Alert Cards
+    const recsContainer = document.getElementById("recommendations-container");
+    recsContainer.innerHTML = "";
+    if (data.recommendations && data.recommendations.length > 0) {
+      data.recommendations.forEach(rec => {
+        const bsAlertMap = {
+          danger: "alert-danger",
+          warning: "alert-warning",
+          success: "alert-success"
+        };
+        const alertDiv = document.createElement("div");
+        alertDiv.className = `alert ${bsAlertMap[rec.type] || 'alert-secondary'} alert-dismissible fade show border-0 shadow-sm rounded-3 mb-2 small`;
+        alertDiv.innerHTML = `
+          <strong>${rec.title}:</strong> ${rec.message}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        `;
+        recsContainer.appendChild(alertDiv);
+      });
+    }
+
+    
+    // Category Rows
+    const tbody = document.getElementById("categories-table-body");
+    tbody.innerHTML = "";
+
+    if (!data.categories || data.categories.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="6" class="text-center text-muted py-4">No category records found.</td></tr>`;
+      return;
+    }
+
+    data.categories.forEach(cat => {
+      const isOver = cat.spent > cat.budget;
+      const row = document.createElement("tr");
+
+      const progressBarBg = cat.status === 'danger' ? 'bg-danger' : cat.status === 'warning' ? 'bg-warning' : 'progress-bar-purple';
+      const badgeBg = cat.status === 'danger' ? 'bg-danger-subtle text-danger' : cat.status === 'warning' ? 'bg-warning-subtle text-warning-emphasis' : 'bg-success-subtle text-success';
+
+      row.innerHTML = `
+        <td class="ps-4 fw-semibold text-body">${cat.category} <span class="text-muted fw-normal ms-1" style="font-size: 0.8rem;">(${cat.percentage}%)</span></td>
+        <td class="text-end fw-medium">${formatCurrency(cat.budget)}</td>
+        <td class="text-end">${formatCurrency(cat.spent)}</td>
+        <td class="text-end fw-semibold ${isOver ? 'text-danger' : 'text-success'}">
+          ${isOver ? `${formatCurrency(Math.abs(cat.remaining))} over` : formatCurrency(cat.remaining)}
+        </td>
+        <td>
+          <div class="d-flex align-items-center gap-2">
+            <div class="progress flex-grow-1" style="height: 6px;">
+              <div class="progress-bar ${progressBarBg}" role="progressbar" style="width: ${Math.min(cat.usage, 100)}%"></div>
+            </div>
+            <span class="small text-muted font-monospace" style="min-width: 38px;">${cat.usage}%</span>
+          </div>
+        </td>
+        <td class="text-center pe-4">
+          <span class="badge ${badgeBg} rounded-pill px-2.5 py-1.5 font-normal">
+            ${cat.status_text}
+          </span>
+        </td>
+      `;
+      tbody.appendChild(row);
+    });
+  }
+
+  function onCategoryChange(selectedCategory) {
+    const goalData = getCategoryGoalData(selectedCategory);
+
+    const percentageInput =
+      document.getElementById("goal_percentage");
+
+    const amountInput =
+      document.getElementById("goal_amount");
+
+    if (!percentageInput || !amountInput) {
+      return;
+    }
+
+    // Nothing selected
+    if (!goalData) {
+      percentageInput.value = "";
+      amountInput.value = "";
+      return;
+    }
+
+    // Existing fixed-dollar budget
+    if (goalData.is_fixed_amount) {
+
+      amountInput.value =
+        goalData.budget != null
+          ? goalData.budget
+          : "";
+
+      percentageInput.value = "";
+
+    } else {
+
+      // Existing percentage budget
+      percentageInput.value =
+        goalData.percentage != null
+          ? goalData.percentage
+          : "";
+
+      amountInput.value = "";
+    }
+
+    const spendingInfo = document.getElementById("goal-spending-info");
+    if (goalData) {
+      spendingInfo.innerHTML = `
+        Spent this month:
+        <strong>${formatCurrency(goalData.spent)}</strong>
+        · Remaining:
+        <strong>${formatCurrency(goalData.remaining)}</strong>
+      `;
+    } else {
+      spendingInfo.innerHTML = "";
+    }
+  }
+
+  function getCategoryGoalData(categoryName) {
+    if (
+      !currentBudgetData ||
+      !Array.isArray(currentBudgetData.categories)
+    ) {
+      return null;
+    }
+
+    return currentBudgetData.categories.find(
+      category => category.category === categoryName
+    ) || null;
+  }
+
+  async function renderHeatmap() {
+    const canvas = document.getElementById("treemapCanvas");
+    if (!canvas) { return; }
+
+    // Show canvas again
+    canvas.style.display = "block";
+
+    // Remove empty state if it exists
+    const container = canvas.parentElement;
+
+    const existingEmptyState = container.querySelector(".heatmap-empty-state");
+
+    if (existingEmptyState) {
+      existingEmptyState.remove();
+    }
+
+    // Destroy previous chart
+    if (treemapChartInstance) {
+      treemapChartInstance.destroy();
+      treemapChartInstance = null;
+    }
+
+    const ctx = canvas.getContext("2d");
+
+    // ==========================================
+    // USE CURRENT MONTH'S ALREADY LOADED DATA
+    // ==========================================
+
+    if (
+      !currentBudgetData ||
+      !Array.isArray(currentBudgetData.categories)
+    ) {
+      console.warn("No current budget data available.");
+      return;
+    }
+
+    const categoriesData =
+      currentBudgetData.categories;
+
+
+    console.log(
+      `Heatmap: ${currentBudgetData.year}-${String(currentBudgetData.month).padStart(2, "0")}`,
+      categoriesData
+    );
+
+
+    // ==========================================
+    // PREPARE TREEMAP
+    // ==========================================
+
+    const processedData = categoriesData
+      .map(item => {
+        const category = item.category || "Unassigned";
+        const budget = Number(item.budget ?? 0);
+        const spent = Number(item.spent ?? 0);
+        const usage = Number(item.usage ?? 0);
+
+        return {category, budget, spent, usage};
+      }).filter(item => item.spent > 0);
+
+    if (processedData.length === 0) {
+      const hasBudget = categoriesData.some(item => Number(item.budget ?? 0) > 0);
+      showHeatmapEmptyState(hasBudget);
+      return;
+    }
+
+    if (typeof Chart === "undefined") {
+      console.error("Chart.js is not loaded.");
+      return;
+    }
+
+
+    // ==========================================
+    // CREATE TREEMAP
+    // ==========================================
+
+    treemapChartInstance = new Chart(ctx, {
+
+      type: "treemap",
+
+      data: {
+
+        datasets: [{
+
+          tree: processedData,
+
+          // Bigger spending = bigger box
+          key: "spent",
+
+          spacing: 3,
+
+          borderWidth: 2,
+
+          borderColor: "#ffffff",
+
+          borderRadius: 6,
+
+
+          // ====================================
+          // COLOR = USAGE
+          // ====================================
+
+          backgroundColor(context) {
+
+            const d =
+              context.raw?._data ||
+              context.raw;
+
+            if (!d) {
+              return "#adb5bd";
+            }
+
+            const usage =
+              Number(d.usage) || 0;
+
+
+            // OVER BUDGET
+            if (usage >= 100) {
+              return "rgba(220, 53, 69, 0.90)";
+            }
+
+
+            // NEAR LIMIT
+            if (usage >= 80) {
+              return "rgba(255, 193, 7, 0.90)";
+            }
+
+
+            // SAFE
+            return "rgba(25, 135, 84, 0.90)";
+          },
+
+
+          // ====================================
+          // LABEL
+          // ====================================
+
+          labels: {
+
+            display: true,
+
+            color: "#ffffff",
+
+            font: {
+              weight: "bold",
+              size: 13
+            },
+
+            formatter(context) {
+
+              const d =
+                context.raw?._data ||
+                context.raw;
+
+              if (!d) {
+                return "";
+              }
+
+              const category =
+                d.category || "";
+
+              const spent =
+                Number(d.spent) || 0;
+
+              const usage =
+                Number(d.usage) || 0;
+
+              return [
+                category,
+                `$${spent.toFixed(0)}`,
+                `${usage.toFixed(0)}%`
+              ];
+            }
+          }
+        }]
+      },
+
+
+      // ==========================================
+      // OPTIONS
+      // ==========================================
+
+      options: {
+
+        responsive: true,
+
+        maintainAspectRatio: false,
+
+        plugins: {
+
+          legend: {
+            display: false
+          },
+
+
+          tooltip: {
+
+            callbacks: {
+
+              title(items) {
+
+                const d =
+                  items?.[0]?.raw?._data ||
+                  items?.[0]?.raw;
+
+                return d?.category || "";
+              },
+
+
+              label(item) {
+
+                const d =
+                  item.raw?._data ||
+                  item.raw;
+
+                if (!d) {
+                  return "";
+                }
+
+                const budget =
+                  Number(d.budget) || 0;
+
+                const spent =
+                  Number(d.spent) || 0;
+
+                const usage =
+                  Number(d.usage) || 0;
+
+                return [
+                  `Budget: $${budget.toFixed(2)}`,
+                  `Spent: $${spent.toFixed(2)}`,
+                  `Usage: ${usage.toFixed(1)}%`
+                ];
+              }
+            }
+          }
+        }
+      }
+    });
+  }
+
+  function showHeatmapEmptyState(hasBudget) {
+    const canvas = document.getElementById("treemapCanvas");
+
+    if (!canvas) {
+      return;
+    }
+
+    const container = canvas.parentElement;
+
+    canvas.style.display = "none";
+
+    const existing =
+      container.querySelector(".heatmap-empty-state");
+
+    if (existing) {
+      existing.remove();
+    }
+
+    const emptyState = document.createElement("div");
+
+    emptyState.className =
+      "heatmap-empty-state d-flex flex-column justify-content-center align-items-center text-center h-100";
+
+    const title = hasBudget
+      ? "No spending activity"
+      : "No budget activity";
+
+    const message = hasBudget
+      ? "Your budget is set, but no spending has been recorded for this month."
+      : "No budgets or spending have been recorded for this month.";
+
+    emptyState.innerHTML = `
+      <div class="rounded-circle bg-primary-subtle d-flex align-items-center justify-content-center mb-3"
+          style="width: 64px; height: 64px;">
+        <i class="bi bi-bar-chart-line text-primary fs-3"></i>
+      </div>
+
+      <h6 class="fw-bold text-body mb-1">
+        ${title}
+      </h6>
+
+      <p class="text-muted small mb-0" style="max-width: 340px;">
+        ${message}
+      </p>
+    `;
+
+    container.appendChild(emptyState);
+  }
+
+
+  function formatCurrency(num) {
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(num);
+  }
+</script>
+{% endblock %}

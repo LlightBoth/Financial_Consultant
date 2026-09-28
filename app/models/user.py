@@ -3,7 +3,7 @@ from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from extension import db
-from app.models.associations import user_roles, user_plans, user_incomes, user_expenses, user_ai, user_histories
+from app.models.associations import user_roles, user_plans, user_incomes, user_expenses, user_ai
 
 
 class User(UserMixin, db.Model):
@@ -26,14 +26,15 @@ class User(UserMixin, db.Model):
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
 
     # Relation-Ship
+    # M-N
     roles = db.relationship("Role", secondary=user_roles, back_populates="users")
     plans = db.relationship("Plan", secondary=user_plans, back_populates="users")
     incomes = db.relationship("Income", secondary=user_incomes, back_populates="users")
     expenses = db.relationship("Expense", secondary=user_expenses, back_populates="users")
-    histories = db.relationship("History", secondary=user_histories, back_populates="users")
     ai_chats = db.relationship("AIChat", secondary=user_ai, back_populates="users")
+    # 1-M
     notifications = db.relationship("Notification", back_populates="user", cascade="all, delete-orphan")
-
+    budget_goals = db.relationship("BudgetGoal", back_populates="user", cascade="all, delete-orphan")
 
     # Methods To Help
     def set_password(self, pw): 

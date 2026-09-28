@@ -4,7 +4,6 @@ from datetime import datetime
 from flask import Blueprint, render_template, request, jsonify
 from flask_login import login_required, current_user
 from app.models.ai_chat import AIChat, AIMessage
-from app.models.history import History
 from extension import db
 from app.security.cookie import check_cookie_token
 from app.services.llm_service import LLMService
@@ -493,35 +492,36 @@ def chat():
                         else f"This change does not affect your monthly surplus, which remains at ${curr_surplus:,.0f}/mo."
                     )
             else:
-                histories = (
-                    History.query.filter(History.users.any(id=current_user.id))
-                    .order_by(History.created_at.desc(), History.id.desc())
-                    .limit(2)
-                    .all()
-                )
-                if len(histories) >= 2:
-                    prev_inc = histories[1].income or 0.0
-                    prev_exp = histories[1].expense or 0.0
-                    prev_surplus = prev_inc - prev_exp
+                # histories = (
+                #     History.query.filter(History.users.any(id=current_user.id))
+                #     .order_by(History.created_at.desc(), History.id.desc())
+                #     .limit(2)
+                #     .all()
+                # )
+                # if len(histories) >= 2:
+                #     prev_inc = histories[1].income or 0.0
+                #     prev_exp = histories[1].expense or 0.0
+                #     prev_surplus = prev_inc - prev_exp
 
-                    curr_inc = histories[0].income or 0.0
-                    curr_exp = histories[0].expense or 0.0
-                    curr_surplus = curr_inc - curr_exp
+                #     curr_inc = histories[0].income or 0.0
+                #     curr_exp = histories[0].expense or 0.0
+                #     curr_surplus = curr_inc - curr_exp
 
-                    diff = curr_surplus - prev_surplus
-                    if diff < 0:
-                        diff_abs = abs(diff)
-                        ai_response = (
-                            f"ការផ្លាស់ប្តូរនេះបន្ថយប្រាក់សល់ប្រចាំខែរបស់អ្នកពី ${prev_surplus:,.0f} មកត្រឹម ${curr_surplus:,.0f} (ថយចុះ ${diff_abs:,.0f} ក្នុងមួយខែ)។"
-                            if lang == "km"
-                            else f"This change reduces your monthly surplus from ${prev_surplus:,.0f} to ${curr_surplus:,.0f} (a reduction of ${diff_abs:,.0f} each month)."
-                        )
-                    else:
-                        ai_response = (
-                            f"ការផ្លាស់ប្តូរនេះបង្កើនប្រាក់សល់ប្រចាំខែរបស់អ្នកពី ${prev_surplus:,.0f} ទៅ ${curr_surplus:,.0f} (កើនឡើង ${diff:,.0f} បន្ថែមទៀតក្នុងមួយខែ)។"
-                            if lang == "km"
-                            else f"This change increased your monthly surplus from ${prev_surplus:,.0f} to ${curr_surplus:,.0f}, providing an additional ${diff:,.0f} each month."
-                        )
+                #     diff = curr_surplus - prev_surplus
+                #     if diff < 0:
+                #         diff_abs = abs(diff)
+                #         ai_response = (
+                #             f"ការផ្លាស់ប្តូរនេះបន្ថយប្រាក់សល់ប្រចាំខែរបស់អ្នកពី ${prev_surplus:,.0f} មកត្រឹម ${curr_surplus:,.0f} (ថយចុះ ${diff_abs:,.0f} ក្នុងមួយខែ)។"
+                #             if lang == "km"
+                #             else f"This change reduces your monthly surplus from ${prev_surplus:,.0f} to ${curr_surplus:,.0f} (a reduction of ${diff_abs:,.0f} each month)."
+                #         )
+                #     else:
+                #         ai_response = (
+                #             f"ការផ្លាស់ប្តូរនេះបង្កើនប្រាក់សល់ប្រចាំខែរបស់អ្នកពី ${prev_surplus:,.0f} ទៅ ${curr_surplus:,.0f} (កើនឡើង ${diff:,.0f} បន្ថែមទៀតក្នុងមួយខែ)។"
+                #             if lang == "km"
+                #             else f"This change increased your monthly surplus from ${prev_surplus:,.0f} to ${curr_surplus:,.0f}, providing an additional ${diff:,.0f} each month."
+                #         )
+                pass
 
         # --- Generate response via Trained Local AI if not already resolved ---
         t_llm_start = time.perf_counter()

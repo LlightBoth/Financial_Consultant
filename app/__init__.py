@@ -88,9 +88,8 @@ def create_app(config_class: type[Config] = Config):
 
     # Register blueprints Client-Side
     from app.routes.plan_route import plan_bp
-    from app.routes.advisor_route import advisor_bp, consult_api_bp
+    from app.routes.advisor_route import advisor_bp
     from app.routes.dashboard_route import dashboard_bp
-    from app.routes.history_route import history_bp
     from app.routes.setting_route import setting_bp
     from app.routes.profile_route import profile_bp
     from app.routes.income_route import income_bp
@@ -99,6 +98,7 @@ def create_app(config_class: type[Config] = Config):
     from app.routes.audit_log_route import audit_log_bp
     from app.routes.notification_route import notification_bp
     from app.routes.currency_converter_routes import currency_bp
+    from app.routes.budget_route import budget_bp
 
     app.register_blueprint(user_bp)
     app.register_blueprint(auth_bp)
@@ -109,9 +109,7 @@ def create_app(config_class: type[Config] = Config):
     app.register_blueprint(lang_bp)
     app.register_blueprint(plan_bp)
     app.register_blueprint(advisor_bp)
-    app.register_blueprint(consult_api_bp)
     app.register_blueprint(dashboard_bp)
-    app.register_blueprint(history_bp)
     app.register_blueprint(setting_bp)
     app.register_blueprint(profile_bp)
     app.register_blueprint(income_bp)
@@ -120,6 +118,7 @@ def create_app(config_class: type[Config] = Config):
     app.register_blueprint(audit_log_bp)
     app.register_blueprint(notification_bp)
     app.register_blueprint(currency_bp)
+    app.register_blueprint(budget_bp)
 
     # Register translation helpers for Jinja
     from app.utils.i18n import _, translate, get_locale, SUPPORTED_LANGUAGES

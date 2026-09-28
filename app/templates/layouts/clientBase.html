@@ -70,6 +70,11 @@
                     <i class="bi bi-grid-1x2 me-2"></i> <span>{{ _('nav.dashboard') }}</span>
                 </a>
             </li>
+            <li class="nav-item mb-1">
+                <a href="{{ url_for('budgets.planner') }}" class="nav-link {% if request.endpoint == 'budgets.planner' %}active{% endif %}">
+                    <i class="bi bi-wallet2 me-2"></i> <span>Budget</span>
+                </a>
+            </li>
             {% if user_has_role(current_user, 'admin') or user_has_permission(current_user, 'income.view') %}
             <li class="nav-item mb-1">
                 <a href="{{ url_for('incomes.index') }}" class="nav-link {% if request.endpoint == 'incomes.index' %}active{% endif %}">
@@ -95,17 +100,14 @@
                     <i class="bi bi-currency-exchange me-2"></i> <span>{{ _('nav.currency') }}</span>
                 </a>
             </li>
-            <!-- <li class="nav-item mb-1">
-                <a href="{{ url_for('advisors.index') }}" class="nav-link {% if 'advisors' in request.endpoint %}active{% endif %}">
-                    <i class="bi bi-cpu me-2"></i> <span>{{ _('nav.advisor') }}</span>
+            
+            {% endif %}
+            <li class="nav-section-title mt-3">OPTIONS</li>
+            <li class="nav-item mb-1">
+                <a class="nav-link" href="/settings">
+                    <i class="bi bi-gear me-2 text-secondary"></i> {{ _('nav.settings') }}
                 </a>
             </li>
-            <li class="nav-item mb-1">
-                <a href="{{ url_for('history.index') }}" class="nav-link {% if 'history' in request.endpoint %}active{% endif %}">
-                    <i class="bi bi-clock-history me-2"></i> <span>{{ _('nav.history') }}</span>
-                </a>
-            </li> -->
-            {% endif %}
             {% if is_management_user(current_user) %}
                 <li class="nav-section-title mt-3">{{ _('nav.administration') }}</li>
                 <li class="nav-item">
