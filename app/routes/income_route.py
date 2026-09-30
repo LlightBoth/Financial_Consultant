@@ -52,21 +52,51 @@ def detail(income_id):
 @login_required
 def create():
     form = IncomeForm()
-
     if form.validate_on_submit():
+        income_type = request.form.get("income_type", "onetime")
+
         data = {
             "amount": form.amount.data,
             "description": form.description.data,
             "category": form.category.data,
             "income_date": form.income_date.data,
-            "recurring_period": form.recurring_period.data,
+
+            "income_type": income_type,
+
+            "recurring_period": (
+                form.recurring_period.data
+                if income_type == "recurring"
+                else None
+            ),
+
+            "start_date": (
+                form.start_date.data
+                if income_type == "recurring"
+                else None
+            ),
+
+            "end_date": (
+                form.end_date.data
+                if income_type == "recurring"
+                else None
+            ),
         }
 
-        income = IncomeServices.create_income(data, current_user)
-        flash(_("message.income_created_success", amount=f"${income.amount:.2f}"), "success")
-        return redirect(url_for("incomes.index"))
+        try:
+            IncomeServices.create_income(data=data, user=current_user)
+            flash("Income created successfully.", "success")
+            return redirect(url_for("incomes.index"))
 
-    return render_template("incomes/create.html", form=form)
+        except ValueError as e:
+            flash(str(e), "danger")
+
+    return render_template(
+        "incomes/create.html",
+        form=form,
+        submit_label="Save Income"
+    )
+
+
 
 
 # --------------------------------------------------
@@ -76,28 +106,74 @@ def create():
 @login_required
 def edit(income_id):
     income = IncomeServices.get_income_id(income_id, current_user.id)
+
     if income is None:
         abort(404)
-    form = EditIncomeForm(original_income=income, obj=income)
 
+    recurring = income.recurring_transaction
+    form = EditIncomeForm(original_income=income)
+
+    # --------------------------------------------------
+    # GET
+    # Populate existing values
+    # --------------------------------------------------
+    if request.method == "GET":
+
+        form.amount.data = income.amount
+        form.description.data = income.description
+        form.category.data = income.category
+        form.income_date.data = income.income_date
+
+        if recurring:
+            form.recurring_period.data = recurring.recurring_period
+            form.start_date.data = recurring.start_date
+            form.end_date.data = recurring.end_date
+
+    # --------------------------------------------------
+    # POST
+    # --------------------------------------------------
     if form.validate_on_submit():
+        income_type = request.form.get("income_type", "onetime")
+
         data = {
             "amount": form.amount.data,
             "description": form.description.data,
             "category": form.category.data,
             "income_date": form.income_date.data,
-            "recurring_period": form.recurring_period.data,
+
+            "income_type": income_type,
+
+            "recurring_period": (
+                form.recurring_period.data
+                if income_type == "recurring"
+                else None
+            ),
+
+            "start_date": (
+                form.start_date.data
+                if income_type == "recurring"
+                else None
+            ),
+
+            "end_date": (
+                form.end_date.data
+                if income_type == "recurring"
+                else None
+            ),
         }
 
         IncomeServices.update_income(income, data)
-        flash(_("message.income_updated_success", amount=f"${income.amount:.2f}"), "success")
+        flash(f"Income of ${income.amount:.2f} updated successfully.", "success")
+
         return redirect(url_for("incomes.index"))
 
     return render_template(
         "incomes/edit.html",
         form=form,
-        income=income
+        income=income,
+        income_type="recurring" if recurring else "onetime"
     )
+
 
 
 # --------------------------------------------------

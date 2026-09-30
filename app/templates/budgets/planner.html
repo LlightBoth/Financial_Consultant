@@ -7,113 +7,312 @@
 
 
 <div class="container-fluid py-4 budget-page">
-  <!-- Header -->
-  <div class="row mb-4">
-    <div class="col-12">
-      <h1 class="h3 fw-bold text-body mb-1">Budget</h1>
-      <p class="text-muted small mb-0">Plan and manage your monthly spending with smart budget tracking</p>
-    </div>
-  </div>
+  <!-- Budget Header -->
+  <div class="budget-page-header mb-4">
+      <div class="row align-items-center g-4">
 
-  <!-- Month Navigation & Controls Bar -->
-  <div class="card shadow-sm border-0 mb-4">
-    <div class="card-body p-3">
-      <div class="row align-items-center gy-3">
-        <div class="col-md-6 d-flex align-items-center">
-          <button id="prev-month-btn" type="button" class="btn btn-body-secondary btn-sm rounded-circle me-3">
-            <svg class="bi" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/></svg>
-          </button>
-          <div>
-            <h2 id="current-month-display" class="h5 fw-bold text-body-secondary mb-0">Loading...</h2>
-            <div class="d-flex align-items-center mt-1">
-              <span class="p-1 bg-primary rounded-circle me-2"></span>
-              <span id="budget-status-subtitle" class="small text-primary fw-semibold">Budget Active</span>
-            </div>
+          <!-- Title -->
+          <div class="col-lg-7">
+              <div class="d-flex align-items-start gap-3">
+
+                  <div class="budget-header-icon">
+                      <i class="bi bi-wallet2"></i>
+                  </div>
+
+                  <div>
+                      <span class="budget-eyebrow">
+                          <i class="bi bi-bar-chart-line me-1"></i>
+                          Financial Planning
+                      </span>
+
+                      <h1 class="h3 fw-bold text-body mb-1">
+                          Budget
+                      </h1>
+
+                      <p class="text-muted small mb-0">
+                          Plan and manage your monthly spending with smart budget tracking.
+                      </p>
+                  </div>
+
+              </div>
           </div>
-          <button id="next-month-btn" type="button" class="btn btn-body-secondary btn-sm rounded-circle ms-3">
-            <svg class="bi" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/></svg>
-          </button>
-        </div>
 
-        <div class="col-md-6 d-flex justify-content-md-end gap-2 budget-actions">
-          <button type="button" class="btn btn-purple btn-sm px-3 fw-medium rounded-3" data-bs-toggle="modal" data-bs-target="#categoryGoalModal">
-            + Budget
-          </button>
+          <!-- Illustration -->
+          <div class="col-lg-5 d-none d-lg-flex justify-content-end">
+              <div class="budget-header-illustration">
+                  <div class="budget-orb budget-orb-one"></div>
+                  <div class="budget-orb budget-orb-two"></div>
 
-          <button type="button" class="btn btn-primary btn-sm px-3 fw-medium rounded-3" data-bs-toggle="modal" data-bs-target="#heatmapModal">
-            Heatmap
-          </button>
-        </div>
+                  <img
+                      src="https://img.icons8.com/3d-fluency/256/goal.png"
+                      alt="Financial goal"
+                      class="stat-illustration"
+                  >
+
+              </div>
+          </div>
 
       </div>
-    </div>
   </div>
+
+
+  <!-- Month Navigation & Controls -->
+  <div class="budget-control-card mb-4">
+
+      <div class="budget-control-main">
+
+          <!-- Month -->
+          <div class="budget-month-section">
+
+              <button
+                  id="prev-month-btn"
+                  type="button"
+                  class="budget-month-btn"
+                  aria-label="Previous month"
+              >
+                  <i class="bi bi-chevron-left"></i>
+              </button>
+
+              <div class="budget-month-info">
+
+                  <span class="budget-month-label">
+                      CURRENT BUDGET PERIOD
+                  </span>
+
+                  <h2
+                      id="current-month-display"
+                      class="budget-month-title"
+                  >
+                      Loading...
+                  </h2>
+
+                  <div class="budget-status">
+                      <span class="budget-status-dot"></span>
+
+                      <span
+                          id="budget-status-subtitle"
+                      >
+                          Budget Active
+                      </span>
+                  </div>
+
+              </div>
+
+              <button
+                  id="next-month-btn"
+                  type="button"
+                  class="budget-month-btn"
+                  aria-label="Next month"
+              >
+                  <i class="bi bi-chevron-right"></i>
+              </button>
+
+          </div>
+
+
+          <!-- Divider -->
+          <div class="budget-control-divider"></div>
+
+
+          <!-- Actions -->
+          <div class="budget-actions">
+
+              <button
+                  type="button"
+                  class="budget-action budget-action-purple"
+                  data-bs-toggle="modal"
+                  data-bs-target="#categoryGoalModal"
+              >
+                  <span class="budget-action-icon">
+                      <i class="bi bi-plus-lg"></i>
+                  </span>
+
+                  <span>
+                      <strong>Add Budget</strong>
+                      <small>Set a spending limit</small>
+                  </span>
+              </button>
+
+
+              <button
+                  type="button"
+                  class="budget-action budget-action-primary"
+                  data-bs-toggle="modal"
+                  data-bs-target="#heatmapModal"
+              >
+                  <span class="budget-action-icon">
+                      <i class="bi bi-grid-3x3-gap"></i>
+                  </span>
+
+                  <span>
+                      <strong>Heatmap</strong>
+                      <small>View spending patterns</small>
+                  </span>
+              </button>
+
+          </div>
+
+      </div>
+
+  </div>
+
 
   <!-- Key Metric Summary Cards -->
   <div class="row g-3 mb-4">
-    <!-- Income -->
-    <div class="col-md-4">
-      <div class="card shadow-sm border-0 h-100">
-        <div class="card-body p-4 d-flex flex-column justify-content-between">
-          <div class="d-flex justify-content-between align-items-start">
-            <div>
-              <span class="text-uppercase text-muted fw-bold tracking-wider" style="font-size: 0.75rem;">Income</span>
-              <div id="stat-income" class="h3 fw-bold text-body mt-1 mb-0">$0.00</div>
-              <p class="text-muted small mt-1 mb-0">Monthly total income</p>
-            </div>
-            <div class="p-2 bg-primary-subtle text-primary rounded-3">
-              <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-            </div>
-          </div>
-          <div class="progress mt-3" style="height: 6px;">
-            <div class="progress-bar bg-primary" role="progressbar" style="width: 100%"></div>
-          </div>
-        </div>
-      </div>
-    </div>
 
-    <!-- Spent -->
-    <div class="col-md-4">
-      <div class="card shadow-sm border-0 h-100">
-        <div class="card-body p-4 d-flex flex-column justify-content-between">
-          <div class="d-flex justify-content-between align-items-start">
-            <div>
-              <span class="text-uppercase text-muted fw-bold tracking-wider" style="font-size: 0.75rem;">Spent</span>
-              <div id="stat-spent" class="h3 fw-bold text-body mt-1 mb-0">$0.00</div>
-              <p id="stat-spent-sub" class="text-muted small mt-1 mb-0">0% of income spent</p>
-            </div>
-            <div class="p-2 bg-warning-subtle text-warning rounded-3">
-              <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-            </div>
-          </div>
-          <div class="progress mt-3" style="height: 6px;">
-            <div id="bar-spent" class="progress-bar bg-warning" role="progressbar" style="width: 0%"></div>
-          </div>
-        </div>
-      </div>
-    </div>
+      <!-- Income -->
+      <div class="col-12 col-md-4">
+          <div class="card metric-illustration-card income-card h-100">
+              <div class="card-body p-4">
 
-    <!-- Remaining -->
-    <div class="col-md-4">
-      <div class="card shadow-sm border-0 h-100">
-        <div class="card-body p-4 d-flex flex-column justify-content-between">
-          <div class="d-flex justify-content-between align-items-start">
-            <div>
-              <span class="text-uppercase text-muted fw-bold tracking-wider" style="font-size: 0.75rem;">Account Reserve</span>
-              <div id="stat-remaining" class="h3 fw-bold text-body mt-1 mb-0">$0.00</div>
-              <p id="stat-remaining-sub" class="text-muted small mt-1 mb-0">Available cash flow</p>
-            </div>
-            <div class="p-2 bg-success-subtle text-success rounded-3">
-              <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
-            </div>
+                  <div class="metric-card-content">
+
+                      <div class="metric-card-info">
+
+                          <span class="metric-card-label">
+                              Income
+                          </span>
+
+                          <div
+                              id="stat-income"
+                              class="metric-card-value"
+                          >
+                              $0.00
+                          </div>
+
+                          <p class="metric-card-description">
+                              Monthly total income
+                          </p>
+
+                      </div>
+
+                      <div class="metric-card-illustration">
+                          <img
+                              src="https://cdn-icons-png.flaticon.com/512/2454/2454282.png"
+                              alt="Income received"
+                          >
+                      </div>
+
+                  </div>
+
+                  <div class="progress metric-progress">
+                      <div
+                          class="progress-bar bg-primary"
+                          role="progressbar"
+                          style="width: 100%"
+                      ></div>
+                  </div>
+
+              </div>
           </div>
-          <div class="progress mt-3" style="height: 6px;">
-            <div id="bar-remaining" class="progress-bar bg-success" role="progressbar" style="width: 0%"></div>
-          </div>
-        </div>
       </div>
-    </div>
+
+
+      <!-- Spent -->
+      <div class="col-12 col-md-4">
+          <div class="card metric-illustration-card expense-card h-100">
+              <div class="card-body p-4">
+
+                  <div class="metric-card-content">
+
+                      <div class="metric-card-info">
+
+                          <span class="metric-card-label">
+                              Spent
+                          </span>
+
+                          <div
+                              id="stat-spent"
+                              class="metric-card-value"
+                          >
+                              $0.00
+                          </div>
+
+                          <p
+                              id="stat-spent-sub"
+                              class="metric-card-description"
+                          >
+                              0% of income spent
+                          </p>
+
+                      </div>
+
+                      <div class="metric-card-illustration">
+                          <img
+                              src="https://cdn-icons-png.flaticon.com/512/2331/2331946.png"
+                              alt="Money spent"
+                          >
+                      </div>
+
+                  </div>
+
+                  <div class="progress metric-progress">
+                      <div
+                          id="bar-spent"
+                          class="progress-bar bg-warning"
+                          role="progressbar"
+                          style="width: 0%"
+                      ></div>
+                  </div>
+
+              </div>
+          </div>
+      </div>
+
+
+      <!-- Account Reserve -->
+      <div class="col-12 col-md-4">
+          <div class="card metric-illustration-card reserve-card h-100">
+              <div class="card-body p-4">
+
+                  <div class="metric-card-content">
+
+                      <div class="metric-card-info">
+
+                          <span class="metric-card-label">
+                              Account Reserve
+                          </span>
+
+                          <div
+                              id="stat-remaining"
+                              class="metric-card-value"
+                          >
+                              $0.00
+                          </div>
+
+                          <p
+                              id="stat-remaining-sub"
+                              class="metric-card-description"
+                          >
+                              Available cash flow
+                          </p>
+
+                      </div>
+
+                      <div class="metric-card-illustration">
+                          <img
+                              src="https://cdn-icons-png.flaticon.com/512/3135/3135673.png"
+                              alt="Account reserve"
+                          >
+                      </div>
+
+                  </div>
+
+                  <div class="progress metric-progress">
+                      <div
+                          id="bar-remaining"
+                          class="progress-bar bg-success"
+                          role="progressbar"
+                          style="width: 0%"
+                      ></div>
+                  </div>
+
+              </div>
+          </div>
+      </div>
+
   </div>
+
 
   <!-- Dynamic Smart Recommendations -->
   <div id="recommendations-container" class="mb-4"></div>

@@ -4,209 +4,1138 @@
 
 {% block content %}
 
+<style>
+    /* ==========================================
+       expense PAGE
+    ========================================== */
+
+    .expense-page {
+        max-width: 1500px;
+        margin: 0 auto;
+    }
+
+    /* ------------------------------------------
+       Hero
+    ------------------------------------------ */
+
+    .expense-hero {
+        position: relative;
+        overflow: hidden;
+
+        min-height: 190px;
+
+        padding: 2rem 2.25rem;
+
+        border-radius: 24px;
+
+        background:
+            linear-gradient(
+                135deg,
+                rgba(var(--bs-danger-rgb), .10),
+                rgba(var(--bs-primary-rgb), .06)
+            );
+
+        border: 1px solid
+            rgba(var(--bs-danger-rgb), .15);
+
+        margin-bottom: 1.5rem;
+    }
+
+    .expense-hero-content {
+        position: relative;
+        z-index: 2;
+
+        max-width: 65%;
+    }
+
+    .expense-hero h3 {
+        font-size: clamp(1.5rem, 2.5vw, 2rem);
+        letter-spacing: -.025em;
+    }
+
+    .expense-hero-illustration {
+        position: absolute;
+
+        right: 1.5rem;
+        bottom: -10px;
+
+        width: 220px;
+        height: 180px;
+
+        display: flex;
+        align-items: flex-end;
+        justify-content: flex-end;
+
+        pointer-events: none;
+
+        opacity: .95;
+    }
+
+    .expense-hero-illustration img {
+        width: 100%;
+        height: 100%;
+
+        object-fit: contain;
+        object-position: right bottom;
+
+        filter: drop-shadow(
+            0 12px 20px rgba(0, 0, 0, .08)
+        );
+    }
+
+
+    /* ------------------------------------------
+       Metric Cards
+    ------------------------------------------ */
+
+    .expense-stat {
+        position: relative;
+        overflow: hidden;
+
+        min-height: 145px;
+
+        border: 1px solid var(--bs-border-color-translucent);
+        border-radius: 18px;
+
+        background: var(--bs-card-bg);
+
+        transition:
+            transform .2s ease,
+            box-shadow .2s ease;
+    }
+
+    .expense-stat:hover {
+        transform: translateY(-3px);
+
+        box-shadow:
+            0 12px 30px rgba(0, 0, 0, .07) !important;
+    }
+
+    .expense-stat-content {
+        position: relative;
+        z-index: 2;
+    }
+
+    .expense-stat-icon {
+        width: 42px;
+        height: 42px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        border-radius: 12px;
+
+        font-size: 1.15rem;
+    }
+
+    .expense-stat-image {
+        position: absolute;
+
+        right: .75rem;
+        bottom: .5rem;
+
+        width: 95px;
+        height: 85px;
+
+        opacity: .16;
+
+        pointer-events: none;
+    }
+
+    .expense-stat-image img {
+        width: 100%;
+        height: 100%;
+
+        object-fit: contain;
+    }
+
+
+    /* ------------------------------------------
+       Filter
+    ------------------------------------------ */
+
+    .expense-toolbar {
+        padding: .75rem 1rem;
+
+        border: 1px solid var(--bs-border-color-translucent);
+        border-radius: 14px;
+
+        background: var(--bs-card-bg);
+    }
+
+
+    /* ------------------------------------------
+       Table
+    ------------------------------------------ */
+
+    .expense-table-card {
+        overflow: hidden;
+
+        border: 1px solid var(--bs-border-color-translucent);
+        border-radius: 20px;
+
+        background: var(--bs-card-bg);
+    }
+
+    .expense-table-header {
+        padding: 1.1rem 1.25rem;
+
+        border-bottom: 1px solid var(--bs-border-color);
+    }
+
+    .expense-table thead th {
+        font-size: .7rem;
+
+        letter-spacing: .06em;
+
+        text-transform: uppercase;
+
+        color: var(--bs-secondary-color);
+
+        white-space: nowrap;
+    }
+
+    .expense-table tbody tr {
+        transition: background-color .15s ease;
+    }
+
+    .expense-table tbody tr:hover {
+        background-color: rgba(
+            var(--bs-danger-rgb),
+            .035
+        );
+    }
+
+    .expense-category {
+        display: inline-flex;
+        align-items: center;
+        gap: .4rem;
+
+        padding: .4rem .65rem;
+
+        border-radius: 999px;
+
+        font-size: .75rem;
+        font-weight: 600;
+    }
+
+    .expense-amount {
+        font-family: var(--bs-font-monospace);
+
+        font-weight: 700;
+
+        color: var(--bs-danger);
+    }
+
+
+    /* ------------------------------------------
+       Empty State
+    ------------------------------------------ */
+
+    .expense-empty {
+        padding: 4rem 1.5rem;
+    }
+
+    .expense-empty-illustration {
+        width: 180px;
+        height: 140px;
+
+        margin: 0 auto 1.25rem;
+    }
+
+    .expense-empty-illustration img {
+        width: 100%;
+        height: 100%;
+
+        object-fit: contain;
+    }
+
+
+    /* ------------------------------------------
+       Mobile
+    ------------------------------------------ */
+
+    @media (max-width: 767.98px) {
+
+        .expense-hero {
+            min-height: 240px;
+
+            padding: 1.5rem;
+
+            border-radius: 20px;
+        }
+
+        .expense-hero-content {
+            max-width: 100%;
+        }
+
+        .expense-hero-illustration {
+            width: 150px;
+            height: 120px;
+
+            right: .5rem;
+            bottom: 0;
+
+            opacity: .55;
+        }
+
+        .expense-hero h3 {
+            max-width: 75%;
+        }
+
+        .expense-stat {
+            min-height: 125px;
+        }
+
+        .expense-toolbar {
+            align-items: stretch !important;
+        }
+
+        .expense-toolbar form {
+            width: 100%;
+        }
+
+        .expense-toolbar select {
+            flex: 1;
+        }
+    }
+</style>
+
+
 <div class="container-fluid py-2 px-2 px-md-3">
 
-    <!-- Header -->
-    <div class="header-title d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
-        <div>
-            <h3 class="fw-bold mb-1">{{ _('expense.tracking_title') }}</h3>
-            <p class="text-muted small mb-0">{{ _('expense.tracking_subtitle') }}</p>
-        </div>
+    <div class="expense-page">
 
-        <a href="{{ url_for('expenses.create') }}" class="btn btn-primary px-4 py-2 mt-3 mt-md-0 rounded-pill shadow-sm fw-semibold">
-            <i class="bi bi-plus-lg me-1"></i> {{ _('expense.add_expense') }}
-        </a>
-    </div>
 
-    <!-- Summary Metrics -->
-    <div class="row g-3 mb-4">
-        <!-- Total Expense Metric -->
-        <div class="col-12 col-md-4">
-            <div class="card stat-card-clean shadow-sm h-100 p-3">
-                <div class="d-flex align-items-center justify-content-between mb-2">
-                    <span class="text-uppercase text-muted fw-bold small">{{ _('expense.total_outlay') }}</span>
-                    <span class="badge bg-danger-subtle text-danger rounded-pill px-2.5 py-1.5 small fw-bold">
-                        <i class="bi bi-activity me-1"></i> {{ _('dashboard.live') }}
+        <!-- ======================================
+             HERO
+        ======================================= -->
+
+        <div class="expense-hero">
+
+            <div class="expense-hero-content">
+
+                <div class="d-flex align-items-center gap-2 mb-2">
+
+                    <span class="badge rounded-pill bg-danger-subtle text-danger">
+                        <i class="bi bi-graph-up-arrow me-1"></i>
+                        expense
                     </span>
+
+                    {% if expenses %}
+                        <span class="text-muted small">
+                            {{ expenses|length }} records
+                        </span>
+                    {% endif %}
+
                 </div>
-                <h3 class="fw-bold mb-0 text-danger">
-                    ${{ "%.2f"|format(expenses|sum(attribute="amount")|float) }}
+
+
+                <h3 class="fw-bold mb-2">
+                    {{ _('expense.tracking_title') }}
                 </h3>
-                <div class="text-muted small mt-1">{{ _('expense.cumulative_spending') }}</div>
+
+
+                <p class="text-muted mb-4">
+                    {{ _('expense.tracking_subtitle') }}
+                </p>
+
+
+                <a
+                    href="{{ url_for('expenses.create') }}"
+                    class="btn btn-danger px-4 py-2 rounded-pill shadow-sm fw-semibold"
+                >
+                    <i class="bi bi-plus-lg me-1"></i>
+                    {{ _('expense.add_expense') }}
+                </a>
+
             </div>
+
+
+            <!-- Hero Illustration -->
+
+            <div class="expense-hero-illustration">
+
+                <img
+                    src="https://cdn-icons-png.flaticon.com/512/2331/2331946.png"
+                    class="stat-illustration"
+                    alt="New expense"
+                >
+
+            </div>
+
         </div>
 
-        <!-- Number of Records Metric -->
-        <div class="col-12 col-md-4">
-            <div class="card stat-card-clean shadow-sm h-100 p-3">
-                <div class="d-flex align-items-center justify-content-between mb-2">
-                    <span class="text-uppercase text-muted fw-bold small">{{ _('expense.expense_records') }}</span>
-                    <span class="badge bg-primary-subtle text-primary rounded-pill px-2.5 py-1.5 small fw-bold">
-                        <i class="bi bi-receipt-cutoff me-1"></i> Logs
-                    </span>
-                </div>
-                <h3 class="fw-bold mb-0 text-body-emphasis">
-                    {{ expenses|length }}
-                </h3>
-                <div class="text-muted small mt-1">{{ _('expense.entries_logged') }}</div>
-            </div>
-        </div>
 
-        <!-- Recurring Expenses Metric -->
-        <div class="col-12 col-md-4">
-            <div class="card stat-card-clean shadow-sm h-100 p-3">
-                <div class="d-flex align-items-center justify-content-between mb-2">
-                    <span class="text-uppercase text-muted fw-bold small">{{ _('expense.recurring_costs') }}</span>
-                    <span class="badge bg-warning-subtle text-warning rounded-pill px-2.5 py-1.5 small fw-bold">
-                        <i class="bi bi-arrow-repeat me-1"></i> Rate
-                    </span>
-                </div>
-                <h3 class="fw-bold mb-0 text-body-emphasis">
-                    {{ expenses|selectattr("recurring_period")|list|length }}
-                </h3>
-                <div class="text-muted small mt-1">{{ _('expense.recurring_items') }}</div>
-            </div>
-        </div>
-    </div>
+        <!-- ======================================
+             SUMMARY
+        ======================================= -->
 
-    <!-- Filter/Sort  -->
-    <div class="d-flex justify-content-end align-items-center mb-4 gap-2">
-        <span class="badge text-body-secondary bg-body-tertiary border fw-normal px-2 py-1 me-2">
-            <i class="bi bi-funnel me-1"></i>Sort By
-        </span>
-        <form action="{{ url_for('expenses.index') }}" method="GET" class="d-flex gap-2">
-            <select name="sort" id="sort" class="form-select form-select-sm">
-                <option value="general" {{ 'selected' if request.args.get('sort') == 'general' }}>General</option>
-                <option value="date" {{ 'selected' if request.args.get('sort') == 'date' }}>Date</option>
-                <option value="amount" {{ 'selected' if request.args.get('sort') == 'amount' }}>Amount</option>
-            </select>
-            <button type="submit" class="btn btn-outline-secondary btn-sm">Filter</button>
-        </form>
-    </div>
+        <div class="row g-3 mb-4">
 
-    <!-- Expense Table Card -->
-    <div class="card border shadow-sm rounded-4 overflow-hidden" style="background-color: var(--bs-card-bg);">
-        <div class="card-header bg-transparent border-bottom p-3 px-4 d-flex justify-content-between align-items-center">
-            <div>
-                <h6 class="fw-bold mb-0">{{ _('expense.ledger_title') }}</h6>
-                <small class="text-muted">{{ _('expense.ledger_subtitle') }}</small>
-            </div>
-        </div>
 
-        <div class="card-body p-0">
-            {% if expenses %}
-                <!-- Desktop Table View -->
-                <div class="table-responsive d-none d-md-block">
-                    <table class="table table-hover align-middle mb-0">
-                        <thead class="bg-body-secondary border-bottom">
-                            <tr class="text-uppercase text-muted small" style="font-size: 0.75rem;">
-                                <th class="ps-4 py-3">{{ _('common.date') }}</th>
-                                <th class="py-3">{{ _('finance.category') }}</th>
-                                <th class="py-3">{{ _('common.description') }}</th>
-                                <th class="py-3">{{ _('income.frequency') }}</th>
-                                <th class="text-end py-3">{{ _('finance.amount') }}</th>
-                                <th class="text-end py-3 pe-4">{{ _('common.actions') }}</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for expense in expenses %}
-                                <tr>
-                                    <td class="ps-4 fw-medium text-body">
-                                        {{ expense.expense_date.strftime('%b %d, %Y') }}
-                                    </td>
-                                    <td>
-                                        <span class="badge bg-danger-subtle text-danger px-2.5 py-1.5 rounded-pill fw-semibold">
-                                            {{ _(expense.category) }}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        {% if expense.description %}
-                                            <span class="text-body">{{ expense.description }}</span>
-                                        {% else %}
-                                            <span class="text-muted fst-italic small">{{ _('common.no_description') }}</span>
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        {% if expense.recurring_period %}
-                                            <span class="badge bg-warning-subtle text-warning fw-normal px-2 py-1 rounded-pill">
-                                                <i class="bi bi-arrow-repeat me-1"></i>{{ _(expense.recurring_period) }}
-                                            </span>
-                                        {% else %}
-                                            <span class="text-muted small">{{ _('period.one_time') }}</span>
-                                        {% endif %}
-                                    </td>
-                                    <td class="text-end fw-bold text-danger font-monospace">
-                                        -${{ "%.2f"|format(expense.amount|float) }}
-                                    </td>
-                                    <td class="text-end pe-4">
-                                        <div class="btn-group btn-group-sm shadow-none rounded-3 border">
-                                            <a href="{{ url_for('expenses.detail', expense_id=expense.id) }}" class="btn btn-light" title="{{ _('common.view_details') }}">
-                                                <i class="bi bi-eye text-secondary"></i>
-                                            </a>
-                                            <a href="{{ url_for('expenses.edit', expense_id=expense.id) }}" class="btn btn-light" title="{{ _('common.edit_record') }}">
-                                                <i class="bi bi-pencil text-secondary"></i>
-                                            </a>
-                                            <a href="{{ url_for('expenses.delete', expense_id=expense.id) }}" class="btn btn-light text-danger" title="{{ _('common.delete') }}">
-                                                <i class="bi bi-trash3"></i>
-                                            </a>
-                                        </div>
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
+            <!-- Total expense -->
 
-                <!-- Mobile Card View -->
-                <div class="d-md-none divide-y">
-                    {% for expense in expenses %}
-                        <div class="p-3 border-bottom">
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <span class="badge bg-danger-subtle text-danger px-2.5 py-1.5 rounded-pill fw-semibold">
-                                    {{ _(expense.category) }}
-                                </span>
-                                <span class="fw-bold text-danger font-monospace fs-5">
-                                    -${{ "%.2f"|format(expense.amount|float) }}
-                                </span>
+            <div class="col-12 col-md-4">
+
+                <div class="expense-stat shadow-sm p-3">
+
+                    <div class="expense-stat-content">
+
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+
+                            <div
+                                class="expense-stat-icon
+                                       bg-danger-subtle
+                                       text-danger"
+                            >
+                                <i class="bi bi-cash-stack"></i>
                             </div>
 
-                            <div class="mb-3">
-                                {% if expense.description %}
-                                    <div class="small fw-semibold mb-1">{{ expense.description }}</div>
-                                {% else %}
-                                    <div class="text-muted fst-italic small mb-1">{{ _('common.no_description') }}</div>
+                            <span
+                                class="badge rounded-pill
+                                       bg-danger-subtle
+                                       text-danger"
+                            >
+                                <i class="bi bi-activity me-1"></i>
+                                {{ _('dashboard.live') }}
+                            </span>
+
+                        </div>
+
+
+                        <div class="text-muted text-uppercase fw-bold small">
+                            {{ _('expense.total_outlay') }}
+                        </div>
+
+
+                        <h3 class="fw-bold text-danger mb-0 mt-1">
+                            ${{ "%.2f"|format(
+                                expenses|sum(attribute="amount")|float
+                            ) }}
+                        </h3>
+
+
+                        <div class="text-muted small mt-1">
+                            {{ _('expense.cumulative_spending') }}
+                        </div>
+
+                    </div>
+
+
+                    <div class="expense-stat-image">
+                        <img
+                            src="https://cdn-icons-png.flaticon.com/512/3081/3081559.png"
+                            class="stat-illustration"
+                            alt="Expense"
+                        >
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Records -->
+
+            <div class="col-12 col-md-4">
+
+                <div class="expense-stat shadow-sm p-3">
+
+                    <div class="expense-stat-content">
+
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+
+                            <div
+                                class="expense-stat-icon
+                                       bg-primary-subtle
+                                       text-primary"
+                            >
+                                <i class="bi bi-receipt"></i>
+                            </div>
+
+                            <span
+                                class="badge rounded-pill
+                                       bg-primary-subtle
+                                       text-primary"
+                            >
+                                Records
+                            </span>
+
+                        </div>
+
+
+                        <div class="text-muted text-uppercase fw-bold small">
+                            {{ _('expense.expense_records') }}
+                        </div>
+
+
+                        <h3 class="fw-bold mb-0 mt-1">
+                            {{ expenses|length }}
+                        </h3>
+
+
+                        <div class="text-muted small mt-1">
+                            {{ _('expense.entries_logged') }}
+                        </div>
+
+                    </div>
+
+
+                    <div class="expense-stat-image">
+
+                        <img
+                            src="https://cdn-icons-png.flaticon.com/512/2489/2489763.png"
+                            class="stat-illustration"
+                            alt="Money spent"
+                        >
+
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Recurring -->
+
+            <div class="col-12 col-md-4">
+
+                <div class="expense-stat shadow-sm p-3">
+
+                    <div class="expense-stat-content">
+
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+
+                            <div
+                                class="expense-stat-icon
+                                       bg-warning-subtle
+                                       text-warning"
+                            >
+                                <i class="bi bi-arrow-repeat"></i>
+                            </div>
+
+                            <span
+                                class="badge rounded-pill
+                                       bg-warning-subtle
+                                       text-warning"
+                            >
+                                Recurring
+                            </span>
+
+                        </div>
+
+
+                        <div class="text-muted text-uppercase fw-bold small">
+                            {{ _('expense.recurring_costs') }}
+                        </div>
+
+
+                        <h3 class="fw-bold mb-0 mt-1">
+                            {{
+                                expenses
+                                | selectattr("recurring_transaction")
+                                | list
+                                | length
+                            }}
+                        </h3>
+
+
+                        <div class="text-muted small mt-1">
+                            {{ _('expense.recurring_items') }}
+                        </div>
+
+                    </div>
+
+
+                    <div class="expense-stat-image">
+
+                        <img
+                            src="https://cdn-icons-png.flaticon.com/512/2920/2920322.png"
+                            alt="Recurring expense"
+                        >
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ======================================
+             FILTER
+        ======================================= -->
+
+        <div
+            class="expense-toolbar
+                   d-flex
+                   flex-column
+                   flex-sm-row
+                   justify-content-between
+                   align-items-sm-center
+                   gap-3
+                   mb-4"
+        >
+
+            <div class="d-flex align-items-center gap-2">
+
+                <div
+                    class="rounded-circle
+                           bg-primary-subtle
+                           text-primary
+                           d-flex
+                           align-items-center
+                           justify-content-center"
+                    style="width:34px;height:34px;"
+                >
+                    <i class="bi bi-funnel"></i>
+                </div>
+
+                <div>
+                    <div class="fw-semibold small">
+                        {{ _('common.filter') if false else 'View expense' }}
+                    </div>
+
+                    <div class="text-muted x-small">
+                        Sort your expense records
+                    </div>
+                </div>
+
+            </div>
+
+
+            <form
+                action="{{ url_for('expenses.index') }}"
+                method="GET"
+                class="d-flex gap-2"
+            >
+
+                <select
+                    name="sort"
+                    id="sort"
+                    class="form-select form-select-sm"
+                >
+                    <option
+                        value="general"
+                        {{ 'selected' if request.args.get('sort') == 'general' }}
+                    >
+                        General
+                    </option>
+
+                    <option
+                        value="date"
+                        {{ 'selected' if request.args.get('sort') == 'date' }}
+                    >
+                        Date
+                    </option>
+
+                    <option
+                        value="amount"
+                        {{ 'selected' if request.args.get('sort') == 'amount' }}
+                    >
+                        Amount
+                    </option>
+
+                </select>
+
+
+                <button
+                    type="submit"
+                    class="btn btn-outline-secondary btn-sm px-3"
+                >
+                    Apply
+                </button>
+
+            </form>
+
+        </div>
+
+
+        <!-- ======================================
+             expense HISTORY
+        ======================================= -->
+
+        <div class="expense-table-card shadow-sm">
+
+
+            <!-- Table Header -->
+
+            <div class="expense-table-header">
+
+                <div class="d-flex justify-content-between align-items-center">
+
+                    <div>
+
+                        <h6 class="fw-bold mb-1">
+                            {{ _('expense.history_title') }}
+                        </h6>
+
+                        <small class="text-muted">
+                            {{ _('expense.history_subtitle') }}
+                        </small>
+
+                    </div>
+
+                    {% if expenses %}
+
+                    <span
+                        class="badge
+                               bg-danger-subtle
+                               text-danger
+                               rounded-pill"
+                    >
+                        {{ expenses|length }} entries
+                    </span>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+
+            <div class="card-body p-0">
+
+
+                {% if expenses %}
+
+
+                <!-- ==================================
+                     DESKTOP TABLE
+                =================================== -->
+
+                <div class="table-responsive d-none d-md-block">
+
+                    <table class="table table-hover align-middle mb-0 expense-table">
+
+                        <thead class="bg-body-secondary">
+
+                            <tr>
+
+                                <th class="ps-4 py-3">
+                                    {{ _('common.date') }}
+                                </th>
+
+                                <th>
+                                    {{ _('finance.category') }}
+                                </th>
+
+                                <th>
+                                    {{ _('common.description') }}
+                                </th>
+
+                                <th>
+                                    {{ _('expense.frequency') }}
+                                </th>
+
+                                <th class="text-end">
+                                    {{ _('finance.amount') }}
+                                </th>
+
+                                <th class="text-end pe-4">
+                                    {{ _('common.actions') }}
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+                            {% for expense in expenses %}
+
+                            <tr>
+
+                                <td class="ps-4">
+
+                                    <div class="fw-semibold">
+                                        {{ expense.expense_date.strftime('%b %d, %Y') }}
+                                    </div>
+
+                                </td>
+
+
+                                <td>
+
+                                    <span
+                                        class="expense-category
+                                               bg-danger-subtle
+                                               text-danger"
+                                    >
+                                        <i class="bi bi-tag"></i>
+                                        {{ _(expense.category) }}
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    {% if expense.description %}
+
+                                        <span class="text-body">
+                                            {{ expense.description }}
+                                        </span>
+
+                                    {% else %}
+
+                                        <span
+                                            class="text-muted
+                                                   fst-italic
+                                                   small"
+                                        >
+                                            {{ _('common.no_description') }}
+                                        </span>
+
+                                    {% endif %}
+
+                                </td>
+
+
+                                <td>
+
+                                    {% if expense.recurring_transaction %}
+
+                                        <span
+                                            class="badge
+                                                   bg-warning-subtle
+                                                   text-warning
+                                                   fw-normal
+                                                   rounded-pill"
+                                        >
+
+                                            <i
+                                                class="bi bi-arrow-repeat me-1"
+                                            ></i>
+
+                                            {{
+                                                _(
+                                                    expense
+                                                    .recurring_transaction
+                                                    .recurring_period
+                                                )
+                                            }}
+
+                                        </span>
+
+                                    {% else %}
+
+                                        <span class="text-muted small">
+                                            {{ _('period.one_time') }}
+                                        </span>
+
+                                    {% endif %}
+
+                                </td>
+
+
+                                <td class="text-end">
+
+                                    <span class="expense-amount">
+                                        +${{
+                                            "%.2f"|format(
+                                                expense.amount|float
+                                            )
+                                        }}
+                                    </span>
+
+                                </td>
+
+
+                                <td class="text-end pe-4">
+
+                                    <div
+                                        class="btn-group
+                                               btn-group-sm
+                                               border
+                                               rounded-3
+                                               overflow-hidden"
+                                    >
+
+                                        <a
+                                            href="{{ url_for(
+                                                'expenses.detail',
+                                                expense_id=expense.id
+                                            ) }}"
+                                            class="btn btn-light"
+                                            title="{{ _('common.view_details') }}"
+                                        >
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+
+
+                                        <a
+                                            href="{{ url_for(
+                                                'expenses.edit',
+                                                expense_id=expense.id
+                                            ) }}"
+                                            class="btn btn-light"
+                                            title="{{ _('common.edit_record') }}"
+                                        >
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+
+
+                                        <a
+                                            href="{{ url_for(
+                                                'expenses.delete',
+                                                expense_id=expense.id
+                                            ) }}"
+                                            class="btn btn-light text-danger"
+                                            title="{{ _('common.delete') }}"
+                                        >
+                                            <i class="bi bi-trash3"></i>
+                                        </a>
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+
+                <!-- ==================================
+                     MOBILE
+                =================================== -->
+
+                <div class="d-md-none">
+
+                    {% for expense in expenses %}
+
+                    <div class="p-3 border-bottom">
+
+                        <div
+                            class="d-flex
+                                   justify-content-between
+                                   align-items-start
+                                   mb-2"
+                        >
+
+                            <span
+                                class="expense-category
+                                       bg-danger-subtle
+                                       text-danger"
+                            >
+                                <i class="bi bi-tag"></i>
+                                {{ _(expense.category) }}
+                            </span>
+
+
+                            <span
+                                class="fw-bold
+                                       text-danger
+                                       font-monospace"
+                            >
+                                +${{
+                                    "%.2f"|format(
+                                        expense.amount|float
+                                    )
+                                }}
+                            </span>
+
+                        </div>
+
+
+                        <div class="mb-3">
+
+                            {% if expense.description %}
+
+                                <div class="fw-semibold small mb-1">
+                                    {{ expense.description }}
+                                </div>
+
+                            {% else %}
+
+                                <div
+                                    class="text-muted
+                                           fst-italic
+                                           small mb-1"
+                                >
+                                    {{ _('common.no_description') }}
+                                </div>
+
+                            {% endif %}
+
+
+                            <div
+                                class="d-flex
+                                       align-items-center
+                                       gap-2
+                                       text-muted
+                                       x-small"
+                            >
+
+                                <span>
+                                    <i class="bi bi-calendar3 me-1"></i>
+                                    {{ expense.expense_date.strftime('%b %d, %Y') }}
+                                </span>
+
+
+                                {% if expense.recurring_transaction %}
+
+                                    <span>&bull;</span>
+
+                                    <span class="text-warning">
+
+                                        <i
+                                            class="bi bi-arrow-repeat me-1"
+                                        ></i>
+
+                                        {{
+                                            _(
+                                                expense
+                                                .recurring_transaction
+                                                .recurring_period
+                                            )
+                                        }}
+
+                                    </span>
+
                                 {% endif %}
 
-                                <div class="d-flex align-items-center gap-2 text-muted x-small">
-                                    <span><i class="bi bi-calendar3 me-1"></i>{{ expense.expense_date.strftime('%b %d, %Y') }}</span>
-                                    {% if expense.recurring_period %}
-                                        <span>&bull;</span>
-                                        <span class="text-warning"><i class="bi bi-arrow-repeat me-1"></i>{{ _(expense.recurring_period) }}</span>
-                                    {% endif %}
-                                </div>
                             </div>
 
-                            <div class="d-flex gap-2">
-                                <a href="{{ url_for('expenses.detail', expense_id=expense.id) }}" class="btn btn-sm btn-outline-secondary flex-fill rounded-pill">{{ _('common.view') }}</a>
-                                <a href="{{ url_for('expenses.edit', expense_id=expense.id) }}" class="btn btn-sm btn-outline-secondary flex-fill rounded-pill">{{ _('common.edit') }}</a>
-                                <a href="{{ url_for('expenses.delete', expense_id=expense.id) }}" class="btn btn-sm btn-outline-danger flex-fill rounded-pill">{{ _('common.delete') }}</a>
-                            </div>
                         </div>
+
+
+                        <div class="d-flex gap-2">
+
+                            <a
+                                href="{{ url_for(
+                                    'expenses.detail',
+                                    expense_id=expense.id
+                                ) }}"
+                                class="btn btn-sm
+                                       btn-outline-secondary
+                                       flex-fill
+                                       rounded-pill"
+                            >
+                                {{ _('common.view') }}
+                            </a>
+
+
+                            <a
+                                href="{{ url_for(
+                                    'expenses.edit',
+                                    expense_id=expense.id
+                                ) }}"
+                                class="btn btn-sm
+                                       btn-outline-secondary
+                                       flex-fill
+                                       rounded-pill"
+                            >
+                                {{ _('common.edit') }}
+                            </a>
+
+
+                            <a
+                                href="{{ url_for(
+                                    'expenses.delete',
+                                    expense_id=expense.id
+                                ) }}"
+                                class="btn btn-sm
+                                       btn-outline-danger
+                                       flex-fill
+                                       rounded-pill"
+                            >
+                                {{ _('common.delete') }}
+                            </a>
+
+                        </div>
+
+                    </div>
+
                     {% endfor %}
+
                 </div>
-            {% else %}
-                <div class="text-center py-5 px-4">
-                    <i class="bi bi-cash-coin display-5 text-muted opacity-50 mb-3 d-block"></i>
-                    <h5 class="fw-bold">{{ _('expense.no_records_yet') }}</h5>
-                    <p class="text-muted small mx-auto mb-3" style="max-width: 400px;">
+
+
+                {% else %}
+
+
+                <!-- ==================================
+                     EMPTY STATE
+                =================================== -->
+
+                <div class="expense-empty text-center">
+
+                    <div class="expense-empty-illustration">
+
+                        <img
+                            src="{{ url_for(
+                                'static',
+                                filename='images/expense/empty-expense.png'
+                            ) }}"
+                            alt="No expense records"
+                        >
+
+                    </div>
+
+
+                    <span
+                        class="badge
+                               bg-danger-subtle
+                               text-danger
+                               rounded-pill
+                               mb-3"
+                    >
+                        <i class="bi bi-plus-circle me-1"></i>
+                        Get started
+                    </span>
+
+
+                    <h5 class="fw-bold mb-2">
+                        {{ _('expense.no_records_yet') }}
+                    </h5>
+
+
+                    <p
+                        class="text-muted
+                               small
+                               mx-auto
+                               mb-4"
+                        style="max-width:420px;"
+                    >
                         {{ _('expense.no_records_hint') }}
                     </p>
-                    <a href="{{ url_for('expenses.create') }}" class="btn btn-primary px-4 py-2 rounded-pill shadow-sm">
-                        <i class="bi bi-plus-lg me-1"></i> {{ _('expense.add_first_expense') }}
+
+
+                    <a
+                        href="{{ url_for('expenses.create') }}"
+                        class="btn btn-danger
+                               px-4
+                               py-2
+                               rounded-pill
+                               shadow-sm"
+                    >
+                        <i class="bi bi-plus-lg me-1"></i>
+                        {{ _('expense.add_first_expense') }}
                     </a>
+
                 </div>
-            {% endif %}
+
+
+                {% endif %}
+
+            </div>
+
         </div>
+
     </div>
+
 </div>
+
 {% endblock %}

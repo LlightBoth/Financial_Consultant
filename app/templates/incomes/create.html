@@ -1,24 +1,25 @@
 {% extends "layouts/clientBase.html" %}
 
-{% block title %} {{ _('income.create_title') }} {% endblock %}
+{% block title %}
+    Create Income
+{% endblock %}
 
 {% block content %}
 
 <div class="container">
 
     <!-- Header -->
-    <div class="mb-4">
-        <a href="{{ url_for('incomes.index') }}"
-           class="text-decoration-none text-muted small">
+    <div class="mb-4 d-flex justify-content-between align-items-center gap-3">
+        <div>
+            <h2 class="fw-bold mt-3 mb-1">Add Income</h2>
+            <p class="text-muted mb-0">Record a new income or create a recurring income.</p>
+        </div>
+        <a href="{{ url_for('incomes.index') }}" class="btn btn-outline-secondary rounded-3 flex-shrink-0">
             <i class="bi bi-arrow-left me-1"></i>
-            {{ _('income.back_to_income') }}
+            <span class="d-none d-sm-inline">
+                Back
+            </span>
         </a>
-
-        <h2 class="fw-bold mt-3 mb-1">{{ _('income.add_income') }}</h2>
-
-        <p class="text-muted mb-0">
-            {{ _('income.create_subtitle') }}
-        </p>
     </div>
 
 
@@ -27,34 +28,39 @@
 
         <div class="col-lg-8">
 
-            <div class="card border-0 shadow-sm"
-                 style="border-radius: 15px;">
+            <div
+                class="card border-0 shadow-sm"
+                style="border-radius: 15px;"
+            >
 
                 <div class="card-body p-4 p-md-5">
 
                     <div class="d-flex align-items-center mb-4">
 
-                        <div class="rounded-circle bg-success-subtle
-                                    d-flex align-items-center justify-content-center me-3"
-                             style="width: 48px; height: 48px;">
-
+                        <div
+                            class="rounded-circle bg-success-subtle
+                                   d-flex align-items-center justify-content-center me-3"
+                            style="width: 48px; height: 48px;"
+                        >
                             <i class="bi bi-cash-stack text-success fs-4"></i>
-
                         </div>
 
                         <div>
                             <h5 class="fw-bold mb-1">
-                                {{ _('income.card_header') }}
+                                Income Details
                             </h5>
-
                             <p class="text-muted small mb-0">
-                                {{ _('income.card_subtitle') }}
+                                Enter the details of your income.
                             </p>
                         </div>
-
                     </div>
-                    
-                    <form method="post" novalidate class="row g-4">
+
+
+                    <form
+                        method="post"
+                        novalidate
+                        class="row g-4"
+                    >
                         {% include "incomes/_form.html" %}
                     </form>
 

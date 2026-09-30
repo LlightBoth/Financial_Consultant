@@ -76,6 +76,334 @@
 }
 
 /* =========================================
+   PLAN HERO
+========================================= */
+
+.plan-hero {
+    position: relative;
+    overflow: hidden;
+    border-radius: 28px;
+
+    background:
+        radial-gradient(
+            circle at 85% 20%,
+            rgba(var(--bs-primary-rgb), .18),
+            transparent 32%
+        ),
+        radial-gradient(
+            circle at 60% 100%,
+            rgba(111, 66, 193, .12),
+            transparent 35%
+        ),
+        var(--bs-body-bg);
+
+    border: 1px solid var(--bs-border-color-translucent);
+
+    box-shadow:
+        0 15px 45px rgba(0, 0, 0, .06);
+}
+
+.plan-hero-content {
+    min-height: 330px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 2.5rem 3rem;
+
+    position: relative;
+    z-index: 2;
+}
+
+
+/* Text */
+
+.plan-hero-text {
+    max-width: 600px;
+}
+
+.plan-hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+
+    padding: .45rem .8rem;
+
+    border-radius: 999px;
+
+    background: var(--bs-primary-bg-subtle);
+    color: var(--bs-primary);
+
+    font-size: .75rem;
+    font-weight: 700;
+
+    margin-bottom: 1rem;
+}
+
+.plan-hero-title {
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 800;
+    letter-spacing: -.04em;
+
+    margin-bottom: .75rem;
+}
+
+.plan-hero-description {
+    max-width: 520px;
+
+    color: var(--bs-secondary-color);
+
+    line-height: 1.7;
+
+    margin-bottom: 1.5rem;
+}
+
+.plan-hero-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.plan-hero-hint {
+    color: var(--bs-secondary-color);
+    font-size: .8rem;
+}
+
+
+/* =========================================
+   HERO VISUAL
+========================================= */
+
+.plan-hero-visual {
+    width: 310px;
+    height: 280px;
+
+    position: relative;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.plan-hero-image {
+    width: 210px;
+    height: 210px;
+
+    object-fit: contain;
+
+    position: relative;
+    z-index: 3;
+
+    filter:
+        drop-shadow(0 18px 20px rgba(0,0,0,.12));
+
+    animation: planFloat 5s ease-in-out infinite;
+}
+
+@keyframes planFloat {
+
+    0%, 100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-8px);
+    }
+
+}
+
+
+/* Decorative circles */
+
+.plan-orbit {
+    position: absolute;
+
+    border-radius: 50%;
+
+    border: 1px dashed
+        rgba(var(--bs-primary-rgb), .22);
+}
+
+.orbit-one {
+    width: 230px;
+    height: 230px;
+}
+
+.orbit-two {
+    width: 280px;
+    height: 280px;
+
+    opacity: .5;
+}
+
+
+/* Floating cards */
+
+.plan-floating-card {
+    position: absolute;
+
+    z-index: 5;
+
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+
+    padding: .65rem .8rem;
+
+    border-radius: 14px;
+
+    background: var(--bs-body-bg);
+
+    border: 1px solid var(--bs-border-color-translucent);
+
+    box-shadow:
+        0 10px 25px rgba(0,0,0,.08);
+
+    font-size: .75rem;
+}
+
+.plan-floating-card i {
+    width: 32px;
+    height: 32px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 9px;
+
+    background: var(--bs-primary-bg-subtle);
+    color: var(--bs-primary);
+
+    font-size: 1rem;
+}
+
+.plan-floating-card strong {
+    display: block;
+    font-size: .75rem;
+}
+
+.plan-floating-card small {
+    display: block;
+    color: var(--bs-secondary-color);
+    font-size: .65rem;
+}
+
+.card-one {
+    top: 25px;
+    left: 0;
+}
+
+.card-two {
+    right: -5px;
+    bottom: 30px;
+}
+
+
+/* =========================================
+   FILTER CARD
+========================================= */
+
+.plan-filter-card {
+    padding: 1.25rem;
+
+    background: var(--bs-card-bg);
+
+    border: 1px solid var(--bs-border-color-translucent);
+
+    border-radius: 20px;
+
+    box-shadow:
+        0 8px 25px rgba(0,0,0,.04);
+}
+
+.plan-filter-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding-bottom: 1rem;
+    margin-bottom: 1.25rem;
+
+    border-bottom: 1px solid var(--bs-border-color-translucent);
+}
+
+.plan-filter-icon {
+    width: 42px;
+    height: 42px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 12px;
+
+    background: var(--bs-primary-bg-subtle);
+    color: var(--bs-primary);
+}
+
+.plan-filter-label {
+    padding: .4rem .75rem;
+
+    border-radius: 999px;
+
+    background: var(--bs-tertiary-bg);
+
+    color: var(--bs-secondary-color);
+
+    font-size: .7rem;
+    font-weight: 600;
+}
+
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+
+@media (max-width: 767.98px) {
+
+    .plan-hero-content {
+        padding: 2rem 1.5rem;
+
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .plan-hero-visual {
+        width: 100%;
+        height: 230px;
+
+        margin-top: 1rem;
+    }
+
+    .plan-hero-image {
+        width: 170px;
+        height: 170px;
+    }
+
+    .plan-floating-card {
+        transform: scale(.9);
+    }
+
+    .card-one {
+        left: 5%;
+    }
+
+    .card-two {
+        right: 5%;
+    }
+
+    .plan-filter-header {
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+}
+
+
+/* =========================================
    Mobile Plans
    ========================================= */
 @media (max-width: 575.98px) {

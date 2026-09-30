@@ -5,12 +5,324 @@
 {% block content %}
 {% import "macros/form_macros.html" as f %}
 
-<style> .workspace-wrapper{max-width:850px;margin:0 auto}.form-card-modern{background-color:var(--bs-card-bg);border:1px solid var(--bs-border-color-translucent)!important;border-radius:24px;box-shadow:0 10px 30px rgba(0,0,0,.04)!important}.breadcrumb-custom{font-size:.8rem;text-transform:uppercase;letter-spacing:.1rem;font-weight:700;color:var(--bs-secondary-color)}.step-icon{width:40px;height:40px;display:flex;align-items:center;justify-content:center;border-radius:12px;background-color:rgba(var(--bs-primary-rgb),.1);color:var(--bs-primary);font-size:1.2rem;flex-shrink:0}.step-section{display:none}.step-section.active{display:block}
-.choice-grid{display:grid;gap:.75rem}.choice-grid-2{grid-template-columns:repeat(2,minmax(0,1fr))}.choice-grid-3{grid-template-columns:repeat(3,minmax(0,1fr))}.choice-grid-4{grid-template-columns:repeat(4,minmax(0,1fr))}.choice-card{position:relative;display:block;cursor:pointer;margin:0}.choice-input{position:absolute;opacity:0;pointer-events:none}.choice-content{position:relative;min-height:82px;display:flex;align-items:center;gap:.85rem;padding:.9rem 1rem;background:var(--bs-body-bg);border:1px solid var(--bs-border-color);border-radius:.85rem;transition:border-color .18s ease,background-color .18s ease,box-shadow .18s ease,transform .18s ease}.choice-card:hover .choice-content{border-color:rgba(var(--bs-primary-rgb),.45);background:rgba(var(--bs-primary-rgb),.025);transform:translateY(-1px)}.choice-input:checked+.choice-content{border-color:var(--bs-primary);background:rgba(var(--bs-primary-rgb),.07);box-shadow:0 0 0 2px rgba(var(--bs-primary-rgb),.1),0 5px 15px rgba(0,0,0,.04)}.choice-input:checked+.choice-content .choice-icon{background:var(--bs-primary);color:#fff}.choice-input:checked+.choice-content .choice-check{opacity:1;transform:scale(1);color:var(--bs-primary)}.choice-icon{width:42px;height:42px;flex:0 0 42px;display:flex;align-items:center;justify-content:center;border-radius:.7rem;background:var(--bs-tertiary-bg);color:var(--bs-secondary-color);font-size:1.05rem;transition:background-color .18s ease,color .18s ease}.choice-text{min-width:0;display:flex;flex-direction:column;gap:.15rem}.choice-title{font-size:.9rem;font-weight:600;color:var(--bs-body-color)}.choice-description{font-size:.74rem;line-height:1.25;color:var(--bs-secondary-color)}.choice-check{margin-left:auto;flex:0 0 auto;opacity:0;transform:scale(.7);font-size:1.1rem;transition:opacity .18s ease,transform .18s ease}.choice-input:focus-visible+.choice-content{outline:2px solid var(--bs-primary);outline-offset:2px}
+<style>
+.workspace-wrapper {
+    max-width: 850px;
+    margin: 0 auto;
+}
 
-@media(max-width:991.98px){.choice-grid-4{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:767.98px){.choice-grid-3,.choice-grid-2,.choice-grid-4{grid-template-columns:1fr}.choice-content{min-height:72px}}
-@media(max-width:576px){.workspace-wrapper{padding-top:2rem!important}.form-card-modern{border-radius:18px}}
+.form-card-modern {
+    background-color: var(--bs-card-bg);
+    border: 1px solid var(--bs-border-color-translucent) !important;
+    border-radius: 24px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, .04) !important;
+}
+
+.breadcrumb-custom {
+    font-size: .8rem;
+    text-transform: uppercase;
+    letter-spacing: .1rem;
+    font-weight: 700;
+    color: var(--bs-secondary-color);
+}
+
+.step-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    background-color: rgba(var(--bs-primary-rgb), .1);
+    color: var(--bs-primary);
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+.step-section {
+    display: none;
+}
+
+.step-section.active {
+    display: block;
+}
+
+
+/* ========================================
+   CHOICE GRID
+======================================== */
+
+.choice-grid {
+    display: grid;
+    gap: 1rem;
+}
+
+.choice-grid-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.choice-grid-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.choice-grid-4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+
+/* ========================================
+   CHOICE CARD
+======================================== */
+
+.choice-card {
+    position: relative;
+    display: block;
+    cursor: pointer;
+    margin: 0;
+    border-radius: 16px;
+    background: var(--bs-card-bg);
+    overflow: hidden;
+
+    transition:
+        border-color .2s ease,
+        background-color .2s ease,
+        box-shadow .2s ease,
+        transform .2s ease;
+}
+
+.choice-content {
+    position: relative;
+    min-height: 170px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    padding: 1.25rem;
+
+    background: var(--bs-body-bg);
+    border: 1px solid var(--bs-border-color);
+    border-radius: 16px;
+
+    transition:
+        border-color .2s ease,
+        background-color .2s ease,
+        box-shadow .2s ease,
+        transform .2s ease;
+}
+
+.choice-card:hover .choice-content {
+    border-color: rgba(var(--bs-primary-rgb), .45);
+    background: rgba(var(--bs-primary-rgb), .025);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, .08);
+}
+
+
+/* ========================================
+   HIDDEN RADIO
+======================================== */
+
+.choice-input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+
+/* ========================================
+   CHOICE CONTENT
+======================================== */
+
+.choice-main {
+    display: flex;
+    align-items: flex-start;
+    gap: .75rem;
+    position: relative;
+    z-index: 2;
+}
+
+.choice-icon {
+    width: 44px;
+    height: 44px;
+    flex: 0 0 44px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 12px;
+    background: var(--bs-tertiary-bg);
+    color: var(--bs-secondary-color);
+
+    font-size: 1.25rem;
+
+    transition:
+        background-color .18s ease,
+        color .18s ease;
+}
+
+.choice-text {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: .15rem;
+}
+
+.choice-title {
+    display: block;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--bs-body-color);
+}
+
+.choice-description {
+    display: block;
+    margin-top: .25rem;
+
+    font-size: .8rem;
+    line-height: 1.4;
+    color: var(--bs-secondary-color);
+}
+
+
+/* ========================================
+   CHECK ICON
+======================================== */
+
+.choice-check {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+
+    margin-left: auto;
+
+    color: var(--bs-primary);
+    font-size: 1.1rem;
+
+    opacity: 0;
+    transform: scale(.7);
+
+    transition:
+        opacity .18s ease,
+        transform .18s ease;
+}
+
+
+/* ========================================
+   ILLUSTRATION
+======================================== */
+
+.choice-illustration {
+    position: absolute;
+    right: .75rem;
+    bottom: .5rem;
+
+    width: 72px;
+    height: 72px;
+
+    opacity: .85;
+    pointer-events: none;
+}
+
+.choice-illustration img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+
+/* ========================================
+   SELECTED STATE
+======================================== */
+
+.choice-input:checked + .choice-content {
+    border-color: var(--bs-primary);
+
+    background: linear-gradient(
+        135deg,
+        var(--bs-primary-bg-subtle),
+        var(--bs-body-bg)
+    );
+
+    box-shadow:
+        0 0 0 2px rgba(var(--bs-primary-rgb), .1),
+        0 5px 15px rgba(0, 0, 0, .04);
+}
+
+.choice-input:checked + .choice-content .choice-icon {
+    background: var(--bs-primary);
+    color: #fff;
+}
+
+.choice-input:checked + .choice-content .choice-check {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.choice-card:has(.choice-input:checked) {
+    border-color: var(--bs-primary);
+    box-shadow: 0 0 0 2px rgba(var(--bs-primary-rgb), .12);
+}
+
+
+/* ========================================
+   KEYBOARD ACCESSIBILITY
+======================================== */
+
+.choice-input:focus-visible + .choice-content {
+    outline: 2px solid var(--bs-primary);
+    outline-offset: 2px;
+}
+
+
+/* ========================================
+   RESPONSIVE
+======================================== */
+
+@media (max-width: 991.98px) {
+
+    .choice-grid-4 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .choice-grid-3 {
+        grid-template-columns: 1fr;
+    }
+
+    .choice-content {
+        min-height: 130px;
+    }
+
+    .choice-illustration {
+        width: 64px;
+        height: 64px;
+    }
+}
+
+@media (max-width: 767.98px) {
+
+    .choice-grid-3,
+    .choice-grid-2,
+    .choice-grid-4 {
+        grid-template-columns: 1fr;
+    }
+
+    .choice-content {
+        min-height: 72px;
+    }
+}
+
+@media (max-width: 576px) {
+
+    .workspace-wrapper {
+        padding-top: 2rem !important;
+    }
+
+    .form-card-modern {
+        border-radius: 18px;
+    }
+}
 </style>
 
 <div class="container-fluid pt-0 px-4"> 
@@ -34,6 +346,7 @@
                     {{ form.hidden_tag() }} 
                     <div id="step-1" class="step-section active"> 
 
+
 <div class="mb-4">
 
     <div class="d-flex justify-content-between align-items-center mb-2">
@@ -55,9 +368,12 @@
         {{ form.saving_type() }}
     </div>
 
+
     <div class="choice-grid choice-grid-3" id="saving-type-options">
 
+        <!-- DAILY -->
         <label class="choice-card saving-type-card">
+
             <input
                 type="radio"
                 name="saving_type_choice"
@@ -67,18 +383,29 @@
 
             <div class="choice-content">
 
-                <div class="choice-icon">
-                    <i class="bi bi-calendar-day"></i>
+                <div class="choice-main">
+
+                    <div class="choice-icon">
+                        <i class="bi bi-calendar-day"></i>
+                    </div>
+
+                    <div class="choice-text">
+                        <span class="choice-title">
+                            Daily
+                        </span>
+
+                        <span class="choice-description">
+                            Save a small amount every day
+                        </span>
+                    </div>
+
                 </div>
 
-                <div class="choice-text">
-                    <span class="choice-title">
-                        Daily
-                    </span>
-
-                    <span class="choice-description">
-                        Save a small amount every day
-                    </span>
+                <div class="choice-illustration">
+                    <img
+                        src="https://cdn-icons-png.flaticon.com/512/2920/2920277.png"
+                        alt="Daily saving"
+                    >
                 </div>
 
                 <div class="choice-check">
@@ -86,10 +413,13 @@
                 </div>
 
             </div>
+
         </label>
 
 
+        <!-- MONTHLY -->
         <label class="choice-card saving-type-card">
+
             <input
                 type="radio"
                 name="saving_type_choice"
@@ -99,18 +429,29 @@
 
             <div class="choice-content">
 
-                <div class="choice-icon">
-                    <i class="bi bi-calendar-month"></i>
+                <div class="choice-main">
+
+                    <div class="choice-icon">
+                        <i class="bi bi-calendar-month"></i>
+                    </div>
+
+                    <div class="choice-text">
+                        <span class="choice-title">
+                            Monthly
+                        </span>
+
+                        <span class="choice-description">
+                            Save a fixed amount each month
+                        </span>
+                    </div>
+
                 </div>
 
-                <div class="choice-text">
-                    <span class="choice-title">
-                        Monthly
-                    </span>
-
-                    <span class="choice-description">
-                        Save a fixed amount each month
-                    </span>
+                <div class="choice-illustration">
+                    <img
+                        src="https://cdn-icons-png.flaticon.com/512/2830/2830284.png"
+                        alt="Monthly saving"
+                    >
                 </div>
 
                 <div class="choice-check">
@@ -118,10 +459,13 @@
                 </div>
 
             </div>
+
         </label>
 
 
+        <!-- FLEXIBLE -->
         <label class="choice-card saving-type-card">
+
             <input
                 type="radio"
                 name="saving_type_choice"
@@ -131,18 +475,29 @@
 
             <div class="choice-content">
 
-                <div class="choice-icon">
-                    <i class="bi bi-sliders"></i>
+                <div class="choice-main">
+
+                    <div class="choice-icon">
+                        <i class="bi bi-sliders"></i>
+                    </div>
+
+                    <div class="choice-text">
+                        <span class="choice-title">
+                            Flexible
+                        </span>
+
+                        <span class="choice-description">
+                            Change your saving amount when needed
+                        </span>
+                    </div>
+
                 </div>
 
-                <div class="choice-text">
-                    <span class="choice-title">
-                        Flexible
-                    </span>
-
-                    <span class="choice-description">
-                        Change your saving amount when needed
-                    </span>
+                <div class="choice-illustration">
+                    <img
+                        src="https://cdn-icons-png.flaticon.com/512/3135/3135679.png"
+                        alt="Flexible saving"
+                    >
                 </div>
 
                 <div class="choice-check">
@@ -150,16 +505,23 @@
                 </div>
 
             </div>
+
         </label>
 
     </div>
 
+
+    <!-- Selected summary -->
     <div
         id="saving-type-summary"
         class="alert alert-primary-subtle border-0 rounded-3 mt-3 mb-0 d-none"
     >
         <div class="d-flex align-items-center">
-            <i id="saving-type-summary-icon" class="bi bi-piggy-bank fs-4 me-3"></i>
+
+            <i
+                id="saving-type-summary-icon"
+                class="bi bi-piggy-bank fs-4 me-3"
+            ></i>
 
             <div>
                 <div
@@ -176,6 +538,7 @@
                     —
                 </small>
             </div>
+
         </div>
     </div>
 

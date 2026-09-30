@@ -69,6 +69,22 @@ class ExpenseForm(BaseLocalizedForm):
         validators=[Optional()]
     )
 
+    start_date = DateField(
+        _l("expense.start_date"),
+        validators=[
+            Optional()
+        ],
+        format="%Y-%m-%d"
+    )
+
+    end_date = DateField(
+        _l("expense.end_date"),
+        validators=[
+            Optional()
+        ],
+        format="%Y-%m-%d"
+    )
+
     submit = SubmitField(_l("expense.add_expense"))
 
 
@@ -124,6 +140,22 @@ class EditExpenseForm(BaseLocalizedForm):
             ("Yearly", _l("period.yearly")),
         ],
         validators=[Optional()]
+    )
+
+    start_date = DateField(
+        _l("expense.start_date"),
+        validators=[
+            Optional()
+        ],
+        format="%Y-%m-%d"
+    )
+
+    end_date = DateField(
+        _l("expense.end_date"),
+        validators=[
+            Optional()
+        ],
+        format="%Y-%m-%d"
     )
 
     submit = SubmitField(_l("common.update"))

@@ -19,3 +19,4 @@ from .audit_log_route import audit_log_bp
 from .notification_route import notification_bp
 from .currency_converter_routes import currency_bp
 from .budget_route import budget_bp
+from .recurring_transaction_route import recurring_transaction_bp

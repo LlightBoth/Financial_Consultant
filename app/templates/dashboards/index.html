@@ -6,168 +6,466 @@
 
 <div class="container-fluid pb-5">
 
-  <!-- Header Banner -->
-  <div class="dash-header-banner">
-    <div>
-      <h3 class="fw-bold mb-1">Financial Intelligence</h3>
-      <span class="text-muted small">Real-time performance metrics & cashflow tracking</span>
-    </div>
-    <div class="d-flex align-items-center gap-2">
-      <form action="{{ url_for('advisors.personalAnalyse') }}" method="POST" class="d-inline">
-        {% if csrf_token is defined %}
-          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-        {% endif %}
-        <input type="hidden" name="income" value="{{ total_income | default(0) }}">
-        <input type="hidden" name="expense" value="{{ total_expense | default(0) }}">
+  <!-- Financial Intelligence Header -->
+  <div class="finance-dashboard-header mb-4">
+      <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+          
+          <!-- Left: Title and Description -->
+          <div class="d-flex align-items-center gap-3">
+              <div class="finance-header-icon">
+                  <i class="bi bi-bar-chart-line-fill"></i>
+              </div>
+              <div>
+                  <div class="finance-header-eyebrow">Financial Dashboard</div>
+                  <h3 class="finance-header-title mb-1">Financial Intelligence</h3>
+                  <div class="finance-header-description">Monitor your cashflow, income and spending performance.</div>
+              </div>
+          </div>
 
-        <button type="submit" class="btn btn-primary rounded-pill px-4 shadow-sm fw-semibold">
-          <i class="bi bi-upc-scan me-1"></i> Analyse Now
-        </button>
-      </form>
-    </div>
+          <!-- Right: Analyse Action Form -->
+          <form action="{{ url_for('advisors.personalAnalyse') }}" method="POST" class="d-inline">
+              {% if csrf_token is defined %}
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              {% endif %}
+              <input type="hidden" name="income" value="{{ total_income | default(0) }}">
+              <input type="hidden" name="expense" value="{{ total_expense | default(0) }}">
+              
+              <button type="submit" class="btn btn-primary analyse-button shadow-sm fw-semibold">
+                  <span class="analyse-icon">
+                      <i class="bi bi-bar-chart-line-fill"></i>
+                      <i class="bi bi-stars analyse-sparkle"></i>
+                  </span>
+                  <span>Analyse Now</span>
+              </button>
+
+          </form>
+
+      </div>
   </div>
 
-  <!-- Primary Metric Cards Section -->
-  <div class="mb-4">
-    <!-- Period Control Header Banner -->
-    <div class="dash-header-banner mb-3">
-      <div class="d-flex align-items-center gap-2">
-        <div class="btn-group btn-group-sm align-items-center border rounded-2 p-0.5 bg-body-tertiary" role="group" aria-label="Period navigation">
-          <button type="button" id="prevPeriod" class="btn btn-sm btn-link text-secondary p-1 border-0" aria-label="Previous period">
-            <svg class="bi" width="12" height="12" fill="currentColor" viewBox="0 0 16 16">
-              <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
-            </svg>
-          </button>
-          <span id="currentPeriodLabel" class="text-body small fw-semibold px-2" style="min-width: 120px; text-align: center;">Loading...</span>
-          <button type="button" id="nextPeriod" class="btn btn-sm btn-link text-secondary p-1 border-0" aria-label="Next period">
-            <svg class="bi" width="12" height="12" fill="currentColor" viewBox="0 0 16 16">
-              <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
-            </svg>
-          </button>
-        </div>
-      </div>
+  <!-- Financial Overview Controls -->
+  <div class="financial-period-card mb-4">
+      <div class="financial-period-card-inner d-flex align-items-center justify-content-between gap-3">
 
-      <div class="metric-label mb-0 d-none d-md-block">FINANCIAL OVERVIEW</div>
+          <!-- Period Navigation -->
+          <div class="period-navigation">
+              <button type="button" id="prevPeriod" class="btn btn-sm text-secondary" aria-label="Previous period">
+                  <i class="bi bi-chevron-left"></i>
+              </button>
 
-      <div class="btn-group btn-group-sm" role="group" aria-label="Period mode view">
-        <button type="button" id="viewYearBtn" class="btn btn-outline-primary py-1">Year</button>
-        <button type="button" id="viewMonthBtn" class="btn btn-primary active py-1">Month</button>
-      </div>
-    </div>
+              <div class="period-label-wrapper">
+                  <span id="currentPeriodLabel" class="period-label">Loading...</span>
+                  <span class="period-subtitle">Selected period</span>
+              </div>
 
-    <!-- Top Row: Account & Performance (3 Cards) -->
-    <div class="row g-3 mb-3">
-      <!-- Account Reserve -->
-      <div class="col-12 col-md-4">
-        <div class="card stat-card p-3 h-100">
-          <div class="d-flex justify-content-between align-items-center mb-2">
-            <span class="metric-label">Account Reserve</span>
-            <div class="icon-box-modern green" style="width:36px; height:36px; font-size:1rem;">
-              <i class="bi bi-wallet2"></i>
-            </div>
+              <button type="button" id="nextPeriod" class="btn btn-sm text-secondary" aria-label="Next period">
+                  <i class="bi bi-chevron-right"></i>
+              </button>
           </div>
-          <div id="valSumSaving" class="metric-value fs-4 mb-1 text-success">
-            ${{ "{:,.2f}".format(sum_saving or 0) }}
-          </div>
-          <span class="text-muted extra-small">Total Savings Balance</span>
-        </div>
-      </div>
 
-      <!-- Income Growth Rate -->
-      <div class="col-12 col-md-4">
-        <div class="card stat-card p-3 h-100">
-          <div class="d-flex justify-content-between align-items-center mb-2">
-            <span class="metric-label">Growth Rate</span>
-            <div class="icon-box-modern blue" style="width:36px; height:36px; font-size:1rem;">
-              <i class="bi bi-graph-up-arrow"></i>
-            </div>
+          <!-- Section Label -->
+          <div class="financial-overview-label d-none d-md-flex">
+              FINANCIAL OVERVIEW
           </div>
-          <div id="valGrowthRate" class="metric-value fs-4 mb-1 text-body-emphasis">
-            {% if (sum_saving_rate or 0) > 0 %}+{% endif %}{{ "{:,.2f}".format(sum_saving_rate or 0) }}%
-          </div>
-          <span class="text-muted extra-small">Performance vs last period</span>
-        </div>
-      </div>
 
-      <!-- Risk Status -->
-      <div class="col-12 col-md-4">
-        <div class="card stat-card p-3 h-100">
-          <div class="d-flex justify-content-between align-items-center mb-2">
-            <span class="metric-label">Risk Profile</span>
-            <div class="icon-box-modern purple" style="width:36px; height:36px; font-size:1rem;">
-              <i class="bi bi-shield-check"></i>
-            </div>
+          <!-- Month / Year Toggle -->
+          <div class="btn-group period-mode" role="group" aria-label="Period mode view">
+              <button type="button" id="viewYearBtn" class="btn btn-outline-secondary">
+                  <i class="bi bi-calendar3 me-1"></i>
+                  Year
+              </button>
+              <button type="button" id="viewMonthBtn" class="btn btn-primary active">
+                  <i class="bi bi-calendar-month me-1"></i>
+                  Month
+              </button>
           </div>
-          <div id="valRiskStatus" class="metric-value fs-4 mb-1">
-            {% if sum_saving_rate is not defined or sum_saving_rate == 0 %}
-              <span class="text-muted">No Data</span>
-            {% elif sum_saving_rate >= 65 %}
-              <span class="text-success">Low Risk</span>
-            {% elif sum_saving_rate >= 15 %}
-              <span class="text-warning">Moderate</span>
-            {% else %}
-              <span class="text-danger">High Risk</span>
-            {% endif %}
-          </div>
-          <span class="text-muted extra-small">Calculated Status</span>
-        </div>
-      </div>
-    </div>
 
-    <!-- Bottom Row: Budget & Expenses (3 Cards) -->
-    <div class="row g-3">
-      <!-- Monthly Expense -->
-      <div class="col-12 col-md-4">
-        <div class="card stat-card p-3 h-100">
-          <div class="d-flex justify-content-between align-items-center mb-2">
-            <span class="metric-label">Expense</span>
-            <div class="icon-box-modern amber" style="width:36px; height:36px; font-size:1rem;">
-              <i class="bi bi-bag"></i>
-            </div>
-          </div>
-          <div id="valExpense" class="metric-value fs-4 mb-1 text-danger">
-            ${{ "{:,.0f}".format(activity.current_expense|default(total_expense|default(0))) }}
-          </div>
-          <a href="{{ url_for('expenses.index') }}" class="text-decoration-none extra-small text-primary fw-semibold">View Details →</a>
-        </div>
       </div>
-
-      <!-- Monthly Budget -->
-      <div class="col-12 col-md-4">
-        <div class="card stat-card p-3 h-100">
-          <div class="d-flex justify-content-between align-items-center mb-2">
-            <span class="metric-label">Budget</span>
-            <div class="icon-box-modern blue" style="width:36px; height:36px; font-size:1rem;">
-              <i class="bi bi-calculator"></i>
-            </div>
-          </div>
-          <div id="valBudget" class="metric-value fs-4 mb-1">
-            ${{ "{:,.0f}".format(budget_total|default(0)) }}
-          </div>
-          <span id="valBudgetStatus" class="text-muted extra-small">
-            {% if (budget_total|default(0)) == 0 %}No budget set for period{% else %}Current limit{% endif %}
-          </span>
-        </div>
-      </div>
-
-      <!-- Remaining Budget -->
-      <div class="col-12 col-md-4">
-        <div class="card stat-card p-3 h-100">
-          <div class="d-flex justify-content-between align-items-center mb-2">
-            <span class="metric-label">Remaining</span>
-            <div class="icon-box-modern green" style="width:36px; height:36px; font-size:1rem;">
-              <i class="bi bi-currency-dollar"></i>
-            </div>
-          </div>
-          {% set remaining = budget_total|default(0) - activity.current_expense|default(0) %}
-          <div id="valRemaining" class="metric-value fs-4 mb-1 {% if remaining < 0 %}text-danger{% elif (budget_total|default(0)) == 0 %}text-muted{% else %}text-success{% endif %}">
-            ${{ "{:,.0f}".format(remaining) }}
-          </div>
-          <a href="{{ url_for('incomes.index') }}" class="text-decoration-none extra-small text-primary fw-semibold">Manage →</a>
-        </div>
-      </div>
-    </div>
   </div>
+
+  <!-- ============================================================
+     FINANCIAL OVERVIEW
+     ============================================================ -->
+
+<div class="row g-3 mb-3">
+
+    <!-- ========================================================
+         ACCOUNT RESERVE
+         ======================================================== -->
+    <div class="col-12 col-md-4">
+        <div class="card stat-card finance-metric-card reserve-card h-100">
+
+            <div class="finance-card-decoration"></div>
+
+            <div class="d-flex justify-content-between align-items-start">
+
+                <div>
+                    <span class="metric-label">
+                        Account Reserve
+                    </span>
+
+                    <div
+                        id="valSumSaving"
+                        class="metric-value fs-4 mt-2 text-success"
+                    >
+                        ${{ "{:,.2f}".format(sum_saving or 0) }}
+                    </div>
+
+                    <span class="text-muted extra-small">
+                        Total Savings Balance
+                    </span>
+                </div>
+
+                <div class="finance-icon-wrapper green">
+                    <div class="finance-icon">
+                        <i class="bi bi-wallet2"></i>
+                    </div>
+
+                    <div class="finance-icon-orbit"></div>
+                </div>
+
+            </div>
+
+            <div class="finance-card-footer">
+                <span>
+                    <i class="bi bi-piggy-bank me-1"></i>
+                    Savings
+                </span>
+
+                <span class="finance-status-dot green-dot"></span>
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- ========================================================
+         GROWTH RATE
+         ======================================================== -->
+    <div class="col-12 col-md-4">
+        <div class="card stat-card finance-metric-card growth-card h-100">
+
+            <div class="finance-card-decoration"></div>
+
+            <div class="d-flex justify-content-between align-items-start">
+
+                <div>
+                    <span class="metric-label">
+                        Growth Rate
+                    </span>
+
+                    <div
+                        id="valGrowthRate"
+                        class="metric-value fs-4 mt-2 text-body-emphasis"
+                    >
+                        {% if (sum_saving_rate or 0) > 0 %}+{% endif %}
+                        {{ "{:,.2f}".format(sum_saving_rate or 0) }}%
+                    </div>
+
+                    <span class="text-muted extra-small">
+                        Performance vs last period
+                    </span>
+                </div>
+
+                <div class="finance-icon-wrapper blue">
+                    <div class="finance-icon">
+                        <i class="bi bi-graph-up-arrow"></i>
+                    </div>
+
+                    <div class="finance-icon-orbit"></div>
+                </div>
+
+            </div>
+
+            <div class="finance-card-footer">
+                <span>
+                    <i class="bi bi-activity me-1"></i>
+                    Performance
+                </span>
+
+                <span class="finance-mini-arrow">
+                    <i class="bi bi-arrow-up-right"></i>
+                </span>
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- ========================================================
+         RISK PROFILE
+         ======================================================== -->
+    <div class="col-12 col-md-4">
+        <div class="card stat-card finance-metric-card risk-card h-100">
+
+            <div class="finance-card-decoration"></div>
+
+            <div class="d-flex justify-content-between align-items-start">
+
+                <div>
+                    <span class="metric-label">
+                        Risk Profile
+                    </span>
+
+                    <div
+                        id="valRiskStatus"
+                        class="metric-value fs-4 mt-2"
+                    >
+                        {% if sum_saving_rate is not defined or sum_saving_rate == 0 %}
+
+                            <span class="text-muted">
+                                No Data
+                            </span>
+
+                        {% elif sum_saving_rate >= 65 %}
+
+                            <span class="text-success">
+                                Low Risk
+                            </span>
+
+                        {% elif sum_saving_rate >= 15 %}
+
+                            <span class="text-warning">
+                                Moderate
+                            </span>
+
+                        {% else %}
+
+                            <span class="text-danger">
+                                High Risk
+                            </span>
+
+                        {% endif %}
+                    </div>
+
+                    <span class="text-muted extra-small">
+                        Calculated Status
+                    </span>
+                </div>
+
+                <div class="finance-icon-wrapper purple">
+                    <div class="finance-icon">
+                        <i class="bi bi-shield-check"></i>
+                    </div>
+
+                    <div class="finance-icon-orbit"></div>
+                </div>
+
+            </div>
+
+            <div class="finance-card-footer">
+                <span>
+                    <i class="bi bi-shield-check me-1"></i>
+                    Financial Safety
+                </span>
+
+                <span class="finance-status-dot purple-dot"></span>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+
+<!-- ============================================================
+     BUDGET OVERVIEW
+     ============================================================ -->
+
+<div class="row g-3">
+
+    <!-- ========================================================
+         EXPENSE
+         ======================================================== -->
+    <div class="col-12 col-md-4">
+        <div class="card stat-card finance-metric-card expense-card h-100">
+
+            <div class="finance-card-decoration"></div>
+
+            <div class="d-flex justify-content-between align-items-start">
+
+                <div>
+                    <span class="metric-label">
+                        Expense
+                    </span>
+
+                    <div
+                        id="valExpense"
+                        class="metric-value fs-4 mt-2 text-danger"
+                    >
+                        ${{ "{:,.0f}".format(
+                            activity.current_expense|default(total_expense|default(0))
+                        ) }}
+                    </div>
+
+                    <span class="text-muted extra-small">
+                        Current period spending
+                    </span>
+                </div>
+
+                <div class="finance-icon-wrapper amber">
+                    <div class="finance-icon">
+                        <i class="bi bi-receipt-cutoff"></i>
+                    </div>
+
+                    <div class="finance-icon-orbit"></div>
+                </div>
+
+            </div>
+
+            <div class="finance-card-footer">
+
+                <a
+                    href="{{ url_for('expenses.index') }}"
+                    class="finance-card-link"
+                >
+                    <i class="bi bi-arrow-right-circle me-1"></i>
+                    View Details
+                </a>
+
+                <span class="finance-status-dot amber-dot"></span>
+
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- ========================================================
+         BUDGET
+         ======================================================== -->
+    <div class="col-12 col-md-4">
+        <div class="card stat-card finance-metric-card budget-card h-100">
+
+            <div class="finance-card-decoration"></div>
+
+            <div class="d-flex justify-content-between align-items-start">
+
+                <div>
+                    <span class="metric-label">
+                        Monthly Budget
+                    </span>
+
+                    <div
+                        id="valBudget"
+                        class="metric-value fs-4 mt-2"
+                    >
+                        ${{ "{:,.0f}".format(
+                            budget_total|default(0)
+                        ) }}
+                    </div>
+
+                    <span
+                        id="valBudgetStatus"
+                        class="text-muted extra-small"
+                    >
+                        {% if (budget_total|default(0)) == 0 %}
+                            No budget set for period
+                        {% else %}
+                            Current spending limit
+                        {% endif %}
+                    </span>
+                </div>
+
+                <div class="finance-icon-wrapper blue">
+                    <div class="finance-icon">
+                        <i class="bi bi-calculator"></i>
+                    </div>
+
+                    <div class="finance-icon-orbit"></div>
+                </div>
+
+            </div>
+
+            <div class="finance-card-footer">
+
+                <span>
+                    <i class="bi bi-calendar3 me-1"></i>
+                    Monthly Plan
+                </span>
+
+                <span class="finance-mini-arrow">
+                    <i class="bi bi-wallet2"></i>
+                </span>
+
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- ========================================================
+         REMAINING
+         ======================================================== -->
+
+    {% set remaining =
+        budget_total|default(0)
+        - activity.current_expense|default(0)
+    %}
+
+    <div class="col-12 col-md-4">
+        <div class="card stat-card finance-metric-card remaining-card h-100">
+
+            <div class="finance-card-decoration"></div>
+
+            <div class="d-flex justify-content-between align-items-start">
+
+                <div>
+                    <span class="metric-label">
+                        Remaining
+                    </span>
+
+                    <div
+                        id="valRemaining"
+                        class="metric-value fs-4 mt-2
+                        {% if remaining < 0 %}
+                            text-danger
+                        {% elif (budget_total|default(0)) == 0 %}
+                            text-muted
+                        {% else %}
+                            text-success
+                        {% endif %}"
+                    >
+                        ${{ "{:,.0f}".format(remaining) }}
+                    </div>
+
+                    <span class="text-muted extra-small">
+                        Available budget balance
+                    </span>
+                </div>
+
+                <div class="finance-icon-wrapper green">
+                    <div class="finance-icon">
+                        <i class="bi bi-cash-stack"></i>
+                    </div>
+
+                    <div class="finance-icon-orbit"></div>
+                </div>
+
+            </div>
+
+            <div class="finance-card-footer">
+
+                <a
+                    href="{{ url_for('incomes.index') }}"
+                    class="finance-card-link"
+                >
+                    <i class="bi bi-sliders me-1"></i>
+                    Manage
+                </a>
+
+                <span class="finance-mini-arrow">
+                    <i class="bi bi-arrow-right"></i>
+                </span>
+
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+</div>
 
   <!-- Primary Charts Row -->
   <div class="row g-4 mb-4">
@@ -264,29 +562,148 @@
 
     <!-- Largest Expenses List -->
     <div class="col-12 col-lg-5">
-      <div class="card stat-card p-4 h-100">
-        <div class="d-flex align-items-center justify-content-between mb-3">
-          <span class="metric-label">Largest Expenses</span>
-          <a href="{{ url_for('expenses.index') }}" class="text-primary text-decoration-none small fw-semibold">View All</a>
-        </div>
-        <div class="overflow-y-auto" id="largestExpensesList" style="max-height: 290px;">
-          {% for item in largest_expenses|default([]) %}
-            <div class="plan-progress-pill mb-2 p-2.5">
-              <div class="d-flex justify-content-between text-muted extra-small mb-1">
-                <span>{{ item.category }}</span>
-                <span>{{ item.expense_date.month ~ '/' ~ item.expense_date.day ~ '/' ~ item.expense_date.year if item.expense_date else '' }}</span>
-              </div>
-              <div class="d-flex align-items-center justify-content-between">
-                <div class="fw-semibold text-body-emphasis small">{{ item.description or 'Expense Item' }}</div>
-                <div class="fw-bold text-danger">${{ "{:,.2f}".format(item.amount) }}</div>
-              </div>
+
+        <div class="card stat-card p-4 h-100">
+
+            <!-- Header -->
+            <div class="d-flex align-items-center justify-content-between mb-3">
+
+                <div>
+                    <span class="metric-label">
+                        Largest Expenses
+                    </span>
+
+                    <div class="text-muted extra-small mt-1">
+                        Your biggest spending items
+                    </div>
+                </div>
+
+                <a
+                    href="{{ url_for('expenses.index') }}"
+                    class="btn btn-sm btn-light rounded-pill px-3 text-primary fw-semibold"
+                >
+                    View All
+                    <i class="bi bi-arrow-up-right ms-1"></i>
+                </a>
+
             </div>
-          {% else %}
-            <div class="text-center text-muted small py-4">No expense entries recorded for this period.</div>
-          {% endfor %}
+
+
+            {% set category_icons = {
+                "Food": "bi-egg-fried",
+                "Transportation": "bi-car-front-fill",
+                "Housing": "bi-house-fill",
+                "Utilities": "bi-lightning-charge-fill",
+                "Education": "bi-mortarboard-fill",
+                "Healthcare": "bi-heart-pulse-fill",
+                "Shopping": "bi-bag-fill",
+                "Entertainment": "bi-controller",
+                "Debt": "bi-credit-card-fill",
+                "Other": "bi-three-dots"
+            } %}
+
+
+            {% set category_colors = {
+                "Food": "orange",
+                "Transportation": "blue",
+                "Housing": "purple",
+                "Utilities": "yellow",
+                "Education": "indigo",
+                "Healthcare": "red",
+                "Shopping": "pink",
+                "Entertainment": "green",
+                "Debt": "gray",
+                "Other": "gray"
+            } %}
+
+
+            <div
+                id="largestExpensesList"
+                class="largest-expenses-list"
+            >
+
+                {% for item in largest_expenses|default([]) %}
+
+                    {% set category = item.category or "Other" %}
+                    {% set icon = category_icons.get(category, "bi-three-dots") %}
+                    {% set color = category_colors.get(category, "gray") %}
+
+                    <div class="expense-item">
+
+                        <!-- Icon -->
+                        <div class="expense-icon expense-icon-{{ color }}">
+                            <i class="bi {{ icon }}"></i>
+                        </div>
+
+
+                        <!-- Content -->
+                        <div class="expense-content">
+
+                            <div class="expense-top-row">
+
+                                <div class="expense-description">
+                                    {{ item.description or "Expense Item" }}
+                                </div>
+
+                                <div class="expense-amount">
+                                    -${{ "{:,.2f}".format(item.amount) }}
+                                </div>
+
+                            </div>
+
+
+                            <div class="expense-bottom-row">
+
+                                <span class="expense-category expense-category-{{ color }}">
+                                    {{ category }}
+                                </span>
+
+                                <span class="expense-dot">
+                                    •
+                                </span>
+
+                                <span class="expense-date">
+
+                                    {% if item.expense_date %}
+                                        {{ item.expense_date.strftime('%b %d, %Y') }}
+                                    {% else %}
+                                        —
+                                    {% endif %}
+
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                {% else %}
+
+                    <div class="expense-empty">
+
+                        <div class="expense-empty-icon">
+                            <i class="bi bi-receipt"></i>
+                        </div>
+
+                        <div class="fw-semibold small">
+                            No expenses yet
+                        </div>
+
+                        <div class="text-muted extra-small mt-1">
+                            No expense entries recorded for this period.
+                        </div>
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
         </div>
-      </div>
+
     </div>
+
 
     <!-- Cash Movement Flow -->
     <div class="col-12 col-lg-7">
@@ -305,28 +722,107 @@
 
     <!-- Income Sources -->
     <div class="col-12 col-lg-5">
-      <div class="card stat-card p-4 h-100">
+
+    <div class="card stat-card p-4 h-100">
+
+        <!-- Header -->
+
         <div class="d-flex align-items-center justify-content-between mb-3">
-          <span class="metric-label">Income Sources</span>
-          <span class="badge bg-success-subtle text-success border border-success-subtle">This Month</span>
+
+            <span class="metric-label">
+                Income Sources
+            </span>
+
+            <span class="badge bg-success-subtle text-success border border-success-subtle">
+                This Month
+            </span>
+
         </div>
-        <div class="overflow-y-auto" id="incomeSourcesList" style="max-height: 220px;">
-          {% for item in income_sources|default([]) %}
-            <div class="plan-progress-pill d-flex align-items-center justify-content-between mb-2 p-2.5">
-              <div class="d-flex align-items-center gap-2">
-                <div class="icon-box-modern green" style="width: 32px; height: 32px; font-size: 0.9rem;">
-                  <i class="bi bi-briefcase"></i>
+
+
+        <!-- Income list -->
+
+        <div
+            class="income-sources-list"
+            id="incomeSourcesList"
+        >
+
+            {% for item in income_sources|default([]) %}
+
+                {% set category = item.category or "Other" %}
+                {% set category_key = category|lower|replace(" ", "-") %}
+
+                {% set icons = {
+                    "salary": "bi-wallet2",
+                    "business": "bi-building",
+                    "freelance": "bi-laptop",
+                    "investment": "bi-graph-up-arrow",
+                    "rental": "bi-house-door",
+                    "other": "bi-cash-stack"
+                } %}
+
+                <div class="income-source-item">
+
+                    <!-- Icon -->
+
+                    <div
+                        class="income-category-icon {{ category_key }}"
+                    >
+                        <i class="bi {{ icons.get(category_key, 'bi-cash-stack') }}"></i>
+                    </div>
+
+
+                    <!-- Category -->
+
+                    <div class="income-source-content">
+
+                        <div class="income-source-category">
+                            {{ category }}
+                        </div>
+
+                        <div class="income-source-label">
+                            Income source
+                        </div>
+
+                    </div>
+
+
+                    <!-- Amount -->
+
+                    <div class="income-source-amount">
+                        ${{ "{:,.0f}".format(item.total) }}
+                    </div>
+
                 </div>
-                <span class="fw-semibold text-body-emphasis small">{{ item.category }}</span>
-              </div>
-              <span class="fw-bold text-success">${{ "{:,.0f}".format(item.total) }}</span>
-            </div>
-          {% else %}
-            <div class="text-center text-muted small py-4">No income recorded for this period.</div>
-          {% endfor %}
+
+            {% else %}
+
+                <div class="income-empty">
+
+                    <div class="income-empty-icon">
+                        <i class="bi bi-wallet2"></i>
+                    </div>
+
+                    <div>
+                        <div class="fw-semibold">
+                            No income yet
+                        </div>
+
+                        <div class="small text-muted">
+                            No income recorded for this period.
+                        </div>
+                    </div>
+
+                </div>
+
+            {% endfor %}
+
         </div>
-      </div>
+
     </div>
+
+</div>
+
   </div>
 </div>
 
@@ -419,45 +915,222 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     // --- 2. Income Sources Fallback ---
-    const incomeContainer = document.getElementById('incomeSourcesList');
+    const incomeContainer = document.getElementById("incomeSourcesList");
+
     if (incomeContainer) {
-      if (data.income_sources && data.income_sources.length > 0) {
-        incomeContainer.innerHTML = data.income_sources.map(src => `
-          <div class="plan-progress-pill d-flex align-items-center justify-content-between mb-2 p-2.5">
-            <div class="d-flex align-items-center gap-2">
-              <div class="icon-box-modern green" style="width: 32px; height: 32px; font-size: 0.9rem;">
-                <i class="bi bi-briefcase"></i>
-              </div>
-              <span class="fw-semibold text-body-emphasis small">${src.category}</span>
-            </div>
-            <span class="fw-bold text-success">${formatCurrency(src.total)}</span>
-          </div>
-        `).join('');
-      } else {
-        incomeContainer.innerHTML = `<div class="text-center text-muted small py-4">No income recorded for this period.</div>`;
-      }
+
+        if (
+            data.income_sources &&
+            data.income_sources.length > 0
+        ) {
+
+            incomeContainer.innerHTML =
+                data.income_sources.map(src => {
+
+                    const category =
+                        src.category || "Other";
+
+                    const categoryKey =
+                        category
+                            .toLowerCase()
+                            .replace(/\s+/g, "-");
+
+                    const categoryIcons = {
+                        salary: "bi-wallet2",
+                        business: "bi-building",
+                        freelance: "bi-laptop",
+                        investment: "bi-graph-up-arrow",
+                        rental: "bi-house-door",
+                        other: "bi-cash-stack"
+                    };
+
+                    const icon =
+                        categoryIcons[categoryKey]
+                        || categoryIcons.other;
+
+                    return `
+                        <div class="income-source-item">
+
+                            <!-- Category icon -->
+
+                            <div
+                                class="income-category-icon ${categoryKey}"
+                            >
+                                <i class="bi ${icon}"></i>
+                            </div>
+
+
+                            <!-- Category information -->
+
+                            <div class="income-source-content">
+
+                                <div class="income-source-category">
+                                    ${category}
+                                </div>
+
+                                <div class="income-source-label">
+                                    Income source
+                                </div>
+
+                            </div>
+
+
+                            <!-- Amount -->
+
+                            <div class="income-source-amount">
+                                ${formatCurrency(src.total)}
+                            </div>
+
+                        </div>
+                    `;
+
+                }).join("");
+
+        } else {
+
+            incomeContainer.innerHTML = `
+                <div class="income-empty">
+
+                    <div class="income-empty-icon">
+                        <i class="bi bi-wallet2"></i>
+                    </div>
+
+                    <div>
+                        <div class="fw-semibold">
+                            No income yet
+                        </div>
+
+                        <div class="small text-muted">
+                            No income recorded for this period.
+                        </div>
+                    </div>
+
+                </div>
+            `;
+        }
     }
 
     // --- 3. Largest Expenses List Fallback ---
-    const expenseList = document.getElementById('largestExpensesList');
+    const expenseList = document.getElementById("largestExpensesList");
+
     if (expenseList) {
-      if (data.largest_expenses && data.largest_expenses.length > 0) {
-        expenseList.innerHTML = data.largest_expenses.map(exp => `
-          <div class="plan-progress-pill mb-2 p-2.5">
-            <div class="d-flex justify-content-between text-muted extra-small mb-1">
-              <span>${exp.category || 'General'}</span>
-              <span>${exp.expense_date || ''}</span>
-            </div>
-            <div class="d-flex align-items-center justify-content-between">
-              <div class="fw-semibold text-body-emphasis small">${exp.description || 'Expense Item'}</div>
-              <div class="fw-bold text-danger">${formatCurrency(exp.amount)}</div>
-            </div>
-          </div>
-        `).join('');
-      } else {
-        expenseList.innerHTML = `<div class="text-center text-muted small py-4">No expense entries recorded for this period.</div>`;
-      }
+
+        if (
+            data.largest_expenses &&
+            data.largest_expenses.length > 0
+        ) {
+
+            expenseList.innerHTML =
+                data.largest_expenses.map(exp => {
+
+                    const category =
+                        exp.category || "Other";
+
+                    const categoryKey =
+                        category
+                            .toLowerCase()
+                            .replace(/\s+/g, "-");
+
+                    const categoryIcons = {
+                        food: "bi-egg-fried",
+                        transportation: "bi-car-front",
+                        housing: "bi-house",
+                        utilities: "bi-lightning-charge",
+                        education: "bi-mortarboard",
+                        healthcare: "bi-heart-pulse",
+                        shopping: "bi-bag",
+                        entertainment: "bi-controller",
+                        debt: "bi-credit-card",
+                        other: "bi-three-dots"
+                    };
+
+                    const icon =
+                        categoryIcons[categoryKey]
+                        || categoryIcons.other;
+
+                    return `
+                        <div class="expense-item">
+
+                            <!-- Category icon -->
+
+                            <div
+                                class="expense-category-icon ${categoryKey}"
+                            >
+                                <i class="bi ${icon}"></i>
+                            </div>
+
+
+                            <!-- Content -->
+
+                            <div class="expense-content">
+
+                                <div class="d-flex justify-content-between align-items-start gap-2">
+
+                                    <div class="min-width-0">
+
+                                        <div class="expense-category">
+                                            ${category}
+                                        </div>
+
+                                        <div class="expense-description">
+                                            ${exp.description || "Expense Item"}
+                                        </div>
+
+                                    </div>
+
+
+                                    <div class="expense-amount text-danger">
+                                        ${formatCurrency(exp.amount)}
+                                    </div>
+
+                                </div>
+
+
+                                <!-- Date -->
+
+                                <div class="expense-date">
+
+                                    <i class="bi bi-calendar3 me-1"></i>
+
+                                    ${exp.expense_date || ""}
+
+                                </div>
+
+                            </div>
+
+                        </div>
+                    `;
+
+                }).join("");
+
+        } else {
+            expenseList.innerHTML = `
+                <div
+                    class="overflow-y-auto"
+                    id="largestExpensesList"
+                    style="max-height: 290px;"
+                >
+                    <div class="expense-empty">
+                        <div class="expense-empty-icon">
+                            <i class="bi bi-receipt"></i>
+                        </div>
+
+                        <div>
+                            <div class="fw-semibold">
+                                Loading expenses...
+                            </div>
+
+                            <div class="small text-muted">
+                                Loading your largest expenses.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            `;
+        }
     }
+
 
     // --- 4. Category Spend Donut & List Fallback ---
     const categories = data.activity?.category_series || [];

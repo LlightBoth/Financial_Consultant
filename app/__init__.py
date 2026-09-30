@@ -108,6 +108,7 @@ def create_app(config_class: type[Config] = Config):
     from app.routes.notification_route import notification_bp
     from app.routes.currency_converter_routes import currency_bp
     from app.routes.budget_route import budget_bp
+    from app.routes.recurring_transaction_route import recurring_transaction_bp
 
     app.register_blueprint(user_bp)
     app.register_blueprint(auth_bp)
@@ -128,6 +129,7 @@ def create_app(config_class: type[Config] = Config):
     app.register_blueprint(notification_bp)
     app.register_blueprint(currency_bp)
     app.register_blueprint(budget_bp)
+    app.register_blueprint(recurring_transaction_bp)
 
     # Register translation helpers for Jinja
     from app.utils.i18n import _, translate, get_locale, SUPPORTED_LANGUAGES

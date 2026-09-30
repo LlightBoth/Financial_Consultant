@@ -3,209 +3,1137 @@
 {% block title %}{{ _('income.page_title') }}{% endblock %}
 
 {% block content %}
+
+<style>
+    /* ==========================================
+       INCOME PAGE
+    ========================================== */
+
+    .income-page {
+        max-width: 1500px;
+        margin: 0 auto;
+    }
+
+    /* ------------------------------------------
+       Hero
+    ------------------------------------------ */
+
+    .income-hero {
+        position: relative;
+        overflow: hidden;
+
+        min-height: 190px;
+
+        padding: 2rem 2.25rem;
+
+        border-radius: 24px;
+
+        background:
+            linear-gradient(
+                135deg,
+                rgba(var(--bs-success-rgb), .10),
+                rgba(var(--bs-primary-rgb), .06)
+            );
+
+        border: 1px solid
+            rgba(var(--bs-success-rgb), .15);
+
+        margin-bottom: 1.5rem;
+    }
+
+    .income-hero-content {
+        position: relative;
+        z-index: 2;
+
+        max-width: 65%;
+    }
+
+    .income-hero h3 {
+        font-size: clamp(1.5rem, 2.5vw, 2rem);
+        letter-spacing: -.025em;
+    }
+
+    .income-hero-illustration {
+        position: absolute;
+
+        right: 1.5rem;
+        bottom: -10px;
+
+        width: 220px;
+        height: 180px;
+
+        display: flex;
+        align-items: flex-end;
+        justify-content: flex-end;
+
+        pointer-events: none;
+
+        opacity: .95;
+    }
+
+    .income-hero-illustration img {
+        width: 100%;
+        height: 100%;
+
+        object-fit: contain;
+        object-position: right bottom;
+
+        filter: drop-shadow(
+            0 12px 20px rgba(0, 0, 0, .08)
+        );
+    }
+
+
+    /* ------------------------------------------
+       Metric Cards
+    ------------------------------------------ */
+
+    .income-stat {
+        position: relative;
+        overflow: hidden;
+
+        min-height: 145px;
+
+        border: 1px solid var(--bs-border-color-translucent);
+        border-radius: 18px;
+
+        background: var(--bs-card-bg);
+
+        transition:
+            transform .2s ease,
+            box-shadow .2s ease;
+    }
+
+    .income-stat:hover {
+        transform: translateY(-3px);
+
+        box-shadow:
+            0 12px 30px rgba(0, 0, 0, .07) !important;
+    }
+
+    .income-stat-content {
+        position: relative;
+        z-index: 2;
+    }
+
+    .income-stat-icon {
+        width: 42px;
+        height: 42px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        border-radius: 12px;
+
+        font-size: 1.15rem;
+    }
+
+    .income-stat-image {
+        position: absolute;
+
+        right: .75rem;
+        bottom: .5rem;
+
+        width: 95px;
+        height: 85px;
+
+        opacity: .16;
+
+        pointer-events: none;
+    }
+
+    .income-stat-image img {
+        width: 100%;
+        height: 100%;
+
+        object-fit: contain;
+    }
+
+
+    /* ------------------------------------------
+       Filter
+    ------------------------------------------ */
+
+    .income-toolbar {
+        padding: .75rem 1rem;
+
+        border: 1px solid var(--bs-border-color-translucent);
+        border-radius: 14px;
+
+        background: var(--bs-card-bg);
+    }
+
+
+    /* ------------------------------------------
+       Table
+    ------------------------------------------ */
+
+    .income-table-card {
+        overflow: hidden;
+
+        border: 1px solid var(--bs-border-color-translucent);
+        border-radius: 20px;
+
+        background: var(--bs-card-bg);
+    }
+
+    .income-table-header {
+        padding: 1.1rem 1.25rem;
+
+        border-bottom: 1px solid var(--bs-border-color);
+    }
+
+    .income-table thead th {
+        font-size: .7rem;
+
+        letter-spacing: .06em;
+
+        text-transform: uppercase;
+
+        color: var(--bs-secondary-color);
+
+        white-space: nowrap;
+    }
+
+    .income-table tbody tr {
+        transition: background-color .15s ease;
+    }
+
+    .income-table tbody tr:hover {
+        background-color: rgba(
+            var(--bs-success-rgb),
+            .035
+        );
+    }
+
+    .income-category {
+        display: inline-flex;
+        align-items: center;
+        gap: .4rem;
+
+        padding: .4rem .65rem;
+
+        border-radius: 999px;
+
+        font-size: .75rem;
+        font-weight: 600;
+    }
+
+    .income-amount {
+        font-family: var(--bs-font-monospace);
+
+        font-weight: 700;
+
+        color: var(--bs-success);
+    }
+
+
+    /* ------------------------------------------
+       Empty State
+    ------------------------------------------ */
+
+    .income-empty {
+        padding: 4rem 1.5rem;
+    }
+
+    .income-empty-illustration {
+        width: 180px;
+        height: 140px;
+
+        margin: 0 auto 1.25rem;
+    }
+
+    .income-empty-illustration img {
+        width: 100%;
+        height: 100%;
+
+        object-fit: contain;
+    }
+
+
+    /* ------------------------------------------
+       Mobile
+    ------------------------------------------ */
+
+    @media (max-width: 767.98px) {
+
+        .income-hero {
+            min-height: 240px;
+
+            padding: 1.5rem;
+
+            border-radius: 20px;
+        }
+
+        .income-hero-content {
+            max-width: 100%;
+        }
+
+        .income-hero-illustration {
+            width: 150px;
+            height: 120px;
+
+            right: .5rem;
+            bottom: 0;
+
+            opacity: .55;
+        }
+
+        .income-hero h3 {
+            max-width: 75%;
+        }
+
+        .income-stat {
+            min-height: 125px;
+        }
+
+        .income-toolbar {
+            align-items: stretch !important;
+        }
+
+        .income-toolbar form {
+            width: 100%;
+        }
+
+        .income-toolbar select {
+            flex: 1;
+        }
+    }
+</style>
+
+
 <div class="container-fluid py-2 px-2 px-md-3">
-    
-    <!-- Header -->
-    <div class="header-title d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
-        <div>
-            <h3 class="fw-bold mb-1">{{ _('income.streams_title') }}</h3>
-            <p class="text-muted small mb-0">{{ _('income.streams_subtitle') }}</p>
-        </div>
 
-        <a href="{{ url_for('incomes.create') }}" class="btn btn-primary px-4 py-2 mt-3 mt-md-0 rounded-pill shadow-sm fw-semibold">
-            <i class="bi bi-plus-lg me-1"></i> {{ _('income.add_income') }}
-        </a>
-    </div>
+    <div class="income-page">
 
-    <!-- Summary Metrics -->
-    <div class="row g-3 mb-4">
-        <!-- Total Income Metric -->
-        <div class="col-12 col-md-4">
-            <div class="card stat-card-clean shadow-sm h-100 p-3">
-                <div class="d-flex align-items-center justify-content-between mb-2">
-                    <span class="text-uppercase text-muted fw-bold small">{{ _('income.total_earned') }}</span>
-                    <span class="badge bg-success-subtle text-success rounded-pill px-2.5 py-1.5 small fw-bold">
-                        <i class="bi bi-activity me-1"></i> {{ _('dashboard.live') }}
+
+        <!-- ======================================
+             HERO
+        ======================================= -->
+
+        <div class="income-hero">
+
+            <div class="income-hero-content">
+
+                <div class="d-flex align-items-center gap-2 mb-2">
+
+                    <span class="badge rounded-pill bg-success-subtle text-success">
+                        <i class="bi bi-graph-up-arrow me-1"></i>
+                        Income
                     </span>
+
+                    {% if incomes %}
+                        <span class="text-muted small">
+                            {{ incomes|length }} records
+                        </span>
+                    {% endif %}
+
                 </div>
-                <h3 class="fw-bold mb-0 text-success">
-                    ${{ "%.2f"|format(incomes|sum(attribute="amount")|float) }}
+
+
+                <h3 class="fw-bold mb-2">
+                    {{ _('income.streams_title') }}
                 </h3>
-                <div class="text-muted small mt-1">{{ _('income.cumulative_earnings') }}</div>
-            </div>
-        </div>
-        
-        <!-- Number of Records Metric -->
-        <div class="col-12 col-md-4">
-            <div class="card stat-card-clean shadow-sm h-100 p-3">
-                <div class="d-flex align-items-center justify-content-between mb-2">
-                    <span class="text-uppercase text-muted fw-bold small">{{ _('income.transaction_logs') }}</span>
-                    <span class="badge bg-primary-subtle text-primary rounded-pill px-2.5 py-1.5 small fw-bold">
-                        <i class="bi bi-receipt fs-5"></i> Logs
-                    </span>
-                </div>
-                <h3 class="fw-bold mb-0 text-body-emphasis">
-                    {{ incomes|length }}
-                </h3>
-                <div class="text-muted small mt-1">{{ _('income.total_entries') }}</div>
-            </div>
-        </div>
 
-        <!-- Recurring Entries Metric -->
-        <div class="col-12 col-md-4">
-            <div class="card stat-card-clean shadow-sm h-100 p-3">
-                <div class="d-flex align-items-center justify-content-between mb-2">
-                    <span class="text-uppercase text-muted fw-bold small">{{ _('income.recurring_streams') }}</span>
-                    <span class="badge bg-warning-subtle text-warning rounded-pill px-2.5 py-1.5 small fw-bold">
-                        <i class="bi bi-arrow-repeat me-1"></i> Rate
-                    </span>
-                </div>
-                <h3 class="fw-bold mb-0 text-body-emphasis">
-                    {{ incomes|selectattr("recurring_period")|list|length }}
-                </h3>
-                <div class="text-muted small mt-1">{{ _('income.recurring_flows') }}</div>
-            </div>
-        </div>
-    </div>
 
-    <!-- Filter/Sort  -->
-    <div class="d-flex justify-content-end align-items-center mb-4 gap-2">
-        <span class="badge text-body-secondary bg-body-tertiary border fw-normal px-2 py-1 me-2">
-            <i class="bi bi-funnel me-1"></i>Sort By
-        </span>
-        <form action="{{ url_for('incomes.index') }}" method="GET" class="d-flex gap-2">
-            <select name="sort" id="sort" class="form-select form-select-sm">
-                <option value="general" {{ 'selected' if request.args.get('sort') == 'general' }}>General</option>
-                <option value="date" {{ 'selected' if request.args.get('sort') == 'date' }}>Date</option>
-                <option value="amount" {{ 'selected' if request.args.get('sort') == 'amount' }}>Amount</option>
-            </select>
-            <button type="submit" class="btn btn-outline-secondary btn-sm">Filter</button>
-        </form>
-    </div>
+                <p class="text-muted mb-4">
+                    {{ _('income.streams_subtitle') }}
+                </p>
 
-    <!-- Income Table Card -->
-    <div class="card border shadow-sm rounded-4 overflow-hidden" style="background-color: var(--bs-card-bg);">
-        <div class="card-header bg-transparent border-bottom p-3 px-4 d-flex justify-content-between align-items-center">
-            <div>
-                <h6 class="fw-bold mb-0">{{ _('income.history_title') }}</h6>
-                <small class="text-muted">{{ _('income.history_subtitle') }}</small>
+
+                <a
+                    href="{{ url_for('incomes.create') }}"
+                    class="btn btn-success px-4 py-2 rounded-pill shadow-sm fw-semibold"
+                >
+                    <i class="bi bi-plus-lg me-1"></i>
+                    {{ _('income.add_income') }}
+                </a>
+
             </div>
+
+
+            <!-- Hero Illustration -->
+
+            <div class="income-hero-illustration">
+
+                <img
+                    src="https://cdn-icons-png.flaticon.com/512/2454/2454282.png"
+                    class="stat-illustration"
+                    alt="Income received"
+                >
+
+
+            </div>
+
         </div>
 
-        <div class="card-body p-0">
-            {% if incomes %}
-                <!-- Desktop Table View -->
-                <div class="table-responsive d-none d-md-block">
-                    <table class="table table-hover align-middle mb-0">
-                        <thead class="bg-body-secondary border-bottom">
-                            <tr class="text-uppercase text-muted small" style="font-size: 0.75rem;">
-                                <th class="ps-4 py-3">{{ _('common.date') }}</th>
-                                <th class="py-3">{{ _('finance.category') }}</th>
-                                <th class="py-3">{{ _('common.description') }}</th>
-                                <th class="py-3">{{ _('income.frequency') }}</th>
-                                <th class="text-end py-3">{{ _('finance.amount') }}</th>
-                                <th class="text-end py-3 pe-4">{{ _('common.actions') }}</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for income in incomes %}
-                                <tr>
-                                    <td class="ps-4 fw-medium text-body">
-                                        {{ income.income_date.strftime('%b %d, %Y') }}
-                                    </td>
-                                    <td>
-                                        <span class="badge bg-success-subtle text-success px-2.5 py-1.5 rounded-pill fw-semibold">
-                                            {{ _(income.category) }}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        {% if income.description %}
-                                            <span class="text-body">{{ income.description }}</span>
-                                        {% else %}
-                                            <span class="text-muted fst-italic small">{{ _('common.no_description') }}</span>
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        {% if income.recurring_period %}
-                                            <span class="badge bg-primary-subtle text-primary fw-normal px-2 py-1 rounded-pill">
-                                                <i class="bi bi-arrow-repeat me-1"></i>{{ _(income.recurring_period) }}
-                                            </span>
-                                        {% else %}
-                                            <span class="text-muted small">{{ _('period.one_time') }}</span>
-                                        {% endif %}
-                                    </td>
-                                    <td class="text-end fw-bold text-success font-monospace">
-                                        +${{ "%.2f"|format(income.amount|float) }}
-                                    </td>
-                                    <td class="text-end pe-4">
-                                        <div class="btn-group btn-group-sm shadow-none rounded-3 border">
-                                            <a href="{{ url_for('incomes.detail', income_id=income.id) }}" class="btn btn-light" title="{{ _('common.view_details') }}">
-                                                <i class="bi bi-eye text-secondary"></i>
-                                            </a>
-                                            <a href="{{ url_for('incomes.edit', income_id=income.id) }}" class="btn btn-light" title="{{ _('common.edit_record') }}">
-                                                <i class="bi bi-pencil text-secondary"></i>
-                                            </a>
-                                            <a href="{{ url_for('incomes.delete', income_id=income.id) }}" class="btn btn-light text-danger" title="{{ _('common.delete') }}">
-                                                <i class="bi bi-trash3"></i>
-                                            </a>
-                                        </div>
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
 
-                <!-- Mobile Card View -->
-                <div class="d-md-none divide-y">
-                    {% for income in incomes %}
-                        <div class="p-3 border-bottom">
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <span class="badge bg-success-subtle text-success px-2.5 py-1.5 rounded-pill fw-semibold">
-                                    {{ _(income.category) }}
-                                </span>
-                                <span class="fw-bold text-success font-monospace fs-5">
-                                    +${{ "%.2f"|format(income.amount|float) }}
-                                </span>
+        <!-- ======================================
+             SUMMARY
+        ======================================= -->
+
+        <div class="row g-3 mb-4">
+
+
+            <!-- Total Income -->
+
+            <div class="col-12 col-md-4">
+
+                <div class="income-stat shadow-sm p-3">
+
+                    <div class="income-stat-content">
+
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+
+                            <div
+                                class="income-stat-icon
+                                       bg-success-subtle
+                                       text-success"
+                            >
+                                <i class="bi bi-cash-stack"></i>
                             </div>
 
-                            <div class="mb-3">
-                                {% if income.description %}
-                                    <div class="small fw-semibold mb-1">{{ income.description }}</div>
-                                {% else %}
-                                    <div class="text-muted fst-italic small mb-1">{{ _('common.no_description') }}</div>
+                            <span
+                                class="badge rounded-pill
+                                       bg-success-subtle
+                                       text-success"
+                            >
+                                <i class="bi bi-activity me-1"></i>
+                                {{ _('dashboard.live') }}
+                            </span>
+
+                        </div>
+
+
+                        <div class="text-muted text-uppercase fw-bold small">
+                            {{ _('income.total_earned') }}
+                        </div>
+
+
+                        <h3 class="fw-bold text-success mb-0 mt-1">
+                            ${{ "%.2f"|format(
+                                incomes|sum(attribute="amount")|float
+                            ) }}
+                        </h3>
+
+
+                        <div class="text-muted small mt-1">
+                            {{ _('income.cumulative_earnings') }}
+                        </div>
+
+                    </div>
+
+
+                    <div class="income-stat-image">
+                        <img
+                            src="https://cdn-icons-png.flaticon.com/512/3135/3135679.png"
+                            class="stat-illustration"
+                            alt="Add new income"
+                        >
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Records -->
+
+            <div class="col-12 col-md-4">
+
+                <div class="income-stat shadow-sm p-3">
+
+                    <div class="income-stat-content">
+
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+
+                            <div
+                                class="income-stat-icon
+                                       bg-primary-subtle
+                                       text-primary"
+                            >
+                                <i class="bi bi-receipt"></i>
+                            </div>
+
+                            <span
+                                class="badge rounded-pill
+                                       bg-primary-subtle
+                                       text-primary"
+                            >
+                                Records
+                            </span>
+
+                        </div>
+
+
+                        <div class="text-muted text-uppercase fw-bold small">
+                            {{ _('income.transaction_logs') }}
+                        </div>
+
+
+                        <h3 class="fw-bold mb-0 mt-1">
+                            {{ incomes|length }}
+                        </h3>
+
+
+                        <div class="text-muted small mt-1">
+                            {{ _('income.total_entries') }}
+                        </div>
+
+                    </div>
+
+
+                    <div class="income-stat-image">
+
+                        <img
+                            src="https://cdn-icons-png.flaticon.com/512/3500/3500833.png"
+                            alt="Income records"
+                        >
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Recurring -->
+
+            <div class="col-12 col-md-4">
+
+                <div class="income-stat shadow-sm p-3">
+
+                    <div class="income-stat-content">
+
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+
+                            <div
+                                class="income-stat-icon
+                                       bg-warning-subtle
+                                       text-warning"
+                            >
+                                <i class="bi bi-arrow-repeat"></i>
+                            </div>
+
+                            <span
+                                class="badge rounded-pill
+                                       bg-warning-subtle
+                                       text-warning"
+                            >
+                                Recurring
+                            </span>
+
+                        </div>
+
+
+                        <div class="text-muted text-uppercase fw-bold small">
+                            {{ _('income.recurring_streams') }}
+                        </div>
+
+
+                        <h3 class="fw-bold mb-0 mt-1">
+                            {{
+                                incomes
+                                | selectattr("recurring_transaction")
+                                | list
+                                | length
+                            }}
+                        </h3>
+
+
+                        <div class="text-muted small mt-1">
+                            {{ _('income.recurring_flows') }}
+                        </div>
+
+                    </div>
+
+
+                    <div class="income-stat-image">
+
+                        <img
+                            src="https://cdn-icons-png.flaticon.com/512/2920/2920322.png"
+                            alt="Recurring income"
+                        >
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ======================================
+             FILTER
+        ======================================= -->
+
+        <div
+            class="income-toolbar
+                   d-flex
+                   flex-column
+                   flex-sm-row
+                   justify-content-between
+                   align-items-sm-center
+                   gap-3
+                   mb-4"
+        >
+
+            <div class="d-flex align-items-center gap-2">
+
+                <div
+                    class="rounded-circle
+                           bg-primary-subtle
+                           text-primary
+                           d-flex
+                           align-items-center
+                           justify-content-center"
+                    style="width:34px;height:34px;"
+                >
+                    <i class="bi bi-funnel"></i>
+                </div>
+
+                <div>
+                    <div class="fw-semibold small">
+                        {{ _('common.filter') if false else 'View income' }}
+                    </div>
+
+                    <div class="text-muted x-small">
+                        Sort your income records
+                    </div>
+                </div>
+
+            </div>
+
+
+            <form
+                action="{{ url_for('incomes.index') }}"
+                method="GET"
+                class="d-flex gap-2"
+            >
+
+                <select
+                    name="sort"
+                    id="sort"
+                    class="form-select form-select-sm"
+                >
+                    <option
+                        value="general"
+                        {{ 'selected' if request.args.get('sort') == 'general' }}
+                    >
+                        General
+                    </option>
+
+                    <option
+                        value="date"
+                        {{ 'selected' if request.args.get('sort') == 'date' }}
+                    >
+                        Date
+                    </option>
+
+                    <option
+                        value="amount"
+                        {{ 'selected' if request.args.get('sort') == 'amount' }}
+                    >
+                        Amount
+                    </option>
+
+                </select>
+
+
+                <button
+                    type="submit"
+                    class="btn btn-outline-secondary btn-sm px-3"
+                >
+                    Apply
+                </button>
+
+            </form>
+
+        </div>
+
+
+        <!-- ======================================
+             INCOME HISTORY
+        ======================================= -->
+
+        <div class="income-table-card shadow-sm">
+
+
+            <!-- Table Header -->
+
+            <div class="income-table-header">
+
+                <div class="d-flex justify-content-between align-items-center">
+
+                    <div>
+
+                        <h6 class="fw-bold mb-1">
+                            {{ _('income.history_title') }}
+                        </h6>
+
+                        <small class="text-muted">
+                            {{ _('income.history_subtitle') }}
+                        </small>
+
+                    </div>
+
+                    {% if incomes %}
+
+                    <span
+                        class="badge
+                               bg-success-subtle
+                               text-success
+                               rounded-pill"
+                    >
+                        {{ incomes|length }} entries
+                    </span>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+
+            <div class="card-body p-0">
+
+
+                {% if incomes %}
+
+
+                <!-- ==================================
+                     DESKTOP TABLE
+                =================================== -->
+
+                <div class="table-responsive d-none d-md-block">
+
+                    <table class="table table-hover align-middle mb-0 income-table">
+
+                        <thead class="bg-body-secondary">
+
+                            <tr>
+
+                                <th class="ps-4 py-3">
+                                    {{ _('common.date') }}
+                                </th>
+
+                                <th>
+                                    {{ _('finance.category') }}
+                                </th>
+
+                                <th>
+                                    {{ _('common.description') }}
+                                </th>
+
+                                <th>
+                                    {{ _('income.frequency') }}
+                                </th>
+
+                                <th class="text-end">
+                                    {{ _('finance.amount') }}
+                                </th>
+
+                                <th class="text-end pe-4">
+                                    {{ _('common.actions') }}
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+                            {% for income in incomes %}
+
+                            <tr>
+
+                                <td class="ps-4">
+
+                                    <div class="fw-semibold">
+                                        {{ income.income_date.strftime('%b %d, %Y') }}
+                                    </div>
+
+                                </td>
+
+
+                                <td>
+
+                                    <span
+                                        class="income-category
+                                               bg-success-subtle
+                                               text-success"
+                                    >
+                                        <i class="bi bi-tag"></i>
+                                        {{ _(income.category) }}
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    {% if income.description %}
+
+                                        <span class="text-body">
+                                            {{ income.description }}
+                                        </span>
+
+                                    {% else %}
+
+                                        <span
+                                            class="text-muted
+                                                   fst-italic
+                                                   small"
+                                        >
+                                            {{ _('common.no_description') }}
+                                        </span>
+
+                                    {% endif %}
+
+                                </td>
+
+
+                                <td>
+
+                                    {% if income.recurring_transaction %}
+
+                                        <span
+                                            class="badge
+                                                   bg-warning-subtle
+                                                   text-warning
+                                                   fw-normal
+                                                   rounded-pill"
+                                        >
+
+                                            <i
+                                                class="bi bi-arrow-repeat me-1"
+                                            ></i>
+
+                                            {{
+                                                _(
+                                                    income
+                                                    .recurring_transaction
+                                                    .recurring_period
+                                                )
+                                            }}
+
+                                        </span>
+
+                                    {% else %}
+
+                                        <span class="text-muted small">
+                                            {{ _('period.one_time') }}
+                                        </span>
+
+                                    {% endif %}
+
+                                </td>
+
+
+                                <td class="text-end">
+
+                                    <span class="income-amount">
+                                        +${{
+                                            "%.2f"|format(
+                                                income.amount|float
+                                            )
+                                        }}
+                                    </span>
+
+                                </td>
+
+
+                                <td class="text-end pe-4">
+
+                                    <div
+                                        class="btn-group
+                                               btn-group-sm
+                                               border
+                                               rounded-3
+                                               overflow-hidden"
+                                    >
+
+                                        <a
+                                            href="{{ url_for(
+                                                'incomes.detail',
+                                                income_id=income.id
+                                            ) }}"
+                                            class="btn btn-light"
+                                            title="{{ _('common.view_details') }}"
+                                        >
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+
+
+                                        <a
+                                            href="{{ url_for(
+                                                'incomes.edit',
+                                                income_id=income.id
+                                            ) }}"
+                                            class="btn btn-light"
+                                            title="{{ _('common.edit_record') }}"
+                                        >
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+
+
+                                        <a
+                                            href="{{ url_for(
+                                                'incomes.delete',
+                                                income_id=income.id
+                                            ) }}"
+                                            class="btn btn-light text-danger"
+                                            title="{{ _('common.delete') }}"
+                                        >
+                                            <i class="bi bi-trash3"></i>
+                                        </a>
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+
+                <!-- ==================================
+                     MOBILE
+                =================================== -->
+
+                <div class="d-md-none">
+
+                    {% for income in incomes %}
+
+                    <div class="p-3 border-bottom">
+
+                        <div
+                            class="d-flex
+                                   justify-content-between
+                                   align-items-start
+                                   mb-2"
+                        >
+
+                            <span
+                                class="income-category
+                                       bg-success-subtle
+                                       text-success"
+                            >
+                                <i class="bi bi-tag"></i>
+                                {{ _(income.category) }}
+                            </span>
+
+
+                            <span
+                                class="fw-bold
+                                       text-success
+                                       font-monospace"
+                            >
+                                +${{
+                                    "%.2f"|format(
+                                        income.amount|float
+                                    )
+                                }}
+                            </span>
+
+                        </div>
+
+
+                        <div class="mb-3">
+
+                            {% if income.description %}
+
+                                <div class="fw-semibold small mb-1">
+                                    {{ income.description }}
+                                </div>
+
+                            {% else %}
+
+                                <div
+                                    class="text-muted
+                                           fst-italic
+                                           small mb-1"
+                                >
+                                    {{ _('common.no_description') }}
+                                </div>
+
+                            {% endif %}
+
+
+                            <div
+                                class="d-flex
+                                       align-items-center
+                                       gap-2
+                                       text-muted
+                                       x-small"
+                            >
+
+                                <span>
+                                    <i class="bi bi-calendar3 me-1"></i>
+                                    {{ income.income_date.strftime('%b %d, %Y') }}
+                                </span>
+
+
+                                {% if income.recurring_transaction %}
+
+                                    <span>&bull;</span>
+
+                                    <span class="text-warning">
+
+                                        <i
+                                            class="bi bi-arrow-repeat me-1"
+                                        ></i>
+
+                                        {{
+                                            _(
+                                                income
+                                                .recurring_transaction
+                                                .recurring_period
+                                            )
+                                        }}
+
+                                    </span>
+
                                 {% endif %}
 
-                                <div class="d-flex align-items-center gap-2 text-muted x-small">
-                                    <span><i class="bi bi-calendar3 me-1"></i>{{ income.income_date.strftime('%b %d, %Y') }}</span>
-                                    {% if income.recurring_period %}
-                                        <span>&bull;</span>
-                                        <span class="text-primary"><i class="bi bi-arrow-repeat me-1"></i>{{ _(income.recurring_period) }}</span>
-                                    {% endif %}
-                                </div>
                             </div>
 
-                            <div class="d-flex gap-2">
-                                <a href="{{ url_for('incomes.detail', income_id=income.id) }}" class="btn btn-sm btn-outline-secondary flex-fill rounded-pill">{{ _('common.view') }}</a>
-                                <a href="{{ url_for('incomes.edit', income_id=income.id) }}" class="btn btn-sm btn-outline-secondary flex-fill rounded-pill">{{ _('common.edit') }}</a>
-                                <a href="{{ url_for('incomes.delete', income_id=income.id) }}" class="btn btn-sm btn-outline-danger flex-fill rounded-pill">{{ _('common.delete') }}</a>
-                            </div>
                         </div>
+
+
+                        <div class="d-flex gap-2">
+
+                            <a
+                                href="{{ url_for(
+                                    'incomes.detail',
+                                    income_id=income.id
+                                ) }}"
+                                class="btn btn-sm
+                                       btn-outline-secondary
+                                       flex-fill
+                                       rounded-pill"
+                            >
+                                {{ _('common.view') }}
+                            </a>
+
+
+                            <a
+                                href="{{ url_for(
+                                    'incomes.edit',
+                                    income_id=income.id
+                                ) }}"
+                                class="btn btn-sm
+                                       btn-outline-secondary
+                                       flex-fill
+                                       rounded-pill"
+                            >
+                                {{ _('common.edit') }}
+                            </a>
+
+
+                            <a
+                                href="{{ url_for(
+                                    'incomes.delete',
+                                    income_id=income.id
+                                ) }}"
+                                class="btn btn-sm
+                                       btn-outline-danger
+                                       flex-fill
+                                       rounded-pill"
+                            >
+                                {{ _('common.delete') }}
+                            </a>
+
+                        </div>
+
+                    </div>
+
                     {% endfor %}
+
                 </div>
-            {% else %}
-                <div class="text-center py-5 px-4">
-                    <i class="bi bi-wallet2 display-5 text-muted opacity-50 mb-3 d-block"></i>
-                    <h5 class="fw-bold">{{ _('income.no_records_yet') }}</h5>
-                    <p class="text-muted small mx-auto mb-3" style="max-width: 400px;">
+
+
+                {% else %}
+
+
+                <!-- ==================================
+                     EMPTY STATE
+                =================================== -->
+
+                <div class="income-empty text-center">
+
+                    <div class="income-empty-illustration">
+
+                        <img
+                            src="{{ url_for(
+                                'static',
+                                filename='images/income/empty-income.png'
+                            ) }}"
+                            alt="No income records"
+                        >
+
+                    </div>
+
+
+                    <span
+                        class="badge
+                               bg-success-subtle
+                               text-success
+                               rounded-pill
+                               mb-3"
+                    >
+                        <i class="bi bi-plus-circle me-1"></i>
+                        Get started
+                    </span>
+
+
+                    <h5 class="fw-bold mb-2">
+                        {{ _('income.no_records_yet') }}
+                    </h5>
+
+
+                    <p
+                        class="text-muted
+                               small
+                               mx-auto
+                               mb-4"
+                        style="max-width:420px;"
+                    >
                         {{ _('income.no_records_hint') }}
                     </p>
-                    <a href="{{ url_for('incomes.create') }}" class="btn btn-primary px-4 py-2 rounded-pill shadow-sm">
-                        <i class="bi bi-plus-lg me-1"></i> {{ _('income.add_first_income') }}
+
+
+                    <a
+                        href="{{ url_for('incomes.create') }}"
+                        class="btn btn-success
+                               px-4
+                               py-2
+                               rounded-pill
+                               shadow-sm"
+                    >
+                        <i class="bi bi-plus-lg me-1"></i>
+                        {{ _('income.add_first_income') }}
                     </a>
+
                 </div>
-            {% endif %}
+
+
+                {% endif %}
+
+            </div>
+
         </div>
+
     </div>
+
 </div>
+
 {% endblock %}

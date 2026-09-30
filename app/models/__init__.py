@@ -14,3 +14,4 @@ from .audit_log import AuditLog
 from .ai_chat import AIChat, AIMessage
 from .notification import Notification
 from .budget import BudgetGoal
+from .recurring_transaction import RecurringTransaction

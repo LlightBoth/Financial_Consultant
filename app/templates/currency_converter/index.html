@@ -4,10 +4,11 @@
 {% block content %}
 
 <style>
-/* =========================================
+    /* =========================================
    Currency Converter
    Automatically supports Bootstrap light/dark
    ========================================= */
+
 .currency-page {
     padding: 1rem 1.5rem 3rem;
 }
@@ -17,20 +18,134 @@
     margin: 0 auto;
 }
 
+/* Hero Section */
 .currency-hero {
+    position: relative;
+    overflow: hidden;
+    min-height: 220px;
+    padding: 2rem 2.25rem;
     margin-bottom: 1.5rem;
+    border: 1px solid var(--bs-border-color-translucent);
+    border-radius: 24px;
+    background:
+        radial-gradient(
+            circle at 82% 20%,
+            rgba(var(--bs-primary-rgb), .14),
+            transparent 32%
+        ),
+        radial-gradient(
+            circle at 100% 100%,
+            rgba(var(--bs-info-rgb), .08),
+            transparent 35%
+        ),
+        var(--bs-card-bg);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, .045);
+}
+
+.currency-hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 620px;
+}
+
+.currency-hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    padding: .45rem .8rem;
+    border: 1px solid rgba(var(--bs-primary-rgb), .15);
+    border-radius: 999px;
+    background: var(--bs-primary-bg-subtle);
+    color: var(--bs-primary);
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: .04em;
+    text-transform: uppercase;
 }
 
 .currency-hero h1 {
-    font-size: 1.8rem;
-    font-weight: 700;
-    letter-spacing: -0.02em;
+    margin: .9rem 0 .45rem;
+    font-size: clamp(1.7rem, 4vw, 2.35rem);
+    line-height: 1.1;
+    font-weight: 800;
+    letter-spacing: -.035em;
     color: var(--bs-emphasis-color);
 }
 
 .currency-hero p {
+    max-width: 560px;
+    margin: 0;
     color: var(--bs-secondary-color);
-    margin-bottom: 0;
+    font-size: .92rem;
+    line-height: 1.6;
+}
+
+/* Illustration */
+.currency-hero-illustration {
+    position: absolute;
+    z-index: 1;
+    right: 2.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 190px;
+    height: 170px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+}
+
+.currency-hero-illustration::before {
+    content: "";
+    position: absolute;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background: var(--bs-primary-bg-subtle);
+    opacity: .7;
+}
+
+.currency-hero-illustration img {
+    position: relative;
+    width: 145px;
+    height: 145px;
+    object-fit: contain;
+    filter: drop-shadow(0 12px 16px rgba(0, 0, 0, .12));
+}
+
+/* Decorative currency symbols */
+.currency-symbol {
+    position: absolute;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    background: var(--bs-body-bg);
+    border: 1px solid var(--bs-border-color);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, .08);
+    font-size: .95rem;
+    font-weight: 800;
+    color: var(--bs-primary);
+}
+
+.currency-symbol-usd {
+    top: 5px;
+    right: 30px;
+}
+
+.currency-symbol-eur {
+    bottom: 5px;
+    left: 20px;
+    color: var(--bs-success);
+}
+
+.currency-symbol-exchange {
+    bottom: 20px;
+    right: 5px;
+    color: var(--bs-warning);
 }
 
 /* Main converter card */
@@ -147,6 +262,173 @@
 .currency-amount::placeholder {
     color: var(--bs-secondary-color);
     opacity: 0.6;
+}
+
+/* =========================================================
+   Exchange Rate Cards
+   ========================================================= */
+
+.currency-card {
+    position: relative;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+.currency-card .recurring-stat-content {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 14px;
+}
+
+.currency-card .recurring-stat-info {
+    flex: 1 1 auto;
+    min-width: 0;
+    max-width: calc(100% - 78px);
+}
+
+.currency-card .recurring-stat-label {
+    min-width: 0;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    color: #64748b;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.currency-card .recurring-stat-value {
+    min-width: 0;
+    max-width: 100%;
+
+    font-size: clamp(18px, 2vw, 25px);
+    line-height: 1.25;
+    font-weight: 700;
+
+    color: #0f172a;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.currency-card .recurring-stat-description {
+    min-width: 0;
+    max-width: 100%;
+
+    margin-top: 6px;
+
+    font-size: 12px;
+    line-height: 1.4;
+
+    color: #94a3b8;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+/* Flag container */
+.currency-card .recurring-stat-illustration {
+    flex: 0 0 58px;
+
+    width: 58px;
+    height: 58px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 16px;
+
+    background: rgba(255, 255, 255, 0.75);
+
+    box-shadow:
+        0 6px 16px rgba(15, 23, 42, 0.08);
+
+    overflow: hidden;
+}
+
+.currency-card .recurring-stat-illustration img {
+    display: block;
+
+    width: 34px;
+    max-width: 100%;
+    height: auto;
+
+    border-radius: 4px;
+}
+
+
+/* Currency code */
+.currency-card .currency-code {
+    position: absolute;
+
+    right: 16px;
+    bottom: 10px;
+
+    max-width: 45px;
+
+    font-size: 9px;
+    line-height: 1;
+
+    font-weight: 700;
+    letter-spacing: 1px;
+
+    color: rgba(15, 23, 42, 0.28);
+
+    pointer-events: none;
+}
+
+
+/* Card colors */
+.currency-usd {
+    background: linear-gradient(
+        135deg,
+        #eff6ff 0%,
+        #ffffff 100%
+    );
+}
+
+.currency-khr {
+    background: linear-gradient(
+        135deg,
+        #ecfdf5 0%,
+        #ffffff 100%
+    );
+}
+
+.currency-cny {
+    background: linear-gradient(
+        135deg,
+        #fff7ed 0%,
+        #ffffff 100%
+    );
+}
+
+
+/* Hover */
+.currency-card {
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.currency-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
 }
 
 .swap-wrapper {
@@ -269,15 +551,73 @@
     color: var(--bs-secondary-color);
     margin-top: 0.15rem;
 }
+.currency-flag img {
+    display: inline-block;
+    width: 28px; /* Force visible width */
+    height: auto;
+    flex-shrink: 0; /* Prevent flexbox from crushing it */
+    object-fit: contain;
+}
 
-/* Mobile */
+/* Mobile Responsiveness */
 @media (max-width: 768px) {
     .currency-page {
         padding: 1rem 0.75rem 2rem;
     }
 
+    .currency-hero {
+        min-height: auto;
+        padding: 1.5rem;
+    }
+
+    .currency-hero-content {
+        max-width: 100%;
+    }
+
     .currency-hero h1 {
         font-size: 1.5rem;
+    }
+
+    .currency-hero-illustration {
+        position: relative;
+        right: auto;
+        top: auto;
+        transform: none;
+        width: 100%;
+        height: 130px;
+        margin-top: 1rem;
+    }
+
+    .currency-hero-illustration img {
+        width: 105px;
+        height: 105px;
+    }
+
+    .currency-hero-illustration::before {
+        width: 110px;
+        height: 110px;
+    }
+
+    .currency-symbol {
+        width: 32px;
+        height: 32px;
+        border-radius: 9px;
+        font-size: .8rem;
+    }
+
+    .currency-symbol-usd {
+        right: calc(50% - 75px);
+        top: 0;
+    }
+
+    .currency-symbol-eur {
+        left: calc(50% - 75px);
+        bottom: 0;
+    }
+
+    .currency-symbol-exchange {
+        right: calc(50% - 80px);
+        bottom: 5px;
     }
 
     .converter-card-body {
@@ -291,27 +631,82 @@
     .result-value {
         font-size: 1.4rem;
     }
+    .currency-card {
+        min-height: 135px;
+    }
+
+    .currency-card .recurring-stat-content {
+        gap: 10px;
+    }
+
+    .currency-card .recurring-stat-info {
+        max-width: calc(100% - 66px);
+    }
+
+    .currency-card .recurring-stat-value {
+        font-size: 20px;
+    }
+
+    .currency-card .recurring-stat-illustration {
+        flex-basis: 50px;
+
+        width: 50px;
+        height: 50px;
+
+        border-radius: 14px;
+    }
+
+    .currency-card .recurring-stat-illustration img {
+        width: 30px;
+    }
 }
 </style>
 
 <div class="currency-page">
 <div class="currency-container">
 
-    <!-- Page heading -->
+    <!-- Currency Hero -->
     <div class="currency-hero">
 
-        <div class="d-flex align-items-center gap-2 mb-2">
-            <span class="badge rounded-pill text-bg-primary px-3 py-2">
-                <i class="bi bi-currency-exchange me-1"></i>
+        <div class="currency-hero-content">
+
+            <div class="currency-hero-badge">
+                <i class="bi bi-currency-exchange"></i>
                 {{ _("currency.badge") }}
-            </span>
+            </div>
+
+            <h1>
+                {{ _("currency.title") }}
+            </h1>
+
+            <p>
+                {{ _("currency.subtitle") }}
+            </p>
+
         </div>
 
-        <h1>{{ _("currency.title") }}</h1>
 
-        <p>
-            {{ _("currency.subtitle") }}
-        </p>
+        <!-- Illustration -->
+        <div class="currency-hero-illustration">
+
+            <span class="currency-symbol currency-symbol-usd">
+                $
+            </span>
+
+            <span class="currency-symbol currency-symbol-eur">
+                €
+            </span>
+
+            <span class="currency-symbol currency-symbol-exchange">
+                <i class="bi bi-arrow-left-right"></i>
+            </span>
+
+            <img
+                src="https://cdn-icons-png.flaticon.com/512/3135/3135679.png"
+                alt="Currency exchange illustration"
+            >
+
+        </div>
 
     </div>
 
@@ -319,6 +714,7 @@
     <!-- Converter -->
     <div class="converter-card">
 
+        <!-- Converter Header -->
         <div class="converter-card-header">
 
             <div class="d-flex justify-content-between align-items-center">
@@ -340,8 +736,8 @@
         </div>
 
 
+        <!-- Converter Body -->
         <div class="converter-card-body">
-
             <div class="row align-items-center g-3">
 
                 <!-- From -->
@@ -356,15 +752,29 @@
                         <div class="currency-input-row">
 
                             <div class="currency-flag" id="fromFlag">
-                                🇺🇸
+                                <img
+                                    src="https://flagcdn.com/w40/us.png"
+                                    alt="United States Flag"
+                                    width="28"
+                                    class="rounded-1 shadow-sm"
+                                >
                             </div>
 
                             <select
                                 class="form-select currency-select"
-                                id="fromCurrency">
-                                <option value="USD" selected>{{ _("currency.usd_option") }}</option>
-                                <option value="KHR">{{ _("currency.khr_option") }}</option>
-                                <option value="CNY">{{ _("currency.cny_option") }}</option>
+                                id="fromCurrency"
+                            >
+                                <option value="USD" selected>
+                                    {{ _("currency.usd_option") }}
+                                </option>
+
+                                <option value="KHR">
+                                    {{ _("currency.khr_option") }}
+                                </option>
+
+                                <option value="CNY">
+                                    {{ _("currency.cny_option") }}
+                                </option>
                             </select>
 
                             <input
@@ -375,10 +785,10 @@
                                 min="0"
                                 step="any"
                                 placeholder="{{ _('currency.enter_amount') }}"
-                                aria-label="{{ _('currency.enter_amount') }}">
+                                aria-label="{{ _('currency.enter_amount') }}"
+                            >
 
                         </div>
-
 
                     </div>
 
@@ -395,10 +805,9 @@
                             class="swap-btn"
                             id="swapCurrencies"
                             title="{{ _('currency.swap_currencies') }}"
-                            aria-label="{{ _('currency.swap_currencies') }}">
-
+                            aria-label="{{ _('currency.swap_currencies') }}"
+                        >
                             <i class="bi bi-arrow-left-right"></i>
-
                         </button>
 
                     </div>
@@ -417,16 +826,19 @@
 
                         <div class="currency-input-row">
 
-                            <div
-                                class="currency-flag"
-                                id="toFlag">
-                                🇰🇭
+                            <div class="currency-flag" id="toFlag">
+                                <img
+                                    src="https://flagcdn.com/w40/kh.png"
+                                    alt="Cambodia Flag"
+                                    width="28"
+                                    class="rounded-1 shadow-sm"
+                                >
                             </div>
 
                             <select
                                 class="form-select currency-select"
-                                id="toCurrency">
-
+                                id="toCurrency"
+                            >
                                 <option value="USD">
                                     {{ _("currency.usd_option") }}
                                 </option>
@@ -438,7 +850,6 @@
                                 <option value="CNY">
                                     {{ _("currency.cny_option") }}
                                 </option>
-
                             </select>
 
                             <input
@@ -446,7 +857,8 @@
                                 class="currency-amount"
                                 id="toAmount"
                                 value="4,055"
-                                readonly>
+                                readonly
+                            >
 
                         </div>
 
@@ -454,179 +866,42 @@
 
                 </div>
 
+
+                <!-- Result -->
+                <div class="col-12">
+
+                    <div class="conversion-result">
+
+                        <div class="result-label">
+                            {{ _("currency.converted_amount") }}
+                        </div>
+
+                        <div
+                            class="result-value"
+                            id="resultValue"
+                        >
+                            4,055 KHR
+                        </div>
+
+                        <div
+                            class="result-rate"
+                            id="resultRate"
+                        >
+                            1 USD = 4,055 KHR
+                        </div>
+
+                    </div>
+
+                </div>
+
             </div>
-
-
-            <!-- Result -->
-            <div class="conversion-result">
-
-                <div class="result-label">
-                    {{ _("currency.converted_amount") }}
-                </div>
-
-                <div class="result-value" id="resultValue">
-                    4,055 KHR
-                </div>
-
-                <div class="result-rate" id="resultRate">
-                    1 USD = 4,055 KHR
-                </div>
-
-            </div>
+            <!-- END converter row -->
 
         </div>
+        <!-- END converter-card-body -->
 
     </div>
 
-
-    <!-- Exchange Rates -->
-    <div class="mt-4">
-
-        <div class="d-flex justify-content-between align-items-center mb-3">
-
-            <div>
-                <h5 class="fw-semibold mb-1">
-                    {{ _("currency.rates_title") }}
-                </h5>
-
-                <div class="small text-muted">
-                    {{ _("currency.rates_subtitle") }}
-                </div>
-            </div>
-
-            <i class="bi bi-graph-up-arrow text-primary"></i>
-
-        </div>
-
-
-        <div class="row g-3">
-
-            <!-- USD -->
-            <div class="col-12 col-md-4">
-
-                <div class="rate-card">
-
-                    <div class="rate-currency">
-
-                        <div class="rate-icon">
-                            🇺🇸
-                        </div>
-
-                        <div>
-                            <div class="rate-name">
-                                {{ _("currency.usd_name") }}
-                            </div>
-
-                            <div class="rate-code">
-                                USD
-                            </div>
-                        </div>
-
-                    </div>
-
-                    <div class="rate-value">
-                        1 USD
-                    </div>
-
-                    <div class="rate-description">
-                        {{ _("currency.base_currency") }}
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <!-- KHR -->
-            <div class="col-12 col-md-4">
-
-                <div class="rate-card">
-
-                    <div class="rate-currency">
-
-                        <div class="rate-icon">
-                            🇰🇭
-                        </div>
-
-                        <div>
-                            <div class="rate-name">
-                                {{ _("currency.khr_name") }}
-                            </div>
-
-                            <div class="rate-code">
-                                KHR
-                            </div>
-                        </div>
-
-                    </div>
-
-                    <div class="rate-value">
-                        1 USD ≈ 4,055 KHR
-                    </div>
-
-                    <div class="rate-description">
-                        {{ _("currency.usd_to_khr") }}
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <!-- CNY -->
-            <div class="col-12 col-md-4">
-
-                <div class="rate-card">
-
-                    <div class="rate-currency">
-
-                        <div class="rate-icon">
-                            🇨🇳
-                        </div>
-
-                        <div>
-                            <div class="rate-name">
-                                {{ _("currency.cny_name") }}
-                            </div>
-
-                            <div class="rate-code">
-                                CNY
-                            </div>
-                        </div>
-
-                    </div>
-
-                    <div class="rate-value">
-                        1 USD ≈ 6.71 CNY
-                    </div>
-
-                    <div class="rate-description">
-                        {{ _("currency.usd_to_cny") }}
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-
-    <!-- Info -->
-    <div class="alert alert-light border mt-4 small d-flex gap-2 align-items-start"
-         data-bs-theme="light">
-
-        <i class="bi bi-info-circle text-primary mt-1"></i>
-
-        <div>
-            <strong>{{ _("currency.note_title") }}</strong>
-            {{ _("currency.note_desc") }}
-        </div>
-
-    </div>
-
-</div>
 
 </div>
 
@@ -648,9 +923,9 @@ document.addEventListener("DOMContentLoaded", function () {
     };
 
     const currencyInfo = {
-        USD: { symbol: "$", name: "US Dollar", flag: "🇺🇸", decimals: 2 },
-        KHR: { symbol: "៛", name: "Cambodian Riel", flag: "🇰🇭", decimals: 0 },
-        CNY: { symbol: "¥", name: "Chinese Yuan", flag: "🇨🇳", decimals: 2 }
+        USD: { symbol: "$", name: "US Dollar", country: "us", decimals: 2 },
+        KHR: { symbol: "៛", name: "Cambodian Riel", country: "kh", decimals: 0 },
+        CNY: { symbol: "¥", name: "Chinese Yuan", country: "cn", decimals: 2 }
     };
 
     const fromCurrency = document.getElementById("fromCurrency");
@@ -678,8 +953,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
         if (isNaN(amount) || amount < 0) {
             toAmount.value = "";
-            resultValue.textContent = "{{ _('currency.enter_amount') }}";
-            resultRate.textContent = "";
+            if (resultValue) resultValue.textContent = "{{ _('currency.enter_amount') }}";
+            if (resultRate) resultRate.textContent = "";
             return;
         }
 
@@ -687,16 +962,20 @@ document.addEventListener("DOMContentLoaded", function () {
         const formatted = formatNumber(converted, to);
 
         toAmount.value = formatted;
-        resultValue.textContent = `${formatted} ${to}`;
+        if (resultValue) resultValue.textContent = `${formatted} ${to}`;
 
         const oneUnitRate = rates[to] / rates[from];
         const formattedRate = formatNumber(oneUnitRate, to);
-        resultRate.textContent = `1 ${from} = ${formattedRate} ${to}`;
+        if (resultRate) resultRate.textContent = `1 ${from} = ${formattedRate} ${to}`;
     }
 
     function updateFlags() {
-        fromFlag.textContent = currencyInfo[fromCurrency.value].flag;
-        toFlag.textContent = currencyInfo[toCurrency.value].flag;
+        const fromCountry = currencyInfo[fromCurrency.value].country;
+        const toCountry = currencyInfo[toCurrency.value].country;
+
+        // Dynamically update the <img> src inside the flag containers
+        fromFlag.innerHTML = `<img src="https://flagcdn.com/w40/${fromCountry}.png" alt="${fromCurrency.value} Flag" width="28" class="rounded-1 shadow-sm">`;
+        toFlag.innerHTML = `<img src="https://flagcdn.com/w40/${toCountry}.png" alt="${toCurrency.value} Flag" width="28" class="rounded-1 shadow-sm">`;
     }
 
     fromCurrency.addEventListener("change", function () {

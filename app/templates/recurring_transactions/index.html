@@ -1,0 +1,2617 @@
+{% extends "layouts/clientBase.html" %}
+
+{% block title %}Recurring Transactions{% endblock %}
+
+{% block content %}
+
+<style>
+    .recurring-page {
+        max-width: 1600px;
+        margin: 0 auto;
+    }
+
+    /* --------------------------------------------------
+       HERO
+    -------------------------------------------------- */
+
+    .recurring-hero {
+        position: relative;
+        overflow: hidden;
+        border: 1px solid var(--bs-border-color);
+        border-radius: 1.25rem;
+        padding: 2rem;
+        margin-bottom: 1.5rem;
+        background:
+            radial-gradient(
+                circle at 90% 10%,
+                rgba(13, 110, 253, .12),
+                transparent 35%
+            ),
+            var(--bs-body-bg);
+    }
+
+    .recurring-hero::after {
+        content: "";
+        position: absolute;
+        width: 180px;
+        height: 180px;
+        right: -70px;
+        bottom: -90px;
+        border-radius: 50%;
+        background: rgba(13, 110, 253, .06);
+    }
+    /* ==================================================
+    RECURRING STAT CARDS
+    ================================================== */
+
+    .recurring-stat-card {
+        position: relative;
+        overflow: hidden;
+
+        min-height: 145px;
+
+        padding: 1.15rem;
+
+        border: 1px solid var(--bs-border-color);
+        border-radius: 18px;
+
+        background: var(--bs-card-bg);
+        color: var(--bs-body-color);
+
+        transition:
+            transform .25s ease,
+            box-shadow .25s ease,
+            border-color .25s ease;
+    }
+
+
+    /* Decorative glow */
+
+    .recurring-stat-card::before {
+        content: "";
+
+        position: absolute;
+
+        width: 130px;
+        height: 130px;
+
+        right: -45px;
+        top: -55px;
+
+        border-radius: 50%;
+
+        pointer-events: none;
+
+        opacity: .65;
+    }
+
+
+    /* Card colors */
+
+    .recurring-income::before {
+        background: rgba(
+            var(--bs-success-rgb),
+            .12
+        );
+    }
+
+    .recurring-expense::before {
+        background: rgba(
+            var(--bs-danger-rgb),
+            .11
+        );
+    }
+
+    .recurring-active::before {
+        background: rgba(
+            var(--bs-primary-rgb),
+            .11
+        );
+    }
+
+    .recurring-next::before {
+        background: rgba(
+            var(--bs-warning-rgb),
+            .13
+        );
+    }
+
+
+    /* Hover */
+
+    .recurring-stat-card:hover {
+        transform: translateY(-4px);
+
+        box-shadow:
+            0 14px 30px rgba(0, 0, 0, .08);
+
+        border-color:
+            rgba(var(--bs-primary-rgb), .25);
+    }
+
+
+    /* Content */
+
+    .recurring-stat-content {
+        position: relative;
+        z-index: 2;
+
+        min-height: 120px;
+
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        gap: .75rem;
+    }
+
+
+    /* Information */
+
+    .recurring-stat-info {
+        min-width: 0;
+        flex: 1;
+    }
+
+
+    /* Label */
+
+    .recurring-stat-label {
+        font-size: .7rem;
+
+        font-weight: 700;
+
+        color: var(--bs-secondary-color);
+
+        letter-spacing: .04em;
+    }
+
+
+    /* Value */
+
+    .recurring-stat-value {
+        margin-top: .3rem;
+
+        font-size: 1.55rem;
+
+        line-height: 1.15;
+
+        font-weight: 800;
+
+        letter-spacing: -.035em;
+
+        color: var(--bs-body-color);
+    }
+
+
+    /* Description */
+
+    .recurring-stat-description {
+        margin-top: .35rem;
+
+        font-size: .72rem;
+
+        color: var(--bs-secondary-color);
+    }
+
+
+    /* Illustration */
+
+    .recurring-stat-illustration {
+        position: relative;
+
+        flex: 0 0 76px;
+
+        width: 76px;
+        height: 76px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        border-radius: 20px;
+
+        background: var(--bs-tertiary-bg);
+    }
+
+
+    /* Image */
+
+    .recurring-stat-illustration img {
+        width: 62px;
+        height: 62px;
+
+        object-fit: contain;
+
+        opacity: .58;
+
+        filter:
+            drop-shadow(
+                0 6px 8px rgba(0, 0, 0, .07)
+            );
+
+        transition:
+            transform .3s ease,
+            opacity .3s ease;
+    }
+
+
+    /* Hover illustration */
+
+    .recurring-stat-card:hover
+    .recurring-stat-illustration img {
+        opacity: .78;
+
+        transform:
+            translateY(-3px)
+            rotate(2deg);
+    }
+
+
+    /* Individual illustration backgrounds */
+
+    .recurring-income
+    .recurring-stat-illustration {
+        background:
+            rgba(var(--bs-success-rgb), .08);
+    }
+
+    .recurring-expense
+    .recurring-stat-illustration {
+        background:
+            rgba(var(--bs-danger-rgb), .08);
+    }
+
+    .recurring-active
+    .recurring-stat-illustration {
+        background:
+            rgba(var(--bs-primary-rgb), .08);
+    }
+
+    .recurring-next
+    .recurring-stat-illustration {
+        background:
+            rgba(var(--bs-warning-rgb), .10);
+    }
+
+
+    .hero-icon {
+        width: 52px;
+        height: 52px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 16px;
+        background: rgba(13, 110, 253, .1);
+        color: var(--bs-primary);
+        font-size: 1.5rem;
+    }
+
+    /* --------------------------------------------------
+       KPI CARDS
+    -------------------------------------------------- */
+
+    .stat-card {
+        position: relative;
+        overflow: hidden;
+        height: 100%;
+        padding: 1.25rem;
+        border: 1px solid var(--bs-border-color);
+        border-radius: 1rem;
+        background: var(--bs-body-bg);
+        transition:
+            transform .2s ease,
+            box-shadow .2s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 .5rem 1.5rem rgba(0, 0, 0, .06);
+    }
+
+    .stat-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 13px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+    }
+
+    .stat-income .stat-icon {
+        background: rgba(25, 135, 84, .12);
+        color: #198754;
+    }
+
+    .stat-expense .stat-icon {
+        background: rgba(220, 53, 69, .12);
+        color: #dc3545;
+    }
+
+    .stat-active .stat-icon {
+        background: rgba(111, 66, 193, .12);
+        color: #6f42c1;
+    }
+
+    .stat-next .stat-icon {
+        background: rgba(13, 110, 253, .12);
+        color: #0d6efd;
+    }
+
+    .stat-value {
+        font-size: 1.45rem;
+        line-height: 1.2;
+    }
+
+    /* --------------------------------------------------
+       MAIN CARDS
+    -------------------------------------------------- */
+
+    .content-card {
+        border: 1px solid var(--bs-border-color);
+        border-radius: 1rem;
+        background: var(--bs-body-bg);
+        overflow: hidden;
+    }
+
+    .content-card-header {
+        padding: 1.1rem 1.25rem;
+        border-bottom: 1px solid var(--bs-border-color);
+    }
+
+    /* --------------------------------------------------
+       FILTERS
+    -------------------------------------------------- */
+
+    .filter-tabs {
+        display: inline-flex;
+        padding: .25rem;
+        border-radius: .75rem;
+        background: var(--bs-tertiary-bg);
+        border: 1px solid var(--bs-border-color);
+    }
+
+    .filter-tabs .btn {
+        border: 0;
+        border-radius: .55rem;
+        padding: .4rem .9rem;
+        font-size: .85rem;
+    }
+
+    .filter-tabs .btn.active {
+        background: var(--bs-primary);
+        color: #fff;
+        box-shadow: 0 2px 6px rgba(13, 110, 253, .2);
+    }
+
+    /* --------------------------------------------------
+       TABLE
+    -------------------------------------------------- */
+
+    .recurring-table {
+        margin-bottom: 0;
+    }
+
+    .recurring-table thead th {
+        background: var(--bs-tertiary-bg);
+        border-bottom: 1px solid var(--bs-border-color);
+        color: var(--bs-secondary-color);
+        font-size: .72rem;
+        font-weight: 700;
+        letter-spacing: .04em;
+        text-transform: uppercase;
+        padding: .9rem .75rem;
+        white-space: nowrap;
+    }
+
+    .recurring-table tbody td {
+        padding: .9rem .75rem;
+        border-color: var(--bs-border-color);
+        vertical-align: middle;
+    }
+
+    .recurring-table tbody tr {
+        cursor: pointer;
+        transition:
+            background-color 0.15s ease,
+            transform 0.15s ease;
+    }
+
+    .recurring-table tbody tr:hover {
+        background-color: var(--bs-tertiary-bg);
+    }
+
+    .recurring-table tbody tr:active {
+        transform: scale(0.995);
+    }
+
+
+    /* --------------------------------------------------
+       BADGES
+    -------------------------------------------------- */
+
+    .soft-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: .3rem;
+        padding: .35rem .65rem;
+        border-radius: 999px;
+        font-size: .75rem;
+        font-weight: 600;
+    }
+
+    .soft-success {
+        background: rgba(25, 135, 84, .1);
+        color: #198754;
+    }
+
+    .soft-danger {
+        background: rgba(220, 53, 69, .1);
+        color: #dc3545;
+    }
+
+    .soft-primary {
+        background: rgba(13, 110, 253, .1);
+        color: #0d6efd;
+    }
+
+    .soft-purple {
+        background: rgba(111, 66, 193, .1);
+        color: #6f42c1;
+    }
+
+    .soft-secondary {
+        background: rgba(108, 117, 125, .12);
+        color: var(--bs-secondary-color);
+    }
+
+    /* --------------------------------------------------
+       FORM
+    -------------------------------------------------- */
+
+    .form-card {
+        position: sticky;
+        top: 1rem;
+    }
+
+    .form-section-title {
+        font-size: .75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .05em;
+        color: var(--bs-secondary-color);
+        margin-bottom: .75rem;
+    }
+
+    .type-switch {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        padding: .25rem;
+        border-radius: .75rem;
+        background: var(--bs-tertiary-bg);
+        border: 1px solid var(--bs-border-color);
+    }
+
+    .type-switch label {
+        cursor: pointer;
+        text-align: center;
+        padding: .55rem;
+        border-radius: .55rem;
+        font-size: .85rem;
+        font-weight: 600;
+        color: var(--bs-secondary-color);
+    }
+
+    .type-switch input:checked + label {
+        background: var(--bs-primary);
+        color: white;
+        box-shadow: 0 2px 5px rgba(13, 110, 253, .2);
+    }
+
+    .type-switch input[value="income"]:checked + label {
+        background: #198754;
+    }
+
+    .type-switch input[value="expense"]:checked + label {
+        background: #dc3545;
+    }
+
+    /* --------------------------------------------------
+       EMPTY STATE
+    -------------------------------------------------- */
+
+    .empty-state {
+        padding: 3.5rem 1.5rem;
+        text-align: center;
+    }
+
+    .empty-icon {
+        width: 72px;
+        height: 72px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 22px;
+        background: rgba(13, 110, 253, .08);
+        color: var(--bs-primary);
+        font-size: 2rem;
+        margin-bottom: 1rem;
+    }
+
+    /* --------------------------------------------------
+       HOW IT WORKS
+    -------------------------------------------------- */
+
+    .step-item {
+        position: relative;
+        display: flex;
+        gap: .75rem;
+    }
+
+    .step-number {
+        flex: 0 0 30px;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(13, 110, 253, .1);
+        color: var(--bs-primary);
+        font-weight: 700;
+        font-size: .8rem;
+    }
+
+    .transaction-type-switch {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+
+    .transaction-type-option {
+        position: relative;
+    }
+
+
+    /* Hide native radio */
+
+    .transaction-type-option .btn-check {
+        position: absolute;
+        opacity: 0;
+        pointer-events: none;
+    }
+
+
+    /* Card */
+
+    .transaction-type-card {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+
+        width: 100%;
+        min-height: 78px;
+
+        padding: 14px 15px;
+
+        border: 1px solid var(--bs-border-color);
+        border-radius: 14px;
+
+        background: var(--bs-body-bg);
+
+        cursor: pointer;
+
+        transition:
+            border-color 0.2s ease,
+            background-color 0.2s ease,
+            box-shadow 0.2s ease,
+            transform 0.2s ease;
+    }
+
+
+    /* Hover */
+
+    .transaction-type-card:hover {
+        transform: translateY(-1px);
+
+        border-color: var(--bs-primary);
+
+        box-shadow:
+            0 5px 15px rgba(0, 0, 0, 0.06);
+    }
+
+
+    /* Icon */
+
+    .transaction-type-icon {
+        flex: 0 0 42px;
+
+        width: 42px;
+        height: 42px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        border-radius: 12px;
+
+        font-size: 1.15rem;
+
+        transition:
+            background-color 0.2s ease,
+            color 0.2s ease;
+    }
+
+
+    /* Income icon */
+
+    .income-card .transaction-type-icon {
+        color: #198754;
+        background: rgba(25, 135, 84, 0.10);
+    }
+
+
+    /* Expense icon */
+
+    .expense-card .transaction-type-icon {
+        color: #dc3545;
+        background: rgba(220, 53, 69, 0.10);
+    }
+
+
+    /* Text */
+
+    .transaction-type-content {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+    }
+
+    .transaction-type-title {
+        font-size: 0.9rem;
+        font-weight: 700;
+        line-height: 1.2;
+    }
+
+    .transaction-type-description {
+        margin-top: 3px;
+
+        color: var(--bs-secondary-color);
+
+        font-size: 0.72rem;
+        line-height: 1.2;
+    }
+
+
+    /* Check */
+
+    .transaction-type-check {
+        margin-left: auto;
+
+        color: transparent;
+
+        font-size: 1.1rem;
+
+        transition:
+            color 0.2s ease,
+            transform 0.2s ease;
+    }
+    .transaction-detail-list {
+        border: 1px solid var(--bs-border-color);
+        border-radius: 14px;
+        overflow: hidden;
+    }
+
+    .transaction-detail-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+
+        padding: 13px 15px;
+
+        border-bottom: 1px solid var(--bs-border-color);
+
+        font-size: 0.875rem;
+    }
+
+    .transaction-detail-item:last-child {
+        border-bottom: 0;
+    }
+
+    .transaction-detail-item > span {
+        color: var(--bs-secondary-color);
+    }
+
+    .transaction-detail-item > strong {
+        text-align: right;
+        word-break: break-word;
+    }
+
+    #modalType {
+        color: #198754;
+    }
+
+    #modalType.expense {
+        color: #dc3545;
+    }
+
+    #modalAmount.income {
+        color: #198754;
+    }
+
+    #modalAmount.expense {
+        color: #dc3545;
+    }
+
+
+    /* ================================
+    SELECTED INCOME
+    ================================ */
+
+    #typeIncome:checked + .income-card {
+        border-color: #198754;
+
+        background:
+            linear-gradient(
+                135deg,
+                rgba(25, 135, 84, 0.08),
+                rgba(25, 135, 84, 0.025)
+            );
+
+        box-shadow:
+            0 5px 18px rgba(25, 135, 84, 0.12);
+    }
+
+    #typeIncome:checked + .income-card .transaction-type-icon {
+        color: #fff;
+        background: #198754;
+    }
+
+    #typeIncome:checked + .income-card .transaction-type-check {
+        color: #198754;
+        transform: scale(1.05);
+    }
+
+
+    /* ================================
+    SELECTED EXPENSE
+    ================================ */
+
+    #typeExpense:checked + .expense-card {
+        border-color: #dc3545;
+
+        background:
+            linear-gradient(
+                135deg,
+                rgba(220, 53, 69, 0.08),
+                rgba(220, 53, 69, 0.025)
+            );
+
+        box-shadow:
+            0 5px 18px rgba(220, 53, 69, 0.12);
+    }
+
+    #typeExpense:checked + .expense-card .transaction-type-icon {
+        color: #fff;
+        background: #dc3545;
+    }
+
+    #typeExpense:checked + .expense-card .transaction-type-check {
+        color: #dc3545;
+        transform: scale(1.05);
+    }
+
+
+    /* Keyboard accessibility */
+
+    .transaction-type-option .btn-check:focus-visible + .transaction-type-card {
+        outline: 3px solid rgba(13, 110, 253, 0.25);
+        outline-offset: 2px;
+    }
+
+
+    /* Mobile */
+
+    @media (max-width: 768px) {
+        .recurring-stat-card {
+            min-height: 125px;
+            padding: 1rem;
+        }
+
+        .recurring-stat-content {
+            min-height: 100px;
+        }
+
+        .recurring-stat-value {
+            font-size: 1.35rem;
+        }
+
+        .recurring-stat-illustration {
+            flex-basis: 64px;
+
+            width: 64px;
+            height: 64px;
+
+            border-radius: 17px;
+        }
+
+        .recurring-stat-illustration img {
+            width: 52px;
+            height: 52px;
+        }
+        .transaction-type-switch {
+            grid-template-columns: 1fr;
+        }
+
+        .transaction-type-card {
+            min-height: 70px;
+        }
+
+    }
+
+
+    /* --------------------------------------------------
+       MOBILE
+    -------------------------------------------------- */
+
+    @media (max-width: 767.98px) {
+        .recurring-hero {
+            padding: 1.25rem;
+        }
+
+        .stat-card {
+            padding: 1rem;
+        }
+
+        .filter-tabs {
+            width: 100%;
+        }
+
+        .filter-tabs .btn {
+            flex: 1;
+        }
+
+        .form-card {
+            position: static;
+        }
+    }
+</style>
+
+
+<div class="container-fluid px-3 px-lg-4 py-3 recurring-page">
+
+    <!-- ==================================================
+         HERO
+    ================================================== -->
+
+    <div class="recurring-hero">
+
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+
+            <div class="d-flex align-items-start gap-3">
+
+                <div class="hero-icon">
+                    <i class="bi bi-arrow-repeat"></i>
+                </div>
+
+                <div>
+                    <div class="small text-primary fw-bold text-uppercase mb-1">
+                        Financial automation
+                    </div>
+
+                    <h2 class="fw-bold mb-1">
+                        Recurring Transactions
+                    </h2>
+
+                    <p class="text-secondary mb-0">
+                        Manage recurring income and expenses and stay ahead
+                        of upcoming payments.
+                    </p>
+                </div>
+
+            </div>
+
+            <button
+                type="button"
+                class="btn btn-primary rounded-pill px-4 fw-semibold"
+                onclick="focusAddForm()"
+            >
+                <i class="bi bi-plus-lg me-1"></i>
+                Add Recurring
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- ==================================================
+         KPI CARDS
+    ================================================== -->
+
+    <div class="row g-3 mb-4">
+
+        <!-- Recurring Income -->
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="recurring-stat-card recurring-income">
+
+                <div class="recurring-stat-content">
+
+                    <div class="recurring-stat-info">
+
+                        <div class="recurring-stat-label">
+                            Recurring Income
+                        </div>
+
+                        <div
+                            id="incomeTotal"
+                            class="recurring-stat-value"
+                        >
+                            $0.00
+                        </div>
+
+                        <div class="recurring-stat-description">
+                            estimated monthly
+                        </div>
+
+                    </div>
+
+                    <div class="recurring-stat-illustration">
+                        <img
+                            src="https://cdn-icons-png.flaticon.com/512/2454/2454282.png"
+                            alt="Recurring income"
+                        >
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+
+        <!-- Recurring Expenses -->
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="recurring-stat-card recurring-expense">
+
+                <div class="recurring-stat-content">
+
+                    <div class="recurring-stat-info">
+
+                        <div class="recurring-stat-label">
+                            Recurring Expenses
+                        </div>
+
+                        <div
+                            id="expenseTotal"
+                            class="recurring-stat-value"
+                        >
+                            $0.00
+                        </div>
+
+                        <div class="recurring-stat-description">
+                            estimated monthly
+                        </div>
+
+                    </div>
+
+                    <div class="recurring-stat-illustration">
+                        <img
+                            src="https://cdn-icons-png.flaticon.com/512/2331/2331946.png"
+                            alt="Recurring expenses"
+                        >
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+
+        <!-- Active Schedules -->
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="recurring-stat-card recurring-active">
+
+                <div class="recurring-stat-content">
+
+                    <div class="recurring-stat-info">
+
+                        <div class="recurring-stat-label">
+                            Active Schedules
+                        </div>
+
+                        <div
+                            id="activeCount"
+                            class="recurring-stat-value"
+                        >
+                            0
+                        </div>
+
+                        <div
+                            id="totalCount"
+                            class="recurring-stat-description"
+                        >
+                            0 total schedules
+                        </div>
+
+                    </div>
+
+                    <div class="recurring-stat-illustration">
+                        <img
+                            src="https://cdn-icons-png.flaticon.com/512/747/747310.png"
+                            alt="Active schedules"
+                        >
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+
+        <!-- Next Due -->
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="recurring-stat-card recurring-next">
+
+                <div class="recurring-stat-content">
+
+                    <div class="recurring-stat-info">
+
+                        <div class="recurring-stat-label">
+                            Next Due
+                        </div>
+
+                        <div
+                            id="nextDueDate"
+                            class="recurring-stat-value text-truncate"
+                        >
+                            —
+                        </div>
+
+                        <div
+                            id="nextDueDescription"
+                            class="recurring-stat-description text-truncate"
+                        >
+                            Nothing scheduled
+                        </div>
+
+                    </div>
+
+                    <div class="recurring-stat-illustration">
+                        <img
+                            src="https://cdn-icons-png.flaticon.com/512/2088/2088617.png"
+                            alt="Next scheduled transaction"
+                        >
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+
+
+    <!-- ==================================================
+         MAIN CONTENT
+    ================================================== -->
+
+    <div class="row g-4 mb-4">
+
+
+        <!-- ==================================================
+             TRANSACTIONS
+        ================================================== -->
+
+        <div class="col-12 col-xl-8">
+
+            <div class="content-card">
+
+                <!-- Header -->
+
+                <div class="content-card-header">
+
+                    <div class="d-flex flex-column flex-md-row justify-content-between gap-3">
+
+                        <div>
+                            <h5 class="fw-bold mb-1">
+                                Your Recurring Transactions
+                            </h5>
+
+                            <p class="text-secondary small mb-0">
+                                View and manage your scheduled financial activity.
+                            </p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Controls -->
+
+                <div class="p-3 border-bottom">
+
+                    <div class="d-flex flex-column flex-md-row justify-content-between gap-3">
+
+                        <!-- Type -->
+
+                        <div class="filter-tabs">
+
+                            <button
+                                type="button"
+                                class="btn active"
+                                data-filter="all"
+                            >
+                                All
+                            </button>
+
+                            <button
+                                type="button"
+                                class="btn"
+                                data-filter="income"
+                            >
+                                <i class="bi bi-arrow-down-left me-1"></i>
+                                Income
+                            </button>
+
+                            <button
+                                type="button"
+                                class="btn"
+                                data-filter="expense"
+                            >
+                                <i class="bi bi-arrow-up-right me-1"></i>
+                                Expense
+                            </button>
+
+                        </div>
+
+
+                        <!-- Search -->
+
+                        <div
+                            class="input-group"
+                            style="max-width: 260px;"
+                        >
+
+                            <span class="input-group-text bg-body-tertiary">
+                                <i class="bi bi-search text-secondary"></i>
+                            </span>
+
+                            <input
+                                type="search"
+                                id="searchInput"
+                                class="form-control"
+                                placeholder="Search transactions..."
+                            >
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Table -->
+
+                <div class="table-responsive recurring-table-wrapper">
+
+                    <table class="table recurring-table mb-0">
+
+                        <thead>
+
+                            <tr>
+                                <th>Type</th>
+                                <th>Category</th>
+                                <th>Description</th>
+                                <th>Amount</th>
+                                <th>Frequency</th>
+                                <th>Next Due</th>
+                                <th>Status</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody id="transactionsTable">
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+
+                <!-- Empty -->
+
+                <div
+                    id="emptyState"
+                    class="empty-state d-none"
+                >
+
+                    <div class="empty-icon">
+                        <i class="bi bi-arrow-repeat"></i>
+                    </div>
+
+                    <h5 class="fw-bold">
+                        No recurring transactions
+                    </h5>
+
+                    <p class="text-secondary small mb-3">
+                        Create a recurring income or expense to start
+                        automating your financial tracking.
+                    </p>
+
+                    <button
+                        class="btn btn-primary rounded-pill px-4"
+                        onclick="focusAddForm()"
+                    >
+                        <i class="bi bi-plus-lg me-1"></i>
+                        Create Schedule
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ==================================================
+             ADD FORM
+        ================================================== -->
+        <div class="col-12 col-xl-4">
+
+            <div
+                id="addRecurringCard"
+                class="content-card form-card"
+            >
+
+                <div class="content-card-header">
+
+                    <h5 class="fw-bold mb-1">
+                        Add Recurring Transaction
+                    </h5>
+
+                    <p class="text-secondary small mb-0">
+                        Create a schedule for future income or expenses.
+                    </p>
+
+                </div>
+
+
+                <div class="p-3">
+
+                    <!-- ==================================================
+                        TYPE
+                        ================================================== -->
+
+                    <div class="mb-4">
+
+                        <div class="form-section-title mb-2">
+                            Transaction type
+                        </div>
+
+                        <div class="transaction-type-switch">
+
+                            <!-- Income -->
+
+                            <div class="transaction-type-option">
+
+                                <input
+                                    type="radio"
+                                    class="btn-check"
+                                    name="transaction_type"
+                                    id="typeIncome"
+                                    value="income"
+                                    checked
+                                >
+
+                                <label
+                                    for="typeIncome"
+                                    class="transaction-type-card income-card"
+                                >
+
+                                    <div class="transaction-type-icon">
+                                        <i class="bi bi-arrow-down-left"></i>
+                                    </div>
+
+                                    <div class="transaction-type-content">
+
+                                        <span class="transaction-type-title">
+                                            Income
+                                        </span>
+
+                                        <span class="transaction-type-description">
+                                            Money in
+                                        </span>
+
+                                    </div>
+
+                                    <div class="transaction-type-check">
+                                        <i class="bi bi-check-circle-fill"></i>
+                                    </div>
+
+                                </label>
+
+                            </div>
+
+
+                            <!-- Expense -->
+
+                            <div class="transaction-type-option">
+
+                                <input
+                                    type="radio"
+                                    class="btn-check"
+                                    name="transaction_type"
+                                    id="typeExpense"
+                                    value="expense"
+                                >
+
+                                <label
+                                    for="typeExpense"
+                                    class="transaction-type-card expense-card"
+                                >
+
+                                    <div class="transaction-type-icon">
+                                        <i class="bi bi-arrow-up-right"></i>
+                                    </div>
+
+                                    <div class="transaction-type-content">
+
+                                        <span class="transaction-type-title">
+                                            Expense
+                                        </span>
+
+                                        <span class="transaction-type-description">
+                                            Money out
+                                        </span>
+
+                                    </div>
+
+                                    <div class="transaction-type-check">
+                                        <i class="bi bi-check-circle-fill"></i>
+                                    </div>
+
+                                </label>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- ==================================================
+                        ONE FORM
+                        ================================================== -->
+
+                    <form
+                        method="POST"
+                        action="{{ url_for('incomes.create') }}"
+                        id="recurringForm"
+                    >
+
+                        {{ income_form.csrf_token }}
+
+                        <!-- ==================================================
+                            INCOME
+                            ================================================== -->
+
+                        <div id="incomeFormContainer">
+
+                            {% with form=income_form %}
+                                {% include "recurring_transactions/_form_income.html" %}
+                            {% endwith %}
+
+                        </div>
+
+
+                        <!-- ==================================================
+                            EXPENSE
+                            ================================================== -->
+
+                        <div
+                            id="expenseFormContainer"
+                            hidden
+                        >
+
+                            {% with form=expense_form %}
+                                {% include "recurring_transactions/_form_expense.html" %}
+                            {% endwith %}
+
+                        </div>
+
+
+                        <!-- ==================================================
+                            TYPE FLAGS
+                            ================================================== -->
+
+                        <input
+                            type="hidden"
+                            name="income_type"
+                            id="incomeType"
+                            value="recurring"
+                        >
+
+                        <input
+                            type="hidden"
+                            name="expense_type"
+                            id="expenseType"
+                            value="recurring"
+                        >
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+    <!-- ==================================================
+         HOW IT WORKS
+    ================================================== -->
+
+    <div class="content-card">
+
+        <div class="p-4">
+
+            <div class="d-flex align-items-center gap-2 mb-4">
+
+                <div class="hero-icon" style="
+                    width: 38px;
+                    height: 38px;
+                    border-radius: 11px;
+                    font-size: 1rem;
+                ">
+                    <i class="bi bi-lightbulb"></i>
+                </div>
+
+                <div>
+                    <h6 class="fw-bold mb-0">
+                        How recurring transactions work
+                    </h6>
+
+                    <small class="text-secondary">
+                        Automate your regular financial activity.
+                    </small>
+                </div>
+
+            </div>
+
+
+            <div class="row g-4">
+
+                <div class="col-12 col-md-6 col-xl-3">
+
+                    <div class="step-item">
+
+                        <span class="step-number">
+                            1
+                        </span>
+
+                        <div>
+                            <div class="fw-semibold small mb-1">
+                                Create a schedule
+                            </div>
+
+                            <div class="text-secondary small">
+                                Set the amount, category and frequency.
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="col-12 col-md-6 col-xl-3">
+
+                    <div class="step-item">
+
+                        <span class="step-number">
+                            2
+                        </span>
+
+                        <div>
+                            <div class="fw-semibold small mb-1">
+                                Track what's next
+                            </div>
+
+                            <div class="text-secondary small">
+                                See upcoming payments directly on this page.
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="col-12 col-md-6 col-xl-3">
+
+                    <div class="step-item">
+
+                        <span class="step-number">
+                            3
+                        </span>
+
+                        <div>
+                            <div class="fw-semibold small mb-1">
+                                Manage schedules
+                            </div>
+
+                            <div class="text-secondary small">
+                                Pause or remove schedules whenever needed.
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="col-12 col-md-6 col-xl-3">
+
+                    <div class="step-item">
+
+                        <span class="step-number">
+                            4
+                        </span>
+
+                        <div>
+                            <div class="fw-semibold small mb-1">
+                                Stay organized
+                            </div>
+
+                            <div class="text-secondary small">
+                                Keep your recurring financial commitments visible.
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ==================================================
+     TRANSACTION DETAILS MODAL
+================================================== -->
+
+<div
+    class="modal fade"
+    id="transactionModal"
+    tabindex="-1"
+    aria-labelledby="transactionModalLabel"
+    aria-hidden="true"
+>
+
+    <div class="modal-dialog modal-dialog-centered">
+
+        <div class="modal-content border-0 shadow-lg rounded-4">
+
+            <!-- Header -->
+
+            <div class="modal-header border-0 pb-2">
+
+                <div>
+
+                    <div
+                        id="modalType"
+                        class="small fw-semibold mb-1"
+                    >
+                        Income
+                    </div>
+
+                    <h5
+                        class="modal-title fw-bold"
+                        id="transactionModalLabel"
+                    >
+                        Transaction Details
+                    </h5>
+
+                </div>
+
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                ></button>
+
+            </div>
+
+
+            <!-- Body -->
+
+            <div class="modal-body pt-2">
+
+                <!-- Amount -->
+
+                <div class="text-center py-3">
+
+                    <div
+                        class="small text-secondary mb-1"
+                    >
+                        Amount
+                    </div>
+
+                    <div
+                        id="modalAmount"
+                        class="fs-2 fw-bold"
+                    >
+                        $0.00
+                    </div>
+
+                </div>
+
+
+                <!-- Details -->
+
+                <div class="transaction-detail-list">
+
+                    <div class="transaction-detail-item">
+
+                        <span>
+                            <i class="bi bi-tag me-2"></i>
+                            Category
+                        </span>
+
+                        <strong id="modalCategory">
+                            -
+                        </strong>
+
+                    </div>
+
+
+                    <div class="transaction-detail-item">
+
+                        <span>
+                            <i class="bi bi-card-text me-2"></i>
+                            Description
+                        </span>
+
+                        <strong id="modalDescription">
+                            -
+                        </strong>
+
+                    </div>
+
+
+                    <div class="transaction-detail-item">
+
+                        <span>
+                            <i class="bi bi-arrow-repeat me-2"></i>
+                            Frequency
+                        </span>
+
+                        <strong id="modalFrequency">
+                            -
+                        </strong>
+
+                    </div>
+
+
+                    <div class="transaction-detail-item">
+
+                        <span>
+                            <i class="bi bi-calendar-event me-2"></i>
+                            Next Due
+                        </span>
+
+                        <strong id="modalNextDue">
+                            -
+                        </strong>
+
+                    </div>
+
+
+                    <div class="transaction-detail-item">
+
+                        <span>
+                            <i class="bi bi-circle me-2"></i>
+                            Status
+                        </span>
+
+                        <strong id="modalStatus">
+                            -
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Footer -->
+
+            <div class="modal-footer border-0 pt-0">
+
+                <button
+                    type="button"
+                    class="btn btn-light rounded-3"
+                    data-bs-dismiss="modal"
+                >
+                    Close
+                </button>
+            </div>
+
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ==================================================
+     JAVASCRIPT
+================================================== -->
+
+<script>
+
+    const API_URL = "{{ url_for('recurring_transactions.get_recurring_transactions') }}";
+
+    let transactions = [];
+    let currentFilter = "all";
+
+
+    /* --------------------------------------------------
+       Helpers
+    -------------------------------------------------- */
+
+    function money(value) {
+        return new Intl.NumberFormat("en-US", {
+            style: "currency",
+            currency: "USD"
+        }).format(Number(value || 0));
+    }
+
+
+    function formatDate(value) {
+
+        if (!value) {
+            return "—";
+        }
+
+        const date = new Date(value + "T00:00:00");
+
+        return date.toLocaleDateString("en-US", {
+            month: "short",
+            day: "numeric",
+            year: "numeric"
+        });
+    }
+
+
+    function escapeHtml(value) {
+
+        if (value === null || value === undefined) {
+            return "";
+        }
+
+        return String(value)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+
+    function getTypeBadge(type) {
+
+        if (type === "income") {
+
+            return `
+                <span class="soft-badge soft-success">
+                    <i class="bi bi-arrow-down-left"></i>
+                    Income
+                </span>
+            `;
+
+        }
+
+        return `
+            <span class="soft-badge soft-danger">
+                <i class="bi bi-arrow-up-right"></i>
+                Expense
+            </span>
+        `;
+    }
+
+
+
+    function getFrequencyBadge(period) {
+
+        const purplePeriods = [
+            "weekly",
+            "yearly"
+        ];
+
+        const className = purplePeriods.includes(period)
+            ? "soft-purple"
+            : "soft-primary";
+
+        const label =
+            period.charAt(0).toUpperCase()
+            + period.slice(1);
+
+        return `
+            <span class="soft-badge ${className}">
+                <i class="bi bi-arrow-repeat"></i>
+                ${escapeHtml(label)}
+            </span>
+        `;
+    }
+
+
+    function getStatusBadge(active) {
+
+        if (active) {
+
+            return `
+                <span class="soft-badge soft-success">
+                    <i class="bi bi-check-circle"></i>
+                    Active
+                </span>
+            `;
+
+        }
+
+        return `
+            <span class="soft-badge soft-secondary">
+                <i class="bi bi-pause-circle"></i>
+                Paused
+            </span>
+        `;
+    }
+
+
+    /* --------------------------------------------------
+       Load transactions
+    -------------------------------------------------- */
+
+    async function loadTransactions() {
+
+        try {
+
+            const response = await fetch(API_URL, {
+                method: "GET",
+                headers: {
+                    "Accept": "application/json"
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to load transactions.");
+            }
+
+            const result = await response.json();
+
+            transactions = result.data || [];
+
+            render();
+
+        } catch (error) {
+
+            console.error(error);
+
+            showToast(
+                "Unable to load recurring transactions.",
+                "danger"
+            );
+
+        }
+    }
+
+
+    /* --------------------------------------------------
+       Render
+    -------------------------------------------------- */
+
+    function render() {
+
+        updateStats();
+        renderTable();
+
+    }
+
+
+    /* --------------------------------------------------
+       Statistics
+    -------------------------------------------------- */
+
+    function updateStats() {
+
+        const active = transactions.filter(
+            transaction => transaction.is_active
+        );
+
+        const income = active
+            .filter(t => t.transaction_type === "income")
+            .reduce(
+                (total, t) => total + Number(t.amount || 0),
+                0
+            );
+
+        const expense = active
+            .filter(t => t.transaction_type === "expense")
+            .reduce(
+                (total, t) => total + Number(t.amount || 0),
+                0
+            );
+
+        document.getElementById("incomeTotal").textContent =
+            money(income);
+
+        document.getElementById("expenseTotal").textContent =
+            money(expense);
+
+        document.getElementById("activeCount").textContent =
+            active.length;
+
+        document.getElementById("totalCount").textContent =
+            `${transactions.length} total schedule${transactions.length === 1 ? "" : "s"}`;
+
+
+        const upcoming = active
+            .filter(t => t.next_due_date)
+            .sort(
+                (a, b) =>
+                    new Date(a.next_due_date)
+                    - new Date(b.next_due_date)
+            );
+
+
+        if (upcoming.length) {
+
+            const next = upcoming[0];
+
+            document.getElementById("nextDueDate").textContent =
+                formatDate(next.next_due_date);
+
+            document.getElementById("nextDueDescription").textContent =
+                `${next.description || next.category} · ${money(next.amount)}`;
+
+        } else {
+
+            document.getElementById("nextDueDate").textContent =
+                "—";
+
+            document.getElementById("nextDueDescription").textContent =
+                "Nothing scheduled";
+        }
+    }
+
+
+    /* --------------------------------------------------
+       Filter
+    -------------------------------------------------- */
+
+    function getFilteredTransactions() {
+
+        const search =
+            document
+                .getElementById("searchInput")
+                .value
+                .trim()
+                .toLowerCase();
+
+
+        return transactions.filter(transaction => {
+
+            const matchesType =
+                currentFilter === "all"
+                || transaction.transaction_type === currentFilter;
+
+
+            const searchable = [
+                transaction.category,
+                transaction.description,
+                transaction.recurring_period
+            ]
+                .filter(Boolean)
+                .join(" ")
+                .toLowerCase();
+
+
+            const matchesSearch =
+                !search
+                || searchable.includes(search);
+
+
+            return matchesType && matchesSearch;
+
+        });
+    }
+
+
+    /* --------------------------------------------------
+       Render table
+    -------------------------------------------------- */
+    let selectedTransaction = null;
+
+    function openTransactionModal(transaction) {
+
+        selectedTransaction = transaction;
+
+        const isIncome =
+            transaction.transaction_type === "income";
+
+
+        // Type
+
+        const typeElement =
+            document.getElementById("modalType");
+
+        typeElement.textContent =
+            isIncome ? "Income" : "Expense";
+
+        typeElement.classList.toggle(
+            "expense",
+            !isIncome
+        );
+
+
+        // Amount
+
+        const amountElement =
+            document.getElementById("modalAmount");
+
+        amountElement.textContent =
+            (isIncome ? "+" : "-") +
+            money(transaction.amount);
+
+        amountElement.classList.remove(
+            "income",
+            "expense"
+        );
+
+        amountElement.classList.add(
+            isIncome ? "income" : "expense"
+        );
+
+
+        // Details
+
+        document.getElementById(
+            "modalCategory"
+        ).textContent =
+            transaction.category || "—";
+
+        document.getElementById(
+            "modalDescription"
+        ).textContent =
+            transaction.description || "—";
+
+        document.getElementById(
+            "modalFrequency"
+        ).textContent =
+            transaction.recurring_period || "—";
+
+        document.getElementById(
+            "modalNextDue"
+        ).textContent =
+            formatDate(transaction.next_due_date);
+
+        document.getElementById(
+            "modalStatus"
+        ).textContent =
+            transaction.is_active
+                ? "Active"
+                : "Paused";
+
+        // Show modal
+
+        const modalElement =
+            document.getElementById(
+                "transactionModal"
+            );
+
+        const modal =
+            bootstrap.Modal.getOrCreateInstance(
+                modalElement
+            );
+
+        modal.show();
+    }
+
+
+    function renderTable() {
+
+        const tbody =
+            document.getElementById("transactionsTable");
+
+        const emptyState =
+            document.getElementById("emptyState");
+
+        const filtered =
+            getFilteredTransactions();
+
+
+        tbody.innerHTML = "";
+
+
+        if (!filtered.length) {
+
+            emptyState.classList.remove("d-none");
+
+            return;
+        }
+
+
+        emptyState.classList.add("d-none");
+
+
+        filtered.forEach(transaction => {
+
+            const row = document.createElement("tr");
+
+            const amountClass =
+                transaction.transaction_type === "income"
+                    ? "text-success"
+                    : "text-danger";
+
+
+            /*
+            * Store transaction information on the row.
+            * This lets us open the modal when the row is clicked.
+            */
+
+            row.dataset.transactionId =
+                transaction.id;
+
+
+            row.innerHTML = `
+
+                <td>
+                    ${getTypeBadge(transaction.transaction_type)}
+                </td>
+
+                <td>
+                    <span class="fw-semibold">
+                        ${escapeHtml(transaction.category)}
+                    </span>
+                </td>
+
+                <td>
+                    <span class="text-secondary">
+                        ${escapeHtml(
+                            transaction.description || "—"
+                        )}
+                    </span>
+                </td>
+
+                <td>
+                    <span class="fw-bold ${amountClass}">
+                        ${
+                            transaction.transaction_type === "income"
+                                ? "+"
+                                : "-"
+                        }
+
+                        ${money(transaction.amount)}
+                    </span>
+                </td>
+
+                <td>
+                    ${getFrequencyBadge(
+                        transaction.recurring_period
+                    )}
+                </td>
+
+                <td class="text-secondary">
+                    ${formatDate(
+                        transaction.next_due_date
+                    )}
+                </td>
+
+                <td>
+                    ${getStatusBadge(
+                        transaction.is_active
+                    )}
+                </td>
+
+            `;
+
+
+            /*
+            * Clicking anywhere on the row
+            * opens the transaction modal.
+            */
+
+            row.addEventListener("click", function () {
+
+                openTransactionModal(transaction);
+
+            });
+
+
+            tbody.appendChild(row);
+
+        });
+
+    }
+    /* --------------------------------------------------
+       Activate
+       
+       Your current backend does not have an activate route.
+       We use the update endpoint to set is_active = true.
+    -------------------------------------------------- */
+
+    async function activateTransaction(id) {
+
+        try {
+
+            const response = await fetch(
+                "{{ url_for('recurring_transactions.update_recurring_transaction', recurring_id=0) }}"
+                    .replace("/0", `/${id}`),
+                {
+                    method: "PATCH",
+
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Accept": "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        is_active: true
+                    })
+                }
+            );
+
+
+            const result = await response.json();
+
+
+            if (!response.ok) {
+                throw new Error(
+                    result.message || "Unable to activate."
+                );
+            }
+
+
+            showToast(
+                "Recurring transaction activated.",
+                "success"
+            );
+
+
+            await loadTransactions();
+
+
+        } catch (error) {
+
+            showToast(
+                error.message,
+                "danger"
+            );
+
+        }
+
+    }
+
+    /* --------------------------------------------------
+       Filter buttons
+    -------------------------------------------------- */
+
+    document
+        .querySelectorAll("[data-filter]")
+        .forEach(button => {
+
+            button.addEventListener(
+                "click",
+                function() {
+
+                    document
+                        .querySelectorAll("[data-filter]")
+                        .forEach(btn =>
+                            btn.classList.remove("active")
+                        );
+
+
+                    this.classList.add("active");
+
+                    currentFilter =
+                        this.dataset.filter;
+
+
+                    renderTable();
+
+                }
+            );
+
+        });
+
+
+    /* --------------------------------------------------
+       Search
+    -------------------------------------------------- */
+
+    document
+        .getElementById("searchInput")
+        .addEventListener(
+            "input",
+            renderTable
+        );
+
+
+    /* --------------------------------------------------
+       Default date
+    -------------------------------------------------- */
+
+    function setDefaultStartDate() {
+        const today = new Date()
+            .toISOString()
+            .split("T")[0];
+
+        const incomeStartDate =
+            document.getElementById("income_start_date");
+
+        const expenseStartDate =
+            document.getElementById("expense_start_date");
+
+        if (
+            document.getElementById("typeIncome").checked &&
+            incomeStartDate &&
+            !incomeStartDate.value
+        ) {
+            incomeStartDate.value = today;
+        }
+
+        if (
+            document.getElementById("typeExpense").checked &&
+            expenseStartDate &&
+            !expenseStartDate.value
+        ) {
+            expenseStartDate.value = today;
+        }
+    }
+
+
+    /* --------------------------------------------------
+       Focus form
+    -------------------------------------------------- */
+
+    function focusAddForm() {
+
+        const card =
+            document.getElementById(
+                "addRecurringCard"
+            );
+
+
+        card.scrollIntoView({
+            behavior: "smooth",
+            block: "center"
+        });
+
+
+        setTimeout(() => {
+
+            document
+                .getElementById("category")
+                .focus();
+
+        }, 500);
+
+    }
+
+
+    /* --------------------------------------------------
+       Toast
+    -------------------------------------------------- */
+
+    function showToast(message, type = "success") {
+
+        let container =
+            document.getElementById(
+                "recurringToastContainer"
+            );
+
+
+        if (!container) {
+
+            container =
+                document.createElement("div");
+
+            container.id =
+                "recurringToastContainer";
+
+            container.className =
+                "toast-container position-fixed bottom-0 end-0 p-3";
+
+            document.body.appendChild(container);
+
+        }
+
+
+        const toast =
+            document.createElement("div");
+
+
+        const icon =
+            type === "success"
+                ? "check-circle-fill"
+                : type === "warning"
+                    ? "exclamation-triangle-fill"
+                    : "x-circle-fill";
+
+
+        toast.className =
+            `toast align-items-center border-0 text-bg-${type}`;
+
+
+        toast.setAttribute(
+            "role",
+            "alert"
+        );
+
+
+        toast.innerHTML = `
+
+            <div class="d-flex">
+
+                <div class="toast-body">
+                    <i class="bi bi-${icon} me-2"></i>
+                    ${escapeHtml(message)}
+                </div>
+
+                <button
+                    type="button"
+                    class="btn-close btn-close-white me-2 m-auto"
+                    data-bs-dismiss="toast"
+                ></button>
+
+            </div>
+
+        `;
+
+
+        container.appendChild(toast);
+
+
+        const bsToast =
+            new bootstrap.Toast(
+                toast,
+                {
+                    delay: 3000
+                }
+            );
+
+
+        bsToast.show();
+
+
+        toast.addEventListener(
+            "hidden.bs.toast",
+            () => toast.remove()
+        );
+
+    }
+
+
+    /* --------------------------------------------------
+       Initial load
+    -------------------------------------------------- */
+
+    document.addEventListener(
+    "DOMContentLoaded",
+    function() {
+
+        const recurringForm =
+            document.getElementById("recurringForm");
+
+        const incomeRadio =
+            document.getElementById("typeIncome");
+
+        const expenseRadio =
+            document.getElementById("typeExpense");
+
+        const incomeContainer =
+            document.getElementById("incomeFormContainer");
+
+        const expenseContainer =
+            document.getElementById("expenseFormContainer");
+
+
+        function setContainerEnabled(container, enabled) {
+
+            const fields =
+                container.querySelectorAll(
+                    "input, select, textarea, button"
+                );
+
+            fields.forEach(function(field) {
+
+                field.disabled = !enabled;
+
+            });
+        }
+
+
+        function switchForm() {
+
+            if (incomeRadio.checked) {
+
+                incomeContainer.hidden = false;
+                expenseContainer.hidden = true;
+
+                setContainerEnabled(
+                    incomeContainer,
+                    true
+                );
+
+                setContainerEnabled(
+                    expenseContainer,
+                    false
+                );
+
+                recurringForm.action =
+                    "{{ url_for('incomes.create') }}";
+
+
+            } else {
+
+                incomeContainer.hidden = true;
+                expenseContainer.hidden = false;
+
+                setContainerEnabled(
+                    incomeContainer,
+                    false
+                );
+
+                setContainerEnabled(
+                    expenseContainer,
+                    true
+                );
+
+                recurringForm.action =
+                    "{{ url_for('expenses.create') }}";
+            }
+        }
+
+
+        incomeRadio.addEventListener(
+            "change",
+            switchForm
+        );
+
+        expenseRadio.addEventListener(
+            "change",
+            switchForm
+        );
+
+
+        switchForm();
+
+        setDefaultStartDate();
+
+        loadTransactions();
+
+    }
+);
+
+
+</script>
+
+{% endblock %}

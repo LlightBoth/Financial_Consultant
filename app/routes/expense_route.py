@@ -58,49 +58,127 @@ def detail(expense_id):
 @login_required
 def create():
     form = ExpenseForm()
-
     if form.validate_on_submit():
+        expense_type = request.form.get("expense_type", "onetime")
+
         data = {
             "amount": form.amount.data,
             "description": form.description.data,
             "category": form.category.data,
             "expense_date": form.expense_date.data,
-            "recurring_period": form.recurring_period.data,
+
+            "expense_type": expense_type,
+
+            "recurring_period": (
+                form.recurring_period.data
+                if expense_type == "recurring"
+                else None
+            ),
+
+            "start_date": (
+                form.start_date.data
+                if expense_type == "recurring"
+                else None
+            ),
+
+            "end_date": (
+                form.end_date.data
+                if expense_type == "recurring"
+                else None
+            ),
         }
 
-        expense = ExpenseServices.create_expense(data, current_user)
-        flash(_("message.expense_created_success", amount=f"${expense.amount:.2f}"), "success")
-        return redirect(url_for("expenses.index"))
+        try:
+            ExpenseServices.create_expense(data=data, user=current_user)
+            flash("expense created successfully.", "success")
+            return redirect(url_for("expenses.index"))
 
-    return render_template("expenses/create.html", form=form)
+        except ValueError as e:
+            flash(str(e), "danger")
+
+    return render_template(
+        "expenses/create.html",
+        form=form,
+        submit_label="Save expense"
+    )
+
+
 
 
 # --------------------------------------------------
-# Edit Expense
+# Edit expense
 # --------------------------------------------------
 @expense_bp.route("/<int:expense_id>/edit", methods=["GET", "POST"])
 @login_required
 def edit(expense_id):
     expense = ExpenseServices.get_expense_id(expense_id, current_user.id)
+
     if expense is None:
         abort(404)
 
-    form = EditExpenseForm(original_expense=expense, obj=expense)
+    recurring = expense.recurring_transaction
+    form = EditExpenseForm(original_expense=expense)
 
+    # --------------------------------------------------
+    # GET
+    # Populate existing values
+    # --------------------------------------------------
+    if request.method == "GET":
+
+        form.amount.data = expense.amount
+        form.description.data = expense.description
+        form.category.data = expense.category
+        form.expense_date.data = expense.expense_date
+
+        if recurring:
+            form.recurring_period.data = recurring.recurring_period
+            form.start_date.data = recurring.start_date
+            form.end_date.data = recurring.end_date
+
+    # --------------------------------------------------
+    # POST
+    # --------------------------------------------------
     if form.validate_on_submit():
+        expense_type = request.form.get("expense_type", "onetime")
+
         data = {
             "amount": form.amount.data,
             "description": form.description.data,
             "category": form.category.data,
             "expense_date": form.expense_date.data,
-            "recurring_period": form.recurring_period.data,
+
+            "expense_type": expense_type,
+
+            "recurring_period": (
+                form.recurring_period.data
+                if expense_type == "recurring"
+                else None
+            ),
+
+            "start_date": (
+                form.start_date.data
+                if expense_type == "recurring"
+                else None
+            ),
+
+            "end_date": (
+                form.end_date.data
+                if expense_type == "recurring"
+                else None
+            ),
         }
 
         ExpenseServices.update_expense(expense, data)
-        flash(_("message.expense_updated_success", amount=f"${expense.amount:.2f}"), "success")
+        flash(f"expense of ${expense.amount:.2f} updated successfully.", "success")
+
         return redirect(url_for("expenses.index"))
 
-    return render_template("expenses/edit.html", form=form, expense=expense)
+    return render_template(
+        "expenses/edit.html",
+        form=form,
+        expense=expense,
+        expense_type="recurring" if recurring else "onetime"
+    )
 
 
 # --------------------------------------------------

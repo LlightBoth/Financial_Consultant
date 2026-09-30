@@ -22,7 +22,7 @@ class Expense(db.Model):
     expense_date = db.Column(db.Date, nullable=False)
 
     # Monthly / Yearly / Weekly
-    recurring_period = db.Column(db.String(20), nullable=True)
+    recurring_transaction_id = db.Column(db.Integer, db.ForeignKey("recurring_transactions.id"), nullable=True)
 
     created_at = db.Column(
         db.DateTime,
@@ -39,7 +39,7 @@ class Expense(db.Model):
 
     # Relationship
     users = db.relationship("User", secondary=user_expenses, back_populates="expenses")
-    
+    recurring_transaction = db.relationship("RecurringTransaction", back_populates="expenses")
 
     def __repr__(self):
         return f"<Expense {self.amount} - {self.category}>"

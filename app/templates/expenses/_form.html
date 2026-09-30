@@ -2,27 +2,574 @@
 
 {{ form.hidden_tag() }}
 
-<div class="row g-3 mb-3">
-    <div class="col-12 col-md-6">
-        {{ f.render_field(form.amount, placeholder="0.00", icon="bi bi-currency-dollar") }}
-    </div>
-    <div class="col-12 col-md-6">
-        {{ f.render_field(form.expense_date, icon="bi bi-calendar-event", type="date") }}
-    </div>
-    <div class="col-12 col-md-6">
-        {{ f.render_select(form.category, icon="bi bi-tag") }}
-    </div>
-    <div class="col-12 col-md-6">
-        {{ f.render_select(form.recurring_period, icon="bi bi-arrow-repeat") }}
-    </div>
-    <div class="col-12">
-        {{ f.render_textarea(form.description, rows=3, placeholder=_('expense.description_placeholder')) }}
-    </div>
-</div>
+<style> .expense-form-wrapper { max-width: 1000px; margin: 0 auto; }
+/* -----------------------------------------
+   Step indicator
+----------------------------------------- */
+.expense-steps {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 2rem 0;
+}
 
-{{ f.render_form_buttons(
-    submit_label=submit_label or _('expense.save_expense'), 
-    cancel_url=url_for('expenses.index'), 
-    submit_class="btn-primary", 
-    submit_icon="bi bi-check-circle"
-) }}
+.expense-step {
+    display: flex;
+    align-items: center;
+    color: var(--bs-secondary-color);
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.expense-step-number {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bs-tertiary-bg);
+    border: 1px solid var(--bs-border-color);
+    margin-right: 8px;
+    transition: all 0.25s ease;
+}
+
+.expense-step.active {
+    color: var(--bs-primary);
+}
+
+.expense-step.active .expense-step-number {
+    background: var(--bs-primary);
+    border-color: var(--bs-primary);
+    color: white;
+    box-shadow: 0 4px 12px rgba(var(--bs-primary-rgb), 0.25);
+}
+
+.expense-step-line {
+    width: 80px;
+    height: 1px;
+    background: var(--bs-border-color);
+    margin: 0 18px;
+}
+
+/* -----------------------------------------
+   Transaction selection cards
+----------------------------------------- */
+.expense-type-card {
+    position: relative;
+    height: 100%;
+    cursor: pointer;
+    border: 2px solid var(--bs-border-color);
+    border-radius: 20px;
+    overflow: hidden;
+    background: var(--bs-body-bg);
+    transition:
+        transform 0.25s ease,
+        border-color 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+.expense-type-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(var(--bs-primary-rgb), 0.5);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+}
+
+.expense-type-card.selected {
+    border-color: var(--bs-primary);
+    box-shadow:
+        0 12px 30px rgba(var(--bs-primary-rgb), 0.12),
+        inset 0 0 0 1px var(--bs-primary);
+}
+
+.expense-type-card.recurring.selected {
+    border-color: var(--bs-success);
+    box-shadow:
+        0 12px 30px rgba(var(--bs-success-rgb), 0.12),
+        inset 0 0 0 1px var(--bs-success);
+}
+
+.expense-type-radio {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.expense-type-image {
+    height: 190px;
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(
+        135deg,
+        rgba(var(--bs-primary-rgb), 0.12),
+        rgba(var(--bs-primary-rgb), 0.03)
+    );
+}
+
+.expense-type-card.recurring .expense-type-image {
+    background: linear-gradient(
+        135deg,
+        rgba(var(--bs-success-rgb), 0.14),
+        rgba(var(--bs-success-rgb), 0.03)
+    );
+}
+
+/*
+   Replace these local image paths with your
+   Freepik / custom illustrations later.
+
+   Recommended:
+   /static/images/expense-onetime.jpg
+   /static/images/expense-recurring.jpg
+*/
+.expense-type-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+
+.expense-type-card:hover .expense-type-image img {
+    transform: scale(1.04);
+}
+
+.expense-image-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        to top,
+        rgba(0, 0, 0, 0.45),
+        rgba(0, 0, 0, 0.02)
+    );
+}
+
+.expense-icon-badge {
+    position: absolute;
+    left: 18px;
+    bottom: 16px;
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.95);
+    color: var(--bs-primary);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+}
+
+.recurring .expense-icon-badge {
+    color: var(--bs-success);
+}
+
+.expense-selected-badge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    display: none;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: var(--bs-primary);
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.recurring .expense-selected-badge {
+    background: var(--bs-success);
+}
+
+.expense-type-card.selected .expense-selected-badge {
+    display: flex;
+}
+
+.expense-type-content {
+    padding: 1.4rem;
+}
+
+.expense-type-content h5 {
+    font-weight: 700;
+    margin-bottom: 0.45rem;
+}
+
+.expense-type-content p {
+    color: var(--bs-secondary-color);
+    font-size: 0.9rem;
+    margin-bottom: 0;
+    line-height: 1.6;
+}
+
+/* -----------------------------------------
+   Form section
+----------------------------------------- */
+.expense-form-section {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 18px;
+    background: var(--bs-body-bg);
+}
+
+.expense-section-heading {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 1.5rem;
+}
+
+.expense-section-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bs-primary-bg-subtle);
+    color: var(--bs-primary);
+}
+
+.expense-section-heading h5 {
+    margin: 0;
+    font-weight: 700;
+}
+
+.expense-section-heading p {
+    margin: 2px 0 0;
+    font-size: 0.8rem;
+    color: var(--bs-secondary-color);
+}
+
+/* -----------------------------------------
+   Recurring settings
+----------------------------------------- */
+#recurring-fields {
+    display: none;
+    animation: slideDown 0.25s ease;
+}
+
+#recurring-fields.visible {
+    display: block;
+}
+
+.recurring-settings-card {
+    margin-top: 1.5rem;
+    padding: 1.25rem;
+    border-radius: 16px;
+    background: var(--bs-success-bg-subtle);
+    border: 1px solid rgba(var(--bs-success-rgb), 0.2);
+}
+
+.recurring-settings-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 1rem;
+}
+
+.recurring-settings-header i {
+    color: var(--bs-success);
+}
+
+.recurring-settings-header strong {
+    font-size: 0.95rem;
+}
+
+/* -----------------------------------------
+   Bottom action area
+----------------------------------------- */
+.expense-form-actions {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--bs-border-color);
+}
+
+.expense-form-actions .btn {
+    min-height: 48px;
+    border-radius: 12px;
+    font-weight: 600;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 767px) {
+    .expense-steps {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        /* justify-content: flex-start; */
+    }
+
+    .expense-step-line {
+        width: 35px;
+        margin: 0 10px;
+    }
+
+    .expense-step span:not(.expense-step-number) {
+        display: none;
+    }
+
+    .expense-type-image {
+        height: 160px;
+    }
+
+    .expense-form-section {
+        padding: 1rem;
+    }
+
+    .expense-form-actions {
+        margin-top: 1.5rem;
+    }
+}
+
+</style> 
+
+<div class="expense-form-wrapper">
+
+    <!-- =========================================
+         STEPS
+    ========================================== -->
+    <div class="expense-steps">
+        <div class="expense-step active" id="step-type">
+            <span class="expense-step-number">1</span>
+            <span>Choose Type</span>
+        </div>
+
+        <div class="expense-step-line"></div>
+
+        <div class="expense-step" id="step-details">
+            <span class="expense-step-number">2</span>
+            <span>Expense Details</span>
+        </div>
+
+        <div class="expense-step-line"></div>
+
+        <div class="expense-step" id="step-review">
+            <span class="expense-step-number">3</span>
+            <span>Save</span>
+        </div>
+    </div>
+
+    <!-- =========================================
+         STEP 1 — EXPENSE TYPE
+    ========================================== -->
+    <div class="mb-4">
+        <div class="text-center mb-4">
+            <h4 class="fw-bold mb-2">What type of expense is this?</h4>
+            <p class="text-muted mb-0">Choose whether this expense happens once or repeats automatically.</p>
+        </div>
+
+        <div class="row g-4">
+            <!-- ONE TIME -->
+            <div class="col-12 col-md-6">
+                <label for="expense_type_onetime" class="expense-type-card w-100 {% if expense_type == 'onetime' %}selected{% endif %}" id="onetime-card">
+                    <input type="radio" class="expense-type-radio" name="expense_type" id="expense_type_onetime" value="onetime" {% if expense_type == "onetime" %}checked{% endif %}>
+
+                    <div class="expense-type-image">
+                        <img src="{{ url_for('static', filename='images/expense-onetime.jpg') }}" alt="One-time expense">
+                        <div class="expense-image-overlay"></div>
+                        <div class="expense-icon-badge">
+                            <i class="bi bi-wallet2 fs-4"></i>
+                        </div>
+                        <div class="expense-selected-badge">
+                            <i class="bi bi-check-circle-fill"></i> Selected
+                        </div>
+                    </div>
+
+                    <div class="expense-type-content">
+                        <h5>One-time Expense</h5>
+                        <p>For purchases, bills, or payments that happen only once.</p>
+                    </div>
+                </label>
+            </div>
+
+            <!-- RECURRING -->
+            <div class="col-12 col-md-6">
+                <label for="expense_type_recurring" class="expense-type-card recurring w-100 {% if expense_type == 'recurring' %}selected{% endif %}" id="recurring-card">
+                    <input type="radio" class="expense-type-radio" name="expense_type" id="expense_type_recurring" value="recurring" {% if expense_type == "recurring" %}checked{% endif %}>
+
+                    <div class="expense-type-image">
+                        <img src="{{ url_for('static', filename='images/expense-recurring.jpg') }}" alt="Recurring expense">
+                        <div class="expense-image-overlay"></div>
+                        <div class="expense-icon-badge">
+                            <i class="bi bi-arrow-repeat fs-4"></i>
+                        </div>
+                        <div class="expense-selected-badge">
+                            <i class="bi bi-check-circle-fill"></i> Selected
+                        </div>
+                    </div>
+
+                    <div class="expense-type-content">
+                        <h5>Recurring Expense</h5>
+                        <p>For expenses such as rent, subscriptions, loans, or regular bills.</p>
+                    </div>
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <!-- =========================================
+         STEP 2 — EXPENSE DETAILS
+    ========================================== -->
+    <div class="expense-form-section">
+        <div class="expense-section-heading">
+            <div class="expense-section-icon">
+                <i class="bi bi-receipt fs-5"></i>
+            </div>
+            <div>
+                <h5>Expense Details</h5>
+                <p>Enter the information for this expense.</p>
+            </div>
+        </div>
+
+        <div class="row g-3">
+            <!-- Amount -->
+            <div class="col-12 col-md-6">
+                {{ f.render_field(form.amount, placeholder="0.00", icon="bi bi-currency-dollar") }}
+            </div>
+
+            <!-- Expense Date -->
+            <div class="col-12 col-md-6">
+                {{ f.render_field(form.expense_date, icon="bi bi-calendar-event", type="date") }}
+            </div>
+
+            <!-- Category -->
+            <div class="col-12 col-md-6">
+                {{ f.render_select(form.category, icon="bi bi-tag") }}
+            </div>
+
+            <!-- Description -->
+            <div class="col-12">
+                {{ f.render_textarea(form.description, rows=3, placeholder="Enter a description...") }}
+            </div>
+        </div>
+
+        <!-- =====================================
+             RECURRING SETTINGS
+        ===================================== -->
+        <div id="recurring-fields" class="{% if expense_type == 'recurring' %}visible{% endif %}">
+            <div class="recurring-settings-card">
+                <div class="recurring-settings-header">
+                    <i class="bi bi-arrow-repeat fs-5"></i>
+                    <div>
+                        <strong>Recurring Schedule</strong>
+                        <div class="small text-muted">Tell us how often this expense should repeat.</div>
+                    </div>
+                </div>
+
+                <div class="row g-3">
+                    <!-- Period -->
+                    <div class="col-12 col-md-4">
+                        {{ f.render_select(form.recurring_period, icon="bi bi-repeat") }}
+                    </div>
+
+                    <!-- Start Date -->
+                    <div class="col-12 col-md-4">
+                        {{ f.render_field(form.start_date, icon="bi bi-calendar-event", type="date") }}
+                    </div>
+
+                    <!-- End Date -->
+                    <div class="col-12 col-md-4">
+                        {{ f.render_field(form.end_date, icon="bi bi-calendar-x", type="date") }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- =========================================
+         STEP 3 — ACTIONS
+    ========================================== -->
+    <div class="expense-form-actions">
+        {{ f.render_form_buttons(
+            submit_label=submit_label or "Save Expense",
+            cancel_url=url_for("expenses.index"),
+            submit_class="btn-primary",
+            submit_icon="bi bi-check-circle"
+        ) }}
+    </div>
+
+</div>
+<script> document.addEventListener("DOMContentLoaded", function () {
+const recurringRadio =
+    document.getElementById("expense_type_recurring");
+
+const onetimeRadio =
+    document.getElementById("expense_type_onetime");
+
+const recurringFields =
+    document.getElementById("recurring-fields");
+
+const onetimeCard =
+    document.getElementById("onetime-card");
+
+const recurringCard =
+    document.getElementById("recurring-card");
+
+const stepDetails =
+    document.getElementById("step-details");
+
+function updateExpenseType() {
+
+    const isRecurring = recurringRadio.checked;
+
+    /*
+     * Update cards
+     */
+    onetimeCard.classList.toggle(
+        "selected",
+        !isRecurring
+    );
+
+    recurringCard.classList.toggle(
+        "selected",
+        isRecurring
+    );
+
+    /*
+     * Show/hide recurring settings
+     */
+    if (isRecurring) {
+
+        recurringFields.classList.add("visible");
+
+    } else {
+
+        recurringFields.classList.remove("visible");
+
+    }
+
+    /*
+     * Activate details step
+     */
+    stepDetails.classList.add("active");
+}
+
+recurringRadio.addEventListener(
+    "change",
+    updateExpenseType
+);
+
+onetimeRadio.addEventListener(
+    "change",
+    updateExpenseType
+);
+
+/*
+ * Initial state
+ */
+updateExpenseType();
+
+});
+</script>

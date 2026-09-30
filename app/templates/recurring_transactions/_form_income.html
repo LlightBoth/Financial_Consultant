@@ -1,0 +1,240 @@
+<!-- ==================================================
+     INCOME CATEGORY
+     ================================================== -->
+
+<div class="mb-3">
+
+    {{ form.category.label(
+        class="form-label small fw-semibold"
+    ) }}
+
+    <div class="input-group">
+
+        <span class="input-group-text bg-body-tertiary">
+            <i class="bi bi-tag"></i>
+        </span>
+
+        {{ form.category(
+            class="form-select",
+            id="income_category"
+        ) }}
+
+    </div>
+
+    {% if form.category.errors %}
+        <div class="text-danger small mt-1">
+            {% for error in form.category.errors %}
+                <div>{{ error }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+</div>
+
+
+<div class="row">
+    <!-- ==================================================
+     AMOUNT
+     ================================================== -->
+    <div class="mb-3 col-12 col-md-6">
+
+        {{ form.amount.label(
+            class="form-label small fw-semibold"
+        ) }}
+
+        <div class="input-group">
+
+            {{ form.amount(
+                class="form-control",
+                id="income_amount",
+                step="0.01",
+                min="0.01",
+                placeholder="0.00"
+            ) }}
+
+            <span class="input-group-text bg-body-tertiary">
+                USD
+            </span>
+
+        </div>
+
+        {% if form.amount.errors %}
+            <div class="text-danger small mt-1">
+                {% for error in form.amount.errors %}
+                    <div>{{ error }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+    </div>
+
+
+    <!-- ==================================================
+        INCOME DATE
+        ================================================== -->
+
+    <div class="mb-3 col-12 col-md-6">
+
+        {{ form.income_date.label(
+            class="form-label small fw-semibold"
+        ) }}
+
+        {{ form.income_date(
+            class="form-control",
+            id="income_date"
+        ) }}
+
+        {% if form.income_date.errors %}
+            <div class="text-danger small mt-1">
+                {% for error in form.income_date.errors %}
+                    <div>{{ error }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+    </div>
+</div>
+
+
+<!-- ==================================================
+     DESCRIPTION
+     ================================================== -->
+
+<div class="mb-3">
+
+    {{ form.description.label(
+        class="form-label small fw-semibold"
+    ) }}
+
+    {{ form.description(
+        class="form-control",
+        id="income_description"
+    ) }}
+
+    {% if form.description.errors %}
+        <div class="text-danger small mt-1">
+            {% for error in form.description.errors %}
+                <div>{{ error }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+</div>
+
+
+<!-- ==================================================
+     RECURRING PERIOD
+     ================================================== -->
+
+<div class="mb-3">
+
+    {{ form.recurring_period.label(
+        class="form-label small fw-semibold"
+    ) }}
+
+    <select
+        name="{{ form.recurring_period.name }}"
+        id="income_recurring_period"
+        class="form-select"
+        required
+    >
+
+        {% for value, label in form.recurring_period.choices %}
+
+            {% if value %}
+                <option
+                    value="{{ value }}"
+                    {% if form.recurring_period.data == value %}
+                        selected
+                    {% elif not form.recurring_period.data and value == "Monthly" %}
+                        selected
+                    {% endif %}
+                >
+                    {{ label }}
+                </option>
+            {% endif %}
+
+        {% endfor %}
+
+    </select>
+
+    {% if form.recurring_period.errors %}
+        <div class="text-danger small mt-1">
+            {% for error in form.recurring_period.errors %}
+                <div>{{ error }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+</div>
+
+
+
+<!-- ==================================================
+     DATES
+     ================================================== -->
+
+<div class="row">
+
+    <!-- Start Date -->
+
+    <div class="col-12 col-md-6 mb-3">
+
+        {{ form.start_date.label(
+            class="form-label small fw-semibold"
+        ) }}
+
+        {{ form.start_date(
+            class="form-control",
+            id="income_start_date"
+        ) }}
+
+        {% if form.start_date.errors %}
+            <div class="text-danger small mt-1">
+                {% for error in form.start_date.errors %}
+                    <div>{{ error }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+    </div>
+
+
+    <!-- End Date -->
+
+    <div class="col-12 col-md-6 mb-3">
+
+        {{ form.end_date.label(
+            class="form-label small fw-semibold"
+        ) }}
+
+        {{ form.end_date(
+            class="form-control",
+            id="income_end_date"
+        ) }}
+
+        <div class="text-secondary small mt-1">
+            Optional
+        </div>
+
+        {% if form.end_date.errors %}
+            <div class="text-danger small mt-1">
+                {% for error in form.end_date.errors %}
+                    <div>{{ error }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+    </div>
+
+</div>
+
+
+<!-- ==================================================
+     SUBMIT
+     ================================================== -->
+
+{{ form.submit(
+    class="btn btn-primary w-100 py-2 fw-semibold rounded-3",
+    id="saveButton"
+) }}

@@ -35,6 +35,7 @@ class User(UserMixin, db.Model):
     # 1-M
     notifications = db.relationship("Notification", back_populates="user", cascade="all, delete-orphan")
     budget_goals = db.relationship("BudgetGoal", back_populates="user", cascade="all, delete-orphan")
+    recurring_transactions = db.relationship("RecurringTransaction", back_populates="user", cascade="all, delete-orphan")
 
     # Methods To Help
     def set_password(self, pw): 

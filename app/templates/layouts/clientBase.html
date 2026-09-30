@@ -63,47 +63,59 @@
         </div>
         
         <ul class="sidebar-nav nav nav-pills flex-column mb-auto">
-            <li class="nav-section-title">{{ _('nav.main_menu') }}</li>
+            <!-- Menu Sections -->
+            <li class="nav-section-title mt-1">{{ _('nav.main_menu') }}</li>
             
-            <li class="nav-item mb-1">
+            <li class="nav-item">
                 <a href="{{ url_for('dashboards.userIndex') }}" class="nav-link {% if request.endpoint == 'dashboards.userIndex' %}active{% endif %}">
                     <i class="bi bi-grid-1x2 me-2"></i> <span>{{ _('nav.dashboard') }}</span>
                 </a>
             </li>
-            <li class="nav-item mb-1">
-                <a href="{{ url_for('budgets.planner') }}" class="nav-link {% if request.endpoint == 'budgets.planner' %}active{% endif %}">
-                    <i class="bi bi-wallet2 me-2"></i> <span>Budget</span>
-                </a>
-            </li>
+
+            <!-- Finance Sections -->
+            <li class="nav-section-title mt-1">FINANCE</li>
             {% if user_has_role(current_user, 'admin') or user_has_permission(current_user, 'income.view') %}
-            <li class="nav-item mb-1">
+            <li class="nav-item">
                 <a href="{{ url_for('incomes.index') }}" class="nav-link {% if request.endpoint == 'incomes.index' %}active{% endif %}">
                     <i class="bi bi-arrow-down-left-circle me-2"></i> <span>{{ _('nav.income') }}</span>
                 </a>
             </li>
             {% endif %}
             {% if user_has_role(current_user, 'admin') or user_has_permission(current_user, 'expense.view') %}
-            <li class="nav-item mb-1">
+            <li class="nav-item">
                 <a href="{{ url_for('expenses.index') }}" class="nav-link {% if request.endpoint == 'expenses.index' %}active{% endif %}">
                     <i class="bi bi-arrow-up-right-circle me-2"></i> <span>{{ _('nav.expense') }}</span>
                 </a>
             </li>
             {% endif %}
+            <li class="nav-item">
+                <a href="{{ url_for('budgets.planner') }}" class="nav-link {% if request.endpoint == 'budgets.planner' %}active{% endif %}">
+                    <i class="bi bi-pie-chart me-2"></i> <span>Budget Goals</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{{ url_for('recurring_transactions.index') }}" class="nav-link {% if request.endpoint == 'recurring_transactions.index' %}active{% endif %}">
+                    <i class="bi bi-arrow-repeat me-2"></i> <span>Recurring</span>
+                </a>
+            </li>
+            
+            <!-- Plan Sections -->
+            <li class="nav-section-title mt-1">PLANS</li>
             {% if user_has_role(current_user, 'admin') or user_has_permission(current_user, 'plan.view') %}
             <li class="nav-item mb-1">
                 <a href="{{ url_for('plans.index') }}" class="nav-link {% if 'plans' in request.endpoint %}active{% endif %}">
                     <i class="bi bi-bullseye me-2"></i> <span>{{ _('nav.my_plans') }}</span>
                 </a>
             </li>
-            <li class="nav-item mb-1">
+            <li class="nav-item">
                 <a href="{{ url_for('currencies.converter') }}" class="nav-link {% if 'currencies' in request.endpoint %}active{% endif %}">
                     <i class="bi bi-currency-exchange me-2"></i> <span>{{ _('nav.currency') }}</span>
                 </a>
             </li>
             
             {% endif %}
-            <li class="nav-section-title mt-3">OPTIONS</li>
-            <li class="nav-item mb-1">
+            <li class="nav-section-title mt-1">OPTIONS</li>
+            <li class="nav-item">
                 <a class="nav-link" href="/settings">
                     <i class="bi bi-gear me-2 text-secondary"></i> {{ _('nav.settings') }}
                 </a>

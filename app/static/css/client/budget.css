@@ -1,4 +1,635 @@
-  /* Custom thin scrollbar */
+/* ==================================================
+   METRIC ILLUSTRATION CARDS
+   ================================================== */
+
+.metric-illustration-card {
+    position: relative;
+    overflow: hidden;
+
+    border: 1px solid var(--bs-border-color);
+    border-radius: 18px;
+
+    background: var(--bs-card-bg);
+
+    transition:
+        transform .25s ease,
+        box-shadow .25s ease,
+        border-color .25s ease;
+}
+
+.metric-illustration-card:hover {
+    transform: translateY(-4px);
+
+    box-shadow:
+        0 16px 35px rgba(0, 0, 0, .08);
+
+    border-color:
+        rgba(var(--bs-primary-rgb), .25);
+}
+
+
+/* Decorative background */
+
+.metric-illustration-card::before {
+    content: "";
+
+    position: absolute;
+
+    width: 150px;
+    height: 150px;
+
+    right: -55px;
+    top: -55px;
+
+    border-radius: 50%;
+
+    opacity: .7;
+
+    pointer-events: none;
+}
+.metric-card-illustration img {
+    opacity: 0.65;
+    transition: 
+        transform .3s ease,
+        opacity .3s ease;
+}
+
+.metric-illustration-card:hover
+.metric-card-illustration img {
+    opacity: 0.8;
+    transform: translateY(-4px) rotate(2deg);
+}
+
+
+
+/* Different card colors */
+
+.income-card::before {
+    background: rgba(
+        var(--bs-primary-rgb),
+        .10
+    );
+}
+
+.expense-card::before {
+    background: rgba(
+        var(--bs-warning-rgb),
+        .12
+    );
+}
+
+.reserve-card::before {
+    background: rgba(
+        var(--bs-success-rgb),
+        .12
+    );
+}
+
+
+/* Content */
+
+.metric-card-content {
+    position: relative;
+    z-index: 2;
+
+    min-height: 115px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 1rem;
+}
+
+
+.metric-card-info {
+    min-width: 0;
+}
+
+
+/* Label */
+
+.metric-card-label {
+    display: block;
+
+    font-size: .68rem;
+    font-weight: 750;
+
+    letter-spacing: .09em;
+
+    text-transform: uppercase;
+
+    color: var(--bs-secondary-color);
+}
+
+
+/* Main number */
+
+.metric-card-value {
+    margin-top: .35rem;
+
+    font-size: 1.8rem;
+    line-height: 1.1;
+
+    font-weight: 800;
+
+    letter-spacing: -.035em;
+
+    color: var(--bs-body-color);
+}
+
+
+/* Description */
+
+.metric-card-description {
+    margin: .35rem 0 0;
+
+    font-size: .76rem;
+
+    color: var(--bs-secondary-color);
+}
+
+
+/* Illustration */
+
+.metric-card-illustration {
+    position: relative;
+
+    flex: 0 0 105px;
+
+    width: 105px;
+    height: 105px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 24px;
+
+    background:
+        rgba(var(--bs-primary-rgb), .06);
+}
+
+
+/* Illustration image */
+
+.metric-card-illustration img {
+    width: 88px;
+    height: 88px;
+
+    object-fit: contain;
+
+    display: block;
+
+    filter: drop-shadow(
+        0 8px 10px rgba(0, 0, 0, .08)
+    );
+
+    transition:
+        transform .3s ease;
+}
+
+
+/* Slight movement on hover */
+
+.metric-illustration-card:hover
+.metric-card-illustration img {
+    transform:
+        translateY(-4px)
+        rotate(2deg);
+}
+
+
+/* Card-specific illustration backgrounds */
+
+.income-card
+.metric-card-illustration {
+    background:
+        rgba(var(--bs-primary-rgb), .08);
+}
+
+.expense-card
+.metric-card-illustration {
+    background:
+        rgba(var(--bs-warning-rgb), .10);
+}
+
+.reserve-card
+.metric-card-illustration {
+    background:
+        rgba(var(--bs-success-rgb), .10);
+}
+
+
+/* Progress */
+
+.metric-progress {
+    position: relative;
+    z-index: 2;
+
+    height: 5px !important;
+
+    margin-top: 1rem;
+
+    border-radius: 999px;
+
+    background: var(--bs-tertiary-bg);
+}
+
+.metric-progress .progress-bar {
+    border-radius: 999px;
+}
+
+
+/* =========================================================
+   BUDGET HEADER
+   ========================================================= */
+
+.budget-page-header {
+    position: relative;
+    overflow: hidden;
+    padding: 1.25rem 1.5rem;
+    border-radius: 22px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(var(--bs-primary-rgb), .06),
+            var(--bs-body-bg) 55%,
+            rgba(var(--bs-success-rgb), .04)
+        );
+
+    border: 1px solid var(--bs-border-color-translucent);
+}
+
+
+/* Header icon */
+
+.budget-header-icon {
+    width: 52px;
+    height: 52px;
+    flex: 0 0 52px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 15px;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--bs-primary),
+            rgba(var(--bs-primary-rgb), .75)
+        );
+
+    color: #fff;
+
+    font-size: 1.35rem;
+
+    box-shadow:
+        0 8px 20px rgba(var(--bs-primary-rgb), .2);
+}
+
+
+.budget-eyebrow {
+    display: inline-flex;
+    align-items: center;
+
+    margin-bottom: .35rem;
+
+    font-size: .68rem;
+    font-weight: 700;
+
+    letter-spacing: .08em;
+    text-transform: uppercase;
+
+    color: var(--bs-primary);
+}
+
+
+/* Illustration */
+
+.budget-header-illustration {
+    position: relative;
+
+    width: 150px;
+    height: 105px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.budget-header-illustration img {
+    position: relative;
+    z-index: 2;
+
+    width: 90px;
+    height: 90px;
+
+    object-fit: contain;
+
+    filter: drop-shadow(
+        0 10px 12px rgba(0, 0, 0, .08)
+    );
+}
+
+.budget-orb {
+    position: absolute;
+
+    border-radius: 50%;
+
+    filter: blur(1px);
+}
+
+.budget-orb-one {
+    width: 90px;
+    height: 90px;
+
+    background: rgba(var(--bs-primary-rgb), .09);
+
+    right: 15px;
+    top: 5px;
+}
+
+.budget-orb-two {
+    width: 45px;
+    height: 45px;
+
+    background: rgba(var(--bs-success-rgb), .1);
+
+    right: 100px;
+    bottom: 5px;
+}
+
+
+/* =========================================================
+   BUDGET CONTROL CARD
+   ========================================================= */
+
+.budget-control-card {
+    position: relative;
+
+    overflow: hidden;
+
+    border: 1px solid var(--bs-border-color-translucent);
+
+    border-radius: 20px;
+
+    background: var(--bs-card-bg);
+
+    box-shadow:
+        0 8px 25px rgba(0, 0, 0, .045);
+}
+
+
+.budget-control-main {
+    min-height: 105px;
+
+    display: flex;
+    align-items: center;
+
+    padding: 1rem 1.25rem;
+
+    gap: 1.25rem;
+}
+
+
+/* =========================================================
+   MONTH NAVIGATION
+   ========================================================= */
+
+.budget-month-section {
+    display: flex;
+    align-items: center;
+
+    gap: .9rem;
+
+    min-width: 270px;
+}
+
+
+.budget-month-btn {
+    width: 38px;
+    height: 38px;
+
+    flex: 0 0 38px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid var(--bs-border-color);
+
+    border-radius: 12px;
+
+    background: var(--bs-body-bg);
+    color: var(--bs-secondary-color);
+
+    transition:
+        background-color .18s ease,
+        color .18s ease,
+        border-color .18s ease,
+        transform .18s ease;
+}
+
+
+.budget-month-btn:hover {
+    color: var(--bs-primary);
+
+    border-color:
+        rgba(var(--bs-primary-rgb), .35);
+
+    background:
+        rgba(var(--bs-primary-rgb), .06);
+
+    transform: translateY(-1px);
+}
+
+
+.budget-month-info {
+    min-width: 150px;
+}
+
+
+.budget-month-label {
+    display: block;
+
+    margin-bottom: .15rem;
+
+    font-size: .62rem;
+    font-weight: 700;
+
+    letter-spacing: .08em;
+
+    color: var(--bs-secondary-color);
+}
+
+
+.budget-month-title {
+    margin: 0;
+
+    font-size: 1.15rem;
+    font-weight: 700;
+
+    color: var(--bs-body-color);
+}
+
+
+.budget-status {
+    display: flex;
+    align-items: center;
+
+    gap: .4rem;
+
+    margin-top: .2rem;
+
+    font-size: .72rem;
+    font-weight: 600;
+
+    color: var(--bs-primary);
+}
+
+
+.budget-status-dot {
+    width: 7px;
+    height: 7px;
+
+    border-radius: 50%;
+
+    background: var(--bs-primary);
+
+    box-shadow:
+        0 0 0 4px
+        rgba(var(--bs-primary-rgb), .1);
+}
+
+
+/* =========================================================
+   DIVIDER
+   ========================================================= */
+
+.budget-control-divider {
+    width: 1px;
+    height: 52px;
+
+    background: var(--bs-border-color);
+}
+
+
+/* =========================================================
+   ACTIONS
+   ========================================================= */
+
+.budget-actions {
+    display: flex;
+    align-items: center;
+
+    gap: .7rem;
+
+    margin-left: auto;
+}
+
+
+.budget-action {
+    display: flex;
+    align-items: center;
+
+    gap: .65rem;
+
+    min-width: 165px;
+
+    padding: .65rem .85rem;
+
+    border: 1px solid var(--bs-border-color);
+
+    border-radius: 13px;
+
+    background: var(--bs-body-bg);
+
+    text-align: left;
+
+    transition:
+        transform .18s ease,
+        border-color .18s ease,
+        box-shadow .18s ease,
+        background-color .18s ease;
+}
+
+
+.budget-action:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 7px 18px rgba(0, 0, 0, .06);
+}
+
+
+.budget-action strong {
+    display: block;
+
+    font-size: .78rem;
+    font-weight: 700;
+
+    color: var(--bs-body-color);
+}
+
+
+.budget-action small {
+    display: block;
+
+    margin-top: .1rem;
+
+    font-size: .65rem;
+
+    color: var(--bs-secondary-color);
+}
+
+
+.budget-action-icon {
+    width: 34px;
+    height: 34px;
+
+    flex: 0 0 34px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 10px;
+
+    font-size: .9rem;
+}
+
+
+.budget-action-purple:hover {
+    border-color: rgba(111, 66, 193, .35);
+}
+
+.budget-action-purple .budget-action-icon {
+    color: #6f42c1;
+    background: rgba(111, 66, 193, .1);
+}
+
+
+.budget-action-primary:hover {
+    border-color:
+        rgba(var(--bs-primary-rgb), .35);
+}
+
+.budget-action-primary .budget-action-icon {
+    color: var(--bs-primary);
+    background:
+        rgba(var(--bs-primary-rgb), .1);
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+ /* Custom thin scrollbar */
   .custom-scrollbar::-webkit-scrollbar {
     width: 6px;
     height: 6px;
@@ -60,10 +691,30 @@
       padding-left: 12px !important;
       padding-right: 12px !important;
     }
-    .budget-page {
-      width: 100%;
-      max-width: 1400px;
-      margin: 0 auto;
+    .budget-page-header {
+        padding: 1.15rem;
+    }
+
+    .budget-control-main {
+        flex-wrap: wrap;
+    }
+
+    .budget-control-divider {
+        display: none;
+    }
+
+    .budget-actions {
+        width: 100%;
+
+        margin-left: 0;
+
+        padding-top: .85rem;
+
+        border-top: 1px solid var(--bs-border-color);
+    }
+
+    .budget-action {
+        flex: 1;
     }
 
 
@@ -144,23 +795,69 @@
 
   /* Extra-small phones */
   @media screen and (max-width: 576px) {
+    .metric-card-content {
+        min-height: 100px;
+    }
 
+    .metric-card-value {
+        font-size: 1.55rem;
+    }
+
+    .metric-card-illustration {
+        flex-basis: 82px;
+
+        width: 82px;
+        height: 82px;
+
+        border-radius: 20px;
+    }
+
+    .metric-card-illustration img {
+        width: 68px;
+        height: 68px;
+    }
     .container-fluid {
       padding-left: 8px !important;
       padding-right: 8px !important;
     }
-    .budget-page {
-      max-width: 100%;
-      padding-left: 12px;
-      padding-right: 12px;
-    }
-    .budget-actions {
-      flex-direction: column;
+    
+    .budget-page-header {
+        border-radius: 17px;
     }
 
-    .budget-actions .btn {
-      width: 100%;
+    .budget-header-icon {
+        width: 45px;
+        height: 45px;
+        flex-basis: 45px;
+
+        border-radius: 12px;
     }
+
+    .budget-control-main {
+        padding: .9rem;
+
+        gap: .8rem;
+    }
+
+    .budget-month-section {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .budget-month-info {
+        flex: 1;
+        text-align: center;
+    }
+
+    .budget-actions {
+        flex-direction: column;
+    }
+
+    .budget-action {
+        width: 100%;
+        min-width: 0;
+    }
+
     h1.h3 {
       font-size: 1.35rem;
     }
